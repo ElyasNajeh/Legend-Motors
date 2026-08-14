@@ -34,20 +34,13 @@ def login(
     access_token = create_token(
         {"sub": admin.email},
         timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        token_type="access",
     )
 
     refresh_token = create_token(
         {"sub": admin.email},
         timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
-    )
-
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=False,
-        samesite="strict",
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        token_type="refresh",
     )
 
     response.set_cookie(
@@ -62,12 +55,14 @@ def login(
     return {
         "message": "Login successful",
         "username": admin.username,
+        "access_token": access_token,
+        "token_type": "bearer",
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     }
 
 
 def refresh_access_token(
     request: Request,
-    response: Response,
 ):
     refresh_token = request.cookies.get("refresh_token")
 
@@ -77,7 +72,10 @@ def refresh_access_token(
             detail="Refresh token missing",
         )
 
-    email = verify_token(refresh_token)
+    email = verify_token(
+        refresh_token,
+        expected_token_type="refresh",
+    )
 
     if email is None:
         raise HTTPException(
@@ -88,23 +86,19 @@ def refresh_access_token(
     new_access_token = create_token(
         {"sub": email},
         timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
-    )
-
-    response.set_cookie(
-        key="access_token",
-        value=new_access_token,
-        httponly=True,
-        secure=False,
-        samesite="strict",
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        token_type="access",
     )
 
     return {
         "message": "Access token refreshed",
+        "access_token": new_access_token,
+        "token_type": "bearer",
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     }
 
 
 def logout(response: Response):
+    # Remove the old access-token cookie for clients upgrading from the previous flow.
     response.delete_cookie(
         key="access_token",
         samesite="strict",

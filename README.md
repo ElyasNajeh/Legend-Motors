@@ -54,7 +54,7 @@ Legend-Motors/
 ## Main Features
 
 - Admin authentication using access and refresh tokens
-- HttpOnly cookie-based authentication
+- Bearer access-token authentication with an HttpOnly refresh-token cookie
 - Admin management
 - Brand management
 - Car management
@@ -80,7 +80,15 @@ car_images
 sliders
 ```
 
-Cars share common information in the `cars` table, while type-specific information is stored separately in `normal_cars` and `hybrid_cars`.
+Cars share common information, including engine and fuel fields, in the `cars` table. The `normal_cars` table is an intentionally empty subtype marker for future normal-only fields, while `hybrid_cars` stores `battery_capacity`.
+
+Protected endpoints expect the access token in the request header:
+
+```text
+Authorization: Bearer <access_token>
+```
+
+Login and refresh responses return the access token in their JSON body. The refresh token remains in an HttpOnly cookie and is sent automatically to `/auth/refresh`.
 
 ## Environment Variables
 

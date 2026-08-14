@@ -49,6 +49,22 @@ class Car(Base):
         nullable=False,
     )
 
+    fuel_type = Column(
+        String(20),
+        nullable=False,
+    )
+
+    engine_cc = Column(
+        Integer,
+        nullable=False,
+    )
+
+    is_turbo = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
     car_type = Column(
         String(20),
         nullable=False,
@@ -124,22 +140,6 @@ class NormalCar(Base):
         nullable=False,
     )
 
-    fuel_type = Column(
-        String(20),
-        nullable=False,
-    )
-
-    engine_cc = Column(
-        Integer,
-        nullable=False,
-    )
-
-    is_turbo = Column(
-        Boolean,
-        default=False,
-        nullable=False,
-    )
-
     car = relationship(
         "Car",
         back_populates="normal_car",
@@ -159,22 +159,6 @@ class HybridCar(Base):
         Integer,
         ForeignKey("cars.id", ondelete="CASCADE"),
         unique=True,
-        nullable=False,
-    )
-
-    fuel_type = Column(
-        String(20),
-        nullable=False,
-    )
-
-    engine_cc = Column(
-        Integer,
-        nullable=False,
-    )
-
-    is_turbo = Column(
-        Boolean,
-        default=False,
         nullable=False,
     )
 

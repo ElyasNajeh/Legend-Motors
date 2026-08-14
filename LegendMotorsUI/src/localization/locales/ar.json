@@ -1,0 +1,317 @@
+{
+  "language": {
+    "switch": "التبديل للإنجليزية",
+    "switchTo": "EN"
+  },
+  "common": {
+    "items": "عناصر"
+  },
+  "admin": {
+    "panel": "لوحة الإدارة",
+    "dashboard": "الرئيسية",
+    "cars": "السيارات",
+    "brands": "البراندات",
+    "sliders": "الشرائح",
+    "admins": "المشرفون",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "signOut": "تسجيل الخروج",
+    "openNavigation": "فتح التنقل",
+    "closeNavigation": "إغلاق التنقل",
+
+    "login": {
+      "title": "لوحة الإدارة",
+      "subtitle": "سجّل دخولك لإدارة المعرض",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "signIn": "تسجيل الدخول",
+      "signingIn": "جارٍ تسجيل الدخول…",
+      "checking": "جارٍ التحقق من الجلسة",
+      "notice": "لمشرفي شركة Legend Motors المخولين فقط.",
+      "error": "ما قدرنا نسجّل دخولك. جرّب مرة ثانية."
+    },
+
+    "common": {
+      "active": "فعّال",
+      "hidden": "مخفي",
+      "optional": "اختياري",
+      "tryAgain": "جرّب مرة ثانية",
+      "pagination": "التنقل بين الصفحات",
+      "previous": "السابق",
+      "next": "التالي",
+      "pageOf": "صفحة {{page}} من {{total}}",
+      "uploadFailed": "ما قدرنا نرفع الصورة",
+      "uploadPreview": "معاينة الصورة",
+      "imagePreview": "معاينة الصورة",
+      "uploading": "جارٍ الرفع…",
+      "replaceImage": "استبدال الصورة",
+      "chooseImage": "اختيار صورة",
+      "imageHelp": "JPEG أو PNG أو WebP أو GIF."
+    },
+
+    "stats": {
+      "totalCars": "إجمالي السيارات",
+      "hybridCars": "السيارات الهايبرد",
+      "normalCars": "السيارات العادية"
+    },
+
+    "carTypes": {
+      "normal": "عادية",
+      "hybrid": "هايبرد"
+    },
+
+    "fields": {
+      "brand": "البراند",
+      "model": "الموديل",
+      "year": "السنة",
+      "mileage": "المسافة (كم)",
+      "horsepower": "القوة الحصانية",
+      "engineCc": "سعة المحرك (cc)",
+      "fuelType": "نوع الوقود",
+      "batteryCapacity": "سعة البطارية",
+      "turbo": "تيربو",
+      "featured": "اضافات",
+      "englishName": "الاسم بالإنجليزية",
+      "arabicName": "الاسم بالعربية",
+      "englishDescription": "الوصف بالإنجليزية",
+      "arabicDescription": "الوصف بالعربية"
+    },
+
+    "validation": {
+      "requiredField": "هالحقل مطلوب.",
+      "wholeNumber": "أدخل رقم صحيح.",
+      "saveFailed": "ما قدرنا نحفظ التغييرات. جرّب مرة ثانية."
+    },
+
+    "feedback": {
+      "common": {
+        "cancel": "إلغاء",
+        "confirm": "تأكيد",
+        "tryAgain": "جرّب مرة ثانية."
+      },
+
+      "cars": {
+        "created": "انضافت السيارة",
+        "updated": "تعدّلت السيارة",
+        "saved": "انحفظت {{name}} بنجاح.",
+        "deleteTitle": "حذف السيارة؟",
+        "deleteMessage": "متأكد بدك تحذف {{name}} نهائياً؟",
+        "deleteConfirm": "احذف السيارة",
+        "deleted": "انحذفت السيارة",
+        "removed": "انشالت {{name}} من المعرض.",
+        "deleteFailed": "ما قدرنا نحذف السيارة",
+        "featuredUpdated": "تم تعديل حالة الاضافات بالسيارة",
+        "statusUpdated": "تحدّثت حالة السيارة",
+        "updateFailed": "ما قدرنا نحدّث السيارة",
+        "loadFailed": "ما قدرنا نحمّل السيارات."
+      },
+
+      "brands": {
+        "created": "انضافت الماركة",
+        "updated": "تعدّلت الماركة",
+        "saved": "انحفظت {{name}} بنجاح.",
+        "deleteTitle": "حذف الماركة؟",
+        "deleteMessage": "متأكد بدك تحذف {{name}}؟ الماركات المرتبطة بسيارات ما بتنحذف.",
+        "deleteConfirm": "احذف الماركة",
+        "deleted": "انحذفت الماركة",
+        "removed": "انشالت {{name}}.",
+        "deleteFailed": "ما قدرنا نحذف الماركة",
+        "inUse": "ممكن تكون الماركة مرتبطة بسيارة."
+      },
+
+      "sliders": {
+        "created": "انضافت الشريحة",
+        "updated": "تعدّلت الشريحة",
+        "saved": "انحفظت {{name}} بنجاح.",
+        "deleted": "انحذفت الشريحة",
+        "removed": "انشالت {{name}}.",
+        "hidden": "انخفت الشريحة",
+        "activated": "اتفعّلت الشريحة",
+        "hiddenMessage": "الشريحة هسا مخفية من الصفحة الرئيسية.",
+        "activatedMessage": "الشريحة هسا ظاهرة بالصفحة الرئيسية.",
+        "deleteTitle": "حذف الشريحة؟",
+        "deleteMessage": "متأكد بدك تحذف {{name}} نهائياً؟ ما بتقدر ترجعها بعدين.",
+        "deleteConfirm": "احذف الشريحة",
+        "deleteFailed": "ما قدرنا نحذف الشريحة",
+        "statusFailed": "ما قدرنا نحدّث حالة الشريحة",
+        "loadFailed": "ما قدرنا نحمّل الشرائح."
+      },
+
+      "admins": {
+        "created": "انضاف المشرف",
+        "createdMessage": "{{email}} بقدر يسجّل دخول هسا.",
+        "deleted": "انحذف المشرف",
+        "deletedMessage": "{{email}} ما عاد عنده صلاحية دخول.",
+        "deleteTitle": "حذف المشرف؟",
+        "deleteMessage": "متأكد بدك تشيل صلاحية {{email}}؟ ما رح يقدر يسجّل دخول بعدها.",
+        "deleteConfirm": "احذف المشرف",
+        "deleteFailed": "ما قدرنا نحذف المشرف",
+        "loadFailed": "ما قدرنا نحمّل المشرفين."
+      }
+    },
+
+    "forms": {
+      "common": {
+        "cancel": "إلغاء",
+        "close": "إغلاق",
+        "saving": "جارٍ الحفظ…",
+        "sections": {
+          "status": "3. الحالة"
+        }
+      },
+
+      "fields": {
+        "englishTitle": "العنوان بالإنجليزية",
+        "arabicTitle": "العنوان بالعربية"
+      },
+
+      "car": {
+        "eyebrow": "تفاصيل المركبة",
+        "newTitle": "إضافة سيارة",
+        "editTitle": "تعديل السيارة",
+        "save": "حفظ السيارة",
+        "chooseBrand": "اختر براند",
+        "normalHelp": "مركبة بمحرك احتراق تقليدي",
+        "hybridHelp": "محرك احتراق مع مساعدة كهربائية",
+        "featuredHelp": "إظهار السيارة كمركبة اضافات.",
+        "imagesLabel": "صور السيارة",
+        "chooseImages": "اختار الصور",
+        "imagesSelected": "اخترت {{count}} صورة.",
+        "imagesHelp": "اختياري. يمكنك اختيار عدة صور وسيتم رفعها بعد حفظ السيارة.",
+        "sections": {
+          "type": "1. نوع السيارة",
+          "basic": "2. المواصفات",
+          "descriptions": "3. الأوصاف",
+          "images": "4. الصور",
+          "options": "5. الخيارات"
+        }
+      },
+
+      "brand": {
+        "eyebrow": "تفاصيل البراند",
+        "newTitle": "إضافة براند",
+        "editTitle": "تعديل البراند",
+        "save": "حفظ البراند"
+      },
+
+      "slider": {
+        "eyebrow": "شريحة الصفحة الرئيسية",
+        "newTitle": "إضافة شريحة",
+        "editTitle": "تعديل الشريحة",
+        "save": "حفظ الشريحة",
+        "displayOrder": "ترتيب العرض",
+        "displayOrderHelp": "يجب أن يكون لكل شريحة ترتيب مختلف.",
+        "activeLabel": "ظاهرة في الصفحة الرئيسية",
+        "activeHelp": "يمكن للزوار رؤية هذه الشريحة.",
+        "sections": {
+          "info": "1. معلومات الشريحة",
+          "image": "2. صورة الشريحة"
+        },
+        "validation": {
+          "required": "العنوانان والصورة مطلوبة.",
+          "displayOrder": "ترتيب العرض يجب أن يكون عدداً صحيحاً يساوي صفر أو أكثر.",
+          "saveFailed": "تعذر حفظ الشريحة."
+        }
+      },
+
+      "admin": {
+        "eyebrow": "حساب جديد",
+        "newTitle": "إضافة مشرف",
+        "save": "إضافة مشرف",
+        "adding": "جارٍ الإضافة…",
+        "username": "اسم المستخدم",
+        "email": "البريد الإلكتروني",
+        "temporaryPassword": "كلمة مرور مؤقتة",
+        "validation": {
+          "required": "اسم المستخدم والبريد وكلمة المرور مطلوبة.",
+          "saveFailed": "تعذر إضافة المشرف."
+        }
+      }
+    },
+
+    "pages": {
+      "dashboardEyebrow": "نظرة عامة",
+      "welcome": "أهلاً بعودتك، {{name}}",
+      "dashboardDescription": "أدِر معرضك من مكان واحد.",
+      "dashboardError": "تعذر تحميل لوحة المعلومات.",
+
+      "carsEyebrow": "مخزون المعرض",
+      "carsDescription": "إدارة مواصفات السيارات وأنواعها وظهورها وصورها.",
+      "addCar": "إضافة سيارة",
+
+      "brandsEyebrow": "كتالوج المركبات",
+      "brandsDescription": "إدارة البراندات المتوفرة في المعرض.",
+      "addBrand": "إضافة براند",
+
+      "slidersEyebrow": "الصفحة الرئيسية",
+      "slidersDescription": "إدارة الشرائح الترويجية وترتيبها وظهورها وصورها.",
+      "addSlider": "إضافة شريحة",
+
+      "adminsEyebrow": "التحكم بالوصول",
+      "adminsDescription": "إدارة من يمكنه الوصول إلى لوحة شركة ETA.",
+      "addAdmin": "إضافة مشرف",
+
+      "settingsEyebrow": "التفضيلات",
+      "settingsDescription": "خصّص لوحة إدارة شركة ETA.",
+      "appearance": "المظهر",
+      "appearanceDescription": "اختر شكل مساحة الإدارة على هذا الجهاز.",
+      "appearanceThemes": "خيارات المظهر",
+      "light": "فاتح",
+      "lightDescription": "مساحة مشرقة ونظيفة",
+      "dark": "داكن",
+      "darkDescription": "مساحة هادئة بإضاءة منخفضة",
+      "select": "اختيار"
+    },
+
+    "management": {
+      "searchCars": "البحث بالسيارات…",
+      "searchBrands": "البحث البراندات",
+      "searchSliders": "البحث بالشرائح…",
+      "filterBrand": "فلترة حسب البراند",
+      "filterType": "فلترة حسب النوع",
+      "filterStatus": "فلترة حسب الحالة",
+      "allBrands": "كل البراندات",
+      "allTypes": "كل الأنواع",
+      "allStatuses": "كل الحالات",
+
+      "loadingCars": "جارٍ تحميل السيارات…",
+      "loadingBrands": "جارٍ تحميل البراندات",
+      "loadingSliders": "جارٍ تحميل الشرائح…",
+      "loadingAdmins": "جارٍ تحميل المشرفين…",
+      "loadBrandsError": "تعذر تحميل البراندات.",
+
+      "noCars": "لا توجد سيارات بعد",
+      "noCarsMessage": "أضف أول سيارة إلى المعرض.",
+      "brandRequired": "أنشئ براند قبل إضافة السيارات.",
+
+      "noBrands": "لا توجد براندات بعد",
+      "noBrandsMessage": "أضف أول براند إلى الكتالوج.",
+
+      "noSliders": "لا توجد شرائح بعد",
+      "noSlidersMessage": "أضف شريحة ترويجية للصفحة الرئيسية.",
+
+      "noAdmins": "لا يوجد مشرفون",
+      "noAdminsMessage": "أضف مشرفاً لتوفير وصول آمن.",
+
+      "car": "السيارة",
+      "brand": "البراند",
+      "slider": "الشريحة",
+      "specs": "المواصفات",
+      "created": "تاريخ الإنشاء",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "order": "الترتيب",
+      "edit": "تعديل",
+      "hide": "إخفاء",
+      "activate": "تفعيل",
+      "delete": "حذف",
+      "unknown": "غير معروف",
+      "toggleFeatured": "الإضافات",
+      "currentAccount": "الحساب الحالي",
+      "cannotDeleteSelf": "لا يمكنك حذف حسابك",
+      "deleteAdmin": "حذف المشرف"
+    }
+  }
+}

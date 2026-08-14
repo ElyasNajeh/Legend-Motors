@@ -24,12 +24,6 @@ UPLOAD_DIR = Path("/app/uploads/cars")
 
 def validate_car_type(car_data):
     if car_data.car_type == "normal":
-        if car_data.normal_details is None:
-            raise HTTPException(
-                status_code=400,
-                detail="Normal car details are required",
-            )
-
         if car_data.hybrid_details is not None:
             raise HTTPException(
                 status_code=400,
@@ -41,12 +35,6 @@ def validate_car_type(car_data):
             raise HTTPException(
                 status_code=400,
                 detail="Hybrid car details are required",
-            )
-
-        if car_data.normal_details is not None:
-            raise HTTPException(
-                status_code=400,
-                detail="Normal details are not allowed for hybrid cars",
             )
 
     else:
@@ -74,6 +62,9 @@ def create_car(db: Session, car_data: CarCreate):
             year=car_data.year,
             mileage=car_data.mileage,
             horsepower=car_data.horsepower,
+            fuel_type=car_data.fuel_type,
+            engine_cc=car_data.engine_cc,
+            is_turbo=car_data.is_turbo,
             car_type=car_data.car_type,
             description_ar=car_data.description_ar,
             description_en=car_data.description_en,
@@ -84,13 +75,8 @@ def create_car(db: Session, car_data: CarCreate):
         db.flush()
 
         if car_data.car_type == "normal":
-            details = car_data.normal_details
-
             normal_car = NormalCar(
                 car_id=car.id,
-                fuel_type=details.fuel_type,
-                engine_cc=details.engine_cc,
-                is_turbo=details.is_turbo,
             )
 
             db.add(normal_car)
@@ -100,9 +86,6 @@ def create_car(db: Session, car_data: CarCreate):
 
             hybrid_car = HybridCar(
                 car_id=car.id,
-                fuel_type=details.fuel_type,
-                engine_cc=details.engine_cc,
-                is_turbo=details.is_turbo,
                 battery_capacity=details.battery_capacity,
             )
 
@@ -197,6 +180,9 @@ def update_car(
         car.year = car_data.year
         car.mileage = car_data.mileage
         car.horsepower = car_data.horsepower
+        car.fuel_type = car_data.fuel_type
+        car.engine_cc = car_data.engine_cc
+        car.is_turbo = car_data.is_turbo
         car.description_ar = car_data.description_ar
         car.description_en = car_data.description_en
         car.is_featured = car_data.is_featured
@@ -214,20 +200,10 @@ def update_car(
         car.car_type = car_data.car_type
 
         if car_data.car_type == "normal":
-            details = car_data.normal_details
-
-            if car.normal_car:
-                car.normal_car.fuel_type = details.fuel_type
-                car.normal_car.engine_cc = details.engine_cc
-                car.normal_car.is_turbo = details.is_turbo
-
-            else:
+            if not car.normal_car:
                 db.add(
                     NormalCar(
                         car_id=car.id,
-                        fuel_type=details.fuel_type,
-                        engine_cc=details.engine_cc,
-                        is_turbo=details.is_turbo,
                     )
                 )
 
@@ -235,18 +211,12 @@ def update_car(
             details = car_data.hybrid_details
 
             if car.hybrid_car:
-                car.hybrid_car.fuel_type = details.fuel_type
-                car.hybrid_car.engine_cc = details.engine_cc
-                car.hybrid_car.is_turbo = details.is_turbo
                 car.hybrid_car.battery_capacity = details.battery_capacity
 
             else:
                 db.add(
                     HybridCar(
                         car_id=car.id,
-                        fuel_type=details.fuel_type,
-                        engine_cc=details.engine_cc,
-                        is_turbo=details.is_turbo,
                         battery_capacity=details.battery_capacity,
                     )
                 )

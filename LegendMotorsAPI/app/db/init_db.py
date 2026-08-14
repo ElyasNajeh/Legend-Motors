@@ -1,8 +1,10 @@
 from sqlalchemy import create_engine, text
 
+from app.core import security
 from app.core.config import settings
 from app.db.base import Base
-from app.db.session import engine
+from app.db.migrations import migrate_car_common_fields
+from app.db.session import SessionLocal, engine
 
 # Import all models so SQLAlchemy registers them in Base.metadata
 from app.features.admins.model import Admin
@@ -44,6 +46,30 @@ def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
+def seed_development_admin():
+    db = SessionLocal()
+
+    try:
+        admin = db.query(Admin).filter(Admin.email == "a@gmail.com").first()
+
+        if admin is None:
+            db.add(
+                Admin(
+                    username="admin",
+                    email="a@gmail.com",
+                    hashed_password=security.hash_password("1234"),
+                )
+            )
+            db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 def init_db():
     create_database_if_not_exists()
+    migrate_car_common_fields(engine)
     create_tables()
+    seed_development_admin()

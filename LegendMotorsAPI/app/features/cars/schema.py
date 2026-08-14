@@ -4,17 +4,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class NormalCarDetails(BaseModel):
-    fuel_type: str
-    engine_cc: int
-    is_turbo: bool = False
-
     model_config = ConfigDict(from_attributes=True)
 
 
 class HybridCarDetails(BaseModel):
-    fuel_type: str
-    engine_cc: int
-    is_turbo: bool = False
     battery_capacity: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -27,6 +20,9 @@ class CarCreate(BaseModel):
     year: int
     mileage: int
     horsepower: int
+    fuel_type: str
+    engine_cc: int
+    is_turbo: bool = False
 
     description_ar: str | None = None
     description_en: str | None = None
@@ -35,7 +31,6 @@ class CarCreate(BaseModel):
 
     car_type: str
 
-    normal_details: NormalCarDetails | None = None
     hybrid_details: HybridCarDetails | None = None
 
 
@@ -46,6 +41,9 @@ class CarUpdate(BaseModel):
     year: int
     mileage: int
     horsepower: int
+    fuel_type: str
+    engine_cc: int
+    is_turbo: bool
 
     description_ar: str | None = None
     description_en: str | None = None
@@ -54,7 +52,6 @@ class CarUpdate(BaseModel):
 
     car_type: str
 
-    normal_details: NormalCarDetails | None = None
     hybrid_details: HybridCarDetails | None = None
 
 
@@ -78,6 +75,9 @@ class CarResponse(BaseModel):
     year: int
     mileage: int
     horsepower: int
+    fuel_type: str
+    engine_cc: int
+    is_turbo: bool
     car_type: str
 
     description_ar: str | None

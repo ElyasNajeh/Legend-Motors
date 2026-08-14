@@ -1,28 +1,47 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import HTTPException, Request
+import bcrypt
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"])
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(
+        password.encode("utf-8"),
+        bcrypt.gensalt(),
+    ).decode("utf-8")
 
 
 def verify_password(password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(password, hashed_password)
+    try:
+        return bcrypt.checkpw(
+            password.encode("utf-8"),
+            hashed_password.encode("utf-8"),
+        )
+    except ValueError:
+        return False
 
 
-def create_token(data: dict, expires_delta: timedelta) -> str:
+def create_token(
+    data: dict,
+    expires_delta: timedelta,
+    token_type: str,
+) -> str:
     to_encode = data.copy()
 
     expire = datetime.now(timezone.utc) + expires_delta
 
-    to_encode.update({"exp": expire})
+    to_encode.update(
+        {
+            "exp": expire,
+            "token_type": token_type,
+        }
+    )
 
     encoded_jwt = jwt.encode(
         to_encode,
@@ -33,7 +52,7 @@ def create_token(data: dict, expires_delta: timedelta) -> str:
     return encoded_jwt
 
 
-def verify_token(token: str):
+def verify_token(token: str, expected_token_type: str):
     try:
         payload = jwt.decode(
             token,
@@ -42,8 +61,9 @@ def verify_token(token: str):
         )
 
         email = payload.get("sub")
+        token_type = payload.get("token_type")
 
-        if email is None:
+        if email is None or token_type != expected_token_type:
             return None
 
         return email
@@ -52,21 +72,26 @@ def verify_token(token: str):
         return None
 
 
-def get_current_user(request: Request):
-    access_token = request.cookies.get("access_token")
-
-    if access_token is None:
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Security(bearer_scheme),
+):
+    if credentials is None:
         raise HTTPException(
             status_code=401,
-            detail="Token missing",
+            detail="Access token missing",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
-    email = verify_token(access_token)
+    email = verify_token(
+        credentials.credentials,
+        expected_token_type="access",
+    )
 
     if email is None:
         raise HTTPException(
             status_code=401,
-            detail="Invalid token",
+            detail="Invalid access token",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     return email

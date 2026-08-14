@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.features.auth import service
-from app.features.auth.schema import LoginRequest
+from app.features.auth.schema import LoginRequest, LoginResponse, RefreshResponse
 
 router = APIRouter(
     prefix="/auth",
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.post("/login")
+@router.post("/login", response_model=LoginResponse)
 def login(
     login_data: LoginRequest,
     response: Response,
@@ -21,12 +21,11 @@ def login(
     return service.login(db, login_data, response)
 
 
-@router.post("/refresh")
+@router.post("/refresh", response_model=RefreshResponse)
 def refresh_access_token(
     request: Request,
-    response: Response,
 ):
-    return service.refresh_access_token(request, response)
+    return service.refresh_access_token(request)
 
 
 @router.post("/logout")
