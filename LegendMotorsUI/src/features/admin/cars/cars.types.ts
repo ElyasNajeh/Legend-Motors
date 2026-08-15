@@ -1,4 +1,5 @@
 export type CarType = "normal" | "hybrid"
+export type Transmission = "automatic" | "manual" | "cvt"
 
 export type CarImage = { id: number; image: string; created_at: string }
 
@@ -8,6 +9,7 @@ export type Car = {
   model: string
   year: number
   mileage: number
+  transmission: Transmission
   horsepower: number
   fuel_type: string
   engine_cc: number
@@ -20,6 +22,7 @@ export type Car = {
   created_at: string
   hybrid_car: { battery_capacity: string | null } | null
   images: CarImage[]
+  brand: { id: number; name_ar: string; name_en: string }
 }
 
 export type CarPayload = {
@@ -27,6 +30,7 @@ export type CarPayload = {
   model: string
   year: number
   mileage: number
+  transmission: Transmission
   horsepower: number
   fuel_type: string
   engine_cc: number
@@ -43,6 +47,7 @@ export type CarFormValues = {
   model: string
   year: string
   mileage: string
+  transmission: Transmission
   horsepower: string
   fuel_type: string
   engine_cc: string

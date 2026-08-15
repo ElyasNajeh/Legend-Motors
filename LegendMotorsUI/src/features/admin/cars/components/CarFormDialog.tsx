@@ -13,6 +13,7 @@ function initialValues(car: Car | null, brands: Brand[]): CarFormValues {
     model: car?.model ?? "",
     year: car ? String(car.year) : "",
     mileage: car ? String(car.mileage) : "",
+    transmission: car?.transmission ?? "automatic",
     horsepower: car ? String(car.horsepower) : "",
     fuel_type: car?.fuel_type ?? "",
     engine_cc: car ? String(car.engine_cc) : "",
@@ -27,7 +28,7 @@ function initialValues(car: Car | null, brands: Brand[]): CarFormValues {
 
 function validate(form: CarFormValues, requiredMessage: string, integerMessage: string) {
   const errors: Errors = {}
-  const required: Array<keyof CarFormValues> = ["brand_id", "model", "year", "mileage", "horsepower", "fuel_type", "engine_cc"]
+  const required: Array<keyof CarFormValues> = ["brand_id", "model", "year", "mileage", "transmission", "horsepower", "fuel_type", "engine_cc"]
   required.forEach((field) => { if (!String(form[field]).trim()) errors[field] = requiredMessage })
   ;(["year", "mileage", "horsepower", "engine_cc"] as const).forEach((field) => {
     if (form[field] && !Number.isInteger(Number(form[field]))) errors[field] = integerMessage
@@ -37,7 +38,7 @@ function validate(form: CarFormValues, requiredMessage: string, integerMessage: 
 
 function toPayload(form: CarFormValues): CarPayload {
   return {
-    brand_id: Number(form.brand_id), model: form.model.trim(), year: Number(form.year), mileage: Number(form.mileage),
+    brand_id: Number(form.brand_id), model: form.model.trim(), year: Number(form.year), mileage: Number(form.mileage), transmission: form.transmission,
     horsepower: Number(form.horsepower), fuel_type: form.fuel_type.trim(), engine_cc: Number(form.engine_cc),
     is_turbo: form.is_turbo, description_ar: form.description_ar.trim() || null, description_en: form.description_en.trim() || null,
     is_featured: form.is_featured, car_type: form.car_type,
@@ -84,6 +85,7 @@ export function CarFormDialog({ car, brands, onClose, onSave }: { car: Car | nul
           <label>{t("admin.fields.model")}<input value={form.model} maxLength={255} onChange={(e) => change("model", e.target.value)} required />{fieldError("model")}</label>
           <NumberField label={t("admin.fields.year")} value={form.year} error={errors.year} onChange={(value) => change("year", value)} />
           <NumberField label={t("admin.fields.mileage")} value={form.mileage} error={errors.mileage} onChange={(value) => change("mileage", value)} />
+          <label>{t("admin.fields.transmission")}<select value={form.transmission} onChange={(e) => change("transmission", e.target.value as CarFormValues["transmission"])} required><option value="automatic">{t("admin.transmissions.automatic")}</option><option value="manual">{t("admin.transmissions.manual")}</option><option value="cvt">{t("admin.transmissions.cvt")}</option></select>{fieldError("transmission")}</label>
           <NumberField label={t("admin.fields.horsepower")} value={form.horsepower} error={errors.horsepower} onChange={(value) => change("horsepower", value)} />
           <NumberField label={t("admin.fields.engineCc")} value={form.engine_cc} error={errors.engine_cc} onChange={(value) => change("engine_cc", value)} />
           <label>{t("admin.fields.fuelType")}<input value={form.fuel_type} maxLength={20} onChange={(e) => change("fuel_type", e.target.value)} required />{fieldError("fuel_type")}</label>

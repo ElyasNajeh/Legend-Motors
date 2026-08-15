@@ -11,7 +11,6 @@ def migrate_car_common_fields(engine: Engine) -> None:
         inspector = inspect(connection)
         table_names = set(inspector.get_table_names())
 
-        # A fresh database will be created directly from the current models.
         if "cars" not in table_names:
             return
 
@@ -112,3 +111,25 @@ def migrate_car_common_fields(engine: Engine) -> None:
                     """
                 )
             )
+
+
+def migrate_car_transmission(engine: Engine) -> None:
+    """Add a controlled transmission value to databases created before this field."""
+    with engine.begin() as connection:
+        inspector = inspect(connection)
+        if "cars" not in inspector.get_table_names():
+            return
+
+        car_columns = {
+            column["name"] for column in inspector.get_columns("cars")
+        }
+        if "transmission" in car_columns:
+            return
+
+        connection.execute(
+            text(
+                "ALTER TABLE cars "
+                "ADD COLUMN transmission VARCHAR(20) "
+                "NOT NULL DEFAULT 'automatic'"
+            )
+        )

@@ -9,9 +9,25 @@ import { BrandsPage } from "@/features/admin/brands/BrandsPage"
 import { SlidersPage } from "@/features/admin/sliders/SlidersPage"
 import { AdminsPage } from "@/features/admin/admins/AdminsPage"
 import { SettingsPage } from "@/features/admin/settings/SettingsPage"
+import { PublicLayout } from "@/layouts/PublicLayout"
+import { HomePage } from "@/features/site/HomePage"
+import { CarDetailPage } from "@/features/site/CarDetailPage"
+import { AboutPage } from "@/features/site/AboutPage"
+import { ContactPage } from "@/features/site/ContactPage"
+import { NotFoundPage } from "@/features/site/NotFoundPage"
 
 export const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/admin" replace /> },
+  {
+    path: "/",
+    element: <PublicLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "cars/:carId", element: <CarDetailPage /> },
+      { path: "about", element: <AboutPage /> },
+      { path: "contact", element: <ContactPage /> },
+      { path: "*", element: <NotFoundPage /> },
+    ],
+  },
   { path: "/login", element: <Navigate to="/admin/login" replace /> },
   { path: "/admin/login", element: <LoginPage /> },
   {
@@ -26,5 +42,4 @@ export const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
     ],
   },
-  { path: "*", element: <Navigate to="/admin" replace /> },
 ])

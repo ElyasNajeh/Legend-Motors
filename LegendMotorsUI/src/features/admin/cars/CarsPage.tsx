@@ -29,7 +29,7 @@ export function CarsPage() {
         {cars.items.map((car) => <article className="product-table car-table" key={car.id}>
           <div className="product-cell">{car.images[0] ? <img src={getAssetUrl(car.images[0].image)} alt="" /> : <span className="category-table__placeholder"><Icon name="cars" /></span>}<span><strong>{car.model}</strong><small>{car.year} · {t(`admin.carTypes.${car.car_type}`)}</small></span></div>
           <span>{brandNames.get(car.brand_id) ?? t("admin.management.unknown")}</span>
-          <span><strong>{car.horsepower} HP</strong><small>{car.engine_cc} cc · {car.mileage.toLocaleString()} km</small></span>
+          <span><strong>{car.horsepower} HP</strong><small>{car.engine_cc} cc · {t(`admin.transmissions.${car.transmission}`)} · {car.mileage.toLocaleString()} km</small></span>
           <span className="car-status-cell"><StatusBadge active={car.is_active} />{car.is_featured && <small className="featured-badge">★ {t("admin.fields.featured")}</small>}</span>
           <div className="row-actions"><button className="icon-button" title={t("admin.management.edit")} onClick={() => setEditing(car)}><Icon name="edit" /></button><button className="icon-button" title={t(car.is_active ? "admin.management.hide" : "admin.management.activate")} onClick={() => void cars.toggleStatus(car)}><Icon name={car.is_active ? "eyeOff" : "eye"} /></button><button className="icon-button" title={t("admin.management.toggleFeatured")} onClick={() => void cars.toggleFeatured(car)}>★</button><button className="icon-button icon-button--danger" title={t("admin.management.delete")} onClick={() => void cars.deleteCar(car)}><Icon name="trash" /></button></div>
         </article>)}

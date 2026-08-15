@@ -16,6 +16,9 @@ export function getInitialLanguage(): Language {
     // Storage may be unavailable in privacy-restricted browsers.
   }
 
+  const isAdminRoute = window.location.pathname.startsWith("/admin") || window.location.pathname === "/login"
+  if (!isAdminRoute) return "ar"
+
   return window.navigator.language.toLocaleLowerCase().startsWith("ar") ? "ar" : "en"
 }
 

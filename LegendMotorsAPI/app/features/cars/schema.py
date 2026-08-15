@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -19,6 +20,7 @@ class CarCreate(BaseModel):
     model: str
     year: int
     mileage: int
+    transmission: Literal["automatic", "manual", "cvt"] = "automatic"
     horsepower: int
     fuel_type: str
     engine_cc: int
@@ -40,6 +42,7 @@ class CarUpdate(BaseModel):
     model: str
     year: int
     mileage: int
+    transmission: Literal["automatic", "manual", "cvt"]
     horsepower: int
     fuel_type: str
     engine_cc: int
@@ -67,6 +70,14 @@ class CarImageResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class CarBrandResponse(BaseModel):
+    id: int
+    name_ar: str
+    name_en: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class CarResponse(BaseModel):
     id: int
     brand_id: int
@@ -74,6 +85,7 @@ class CarResponse(BaseModel):
     model: str
     year: int
     mileage: int
+    transmission: Literal["automatic", "manual", "cvt"]
     horsepower: int
     fuel_type: str
     engine_cc: int
@@ -92,5 +104,6 @@ class CarResponse(BaseModel):
     hybrid_car: HybridCarDetails | None = None
 
     images: list[CarImageResponse] = Field(default_factory=list)
+    brand: CarBrandResponse
 
     model_config = ConfigDict(from_attributes=True)

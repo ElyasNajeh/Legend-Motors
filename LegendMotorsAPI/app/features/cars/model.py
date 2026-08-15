@@ -44,6 +44,12 @@ class Car(Base):
         nullable=False,
     )
 
+    transmission = Column(
+        String(20),
+        default="automatic",
+        nullable=False,
+    )
+
     horsepower = Column(
         Integer,
         nullable=False,
@@ -121,6 +127,7 @@ class Car(Base):
         "CarImage",
         back_populates="car",
         cascade="all, delete-orphan",
+        order_by="CarImage.id",
     )
 
 

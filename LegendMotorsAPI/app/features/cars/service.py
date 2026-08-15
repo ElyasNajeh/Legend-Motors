@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import selectinload
 
 from app.features.brands.model import Brand
 from app.features.cars.model import (
@@ -61,6 +62,7 @@ def create_car(db: Session, car_data: CarCreate):
             model=car_data.model,
             year=car_data.year,
             mileage=car_data.mileage,
+            transmission=car_data.transmission,
             horsepower=car_data.horsepower,
             fuel_type=car_data.fuel_type,
             engine_cc=car_data.engine_cc,
@@ -106,7 +108,17 @@ def get_cars(db: Session):
 
 
 def get_active_cars(db: Session):
-    return db.query(Car).filter(Car.is_active.is_(True)).all()
+    return (
+        db.query(Car)
+        .options(
+            selectinload(Car.brand),
+            selectinload(Car.images),
+            selectinload(Car.hybrid_car),
+        )
+        .filter(Car.is_active.is_(True))
+        .order_by(Car.created_at.desc())
+        .all()
+    )
 
 
 def get_featured_cars(db: Session):
@@ -116,6 +128,12 @@ def get_featured_cars(db: Session):
             Car.is_active.is_(True),
             Car.is_featured.is_(True),
         )
+        .options(
+            selectinload(Car.brand),
+            selectinload(Car.images),
+            selectinload(Car.hybrid_car),
+        )
+        .order_by(Car.created_at.desc())
         .all()
     )
 
@@ -135,12 +153,27 @@ def get_cars_by_brand(db: Session, brand_id: int):
             Car.brand_id == brand_id,
             Car.is_active.is_(True),
         )
+        .options(
+            selectinload(Car.brand),
+            selectinload(Car.images),
+            selectinload(Car.hybrid_car),
+        )
+        .order_by(Car.created_at.desc())
         .all()
     )
 
 
 def get_car(db: Session, car_id: int):
-    car = crud.get_by_id(db, Car, car_id)
+    car = (
+        db.query(Car)
+        .options(
+            selectinload(Car.brand),
+            selectinload(Car.images),
+            selectinload(Car.hybrid_car),
+        )
+        .filter(Car.id == car_id, Car.is_active.is_(True))
+        .first()
+    )
 
     if not car:
         raise HTTPException(
@@ -179,6 +212,7 @@ def update_car(
         car.model = car_data.model
         car.year = car_data.year
         car.mileage = car_data.mileage
+        car.transmission = car_data.transmission
         car.horsepower = car_data.horsepower
         car.fuel_type = car_data.fuel_type
         car.engine_cc = car_data.engine_cc

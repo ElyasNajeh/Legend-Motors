@@ -1,6 +1,36 @@
 {
   "language": { "switch": "Switch to Arabic", "switchTo": "العربية" },
   "common": { "items": "items" },
+  "public": {
+    "brandName": "Legend Motors",
+    "nav": { "home": "Home", "cars": "Cars", "about": "About us", "contact": "Contact us", "open": "Open menu", "close": "Close menu" },
+    "actions": { "browse": "See the cars", "contact": "Talk to us", "details": "See details", "retry": "Try again", "backToCars": "Back to cars", "clearFilters": "Clear filters", "showCars": "Show cars" },
+    "hero": {
+      "eyebrow": "Selected cars in Palestine",
+      "title": "Your next car is closer than you think.",
+      "description": "Explore the available cars and see every detail and photo.",
+      "slidesLabel": "Inside Legend Motors"
+    },
+    "cars": {
+      "title": "Explore all cars", "description": "Filter what suits you, then select any car to see its photos and details.",
+      "search": "Search by brand or model", "filters": "Filters", "filterTitle": "Filter cars", "brand": "Brand", "type": "Car type", "fuel": "Fuel type", "transmission": "Transmission", "sort": "Sort",
+      "all": "All", "newest": "Recently added", "yearNewest": "Year: newest", "mileageLowest": "Mileage: lowest", "results": "{{count}} cars",
+      "loading": "Loading cars…", "errorTitle": "We could not load the cars", "emptyTitle": "No matching cars", "emptyDescription": "Try changing your search or clearing the filters.", "noImage": "Car image unavailable", "mileage": "{{count}} km", "normal": "Normal", "hybrid": "Hybrid"
+    },
+    "transmissions": { "automatic": "Automatic", "manual": "Manual", "cvt": "CVT" },
+    "detail": {
+      "loading": "Loading car details…", "errorTitle": "This car is unavailable", "errorDescription": "The car may no longer be listed, or the link may be incorrect.", "carId": "Car ID {{id}}", "galleryLabel": "Photos of {{name}}", "imageAlt": "{{name}} — photo {{number}}",
+      "description": "About this car", "specs": "Specifications", "year": "Year", "mileage": "Mileage", "fuel": "Fuel", "transmission": "Transmission", "horsepower": "Power", "engine": "Engine", "turbo": "Turbo", "battery": "Battery", "yes": "Yes", "no": "No", "noDescription": "Talk to us for more details about this car.",
+      "whatsapp": "I’m interested in this car", "whatsappMessage": "Hello, I’m interested in the {{name}}, year {{year}}, car ID {{id}}.\n{{url}}"
+    },
+    "about": {
+      "eyebrow": "About us", "title": "Choosing a car should feel clear and comfortable.", "lead": "Legend Motors makes it easy to explore available cars, compare details, and contact us without unnecessary steps.", "detail": "Every car has its own page with photos, specifications, and a description. If it feels right, you can talk to us directly on WhatsApp.",
+      "valueOneTitle": "Clear details", "valueOneText": "The important information and photos are together in one place.", "valueTwoTitle": "Direct contact", "valueTwoText": "Go from the car you like to WhatsApp in one step.", "valueThreeTitle": "Arabic and English", "valueThreeText": "A comfortable experience in both languages and on every screen size."
+    },
+    "contact": { "eyebrow": "Contact us", "title": "Like a car? Talk to us.", "lead": "Message us on WhatsApp and ask about any car or detail you need.", "whatsapp": "Open WhatsApp", "whatsappMessage": "Hello Legend Motors, I would like to ask about the available cars." },
+    "footer": { "tagline": "Selected cars, clear details, and direct contact.", "rights": "© {{year}} Legend Motors" },
+    "notFound": { "title": "Page not found", "description": "Return home to see the available cars." }
+  },
   "admin": {
     "panel": "Admin Panel",
     "dashboard": "Dashboard",
@@ -45,11 +75,13 @@
     },
     "stats": { "totalCars": "Total cars", "hybridCars": "Hybrid cars", "normalCars": "Normal cars" },
     "carTypes": { "normal": "Normal", "hybrid": "Hybrid" },
+    "transmissions": { "automatic": "Automatic", "manual": "Manual", "cvt": "CVT" },
     "fields": {
       "brand": "Brand",
       "model": "Model",
       "year": "Year",
       "mileage": "Mileage (km)",
+      "transmission": "Transmission",
       "horsepower": "Horsepower",
       "engineCc": "Engine (cc)",
       "fuelType": "Fuel type",
@@ -73,12 +105,12 @@
       "common": { "cancel": "Cancel", "close": "Close", "saving": "Saving…", "sections": { "status": "3. Status" } },
       "fields": { "englishTitle": "English title", "arabicTitle": "Arabic title" },
       "car": {
-        "eyebrow": "Vehicle details",
+        "eyebrow": "Car details",
         "newTitle": "Add car",
         "editTitle": "Edit car",
         "save": "Save car",
         "chooseBrand": "Choose a brand",
-        "normalHelp": "Standard combustion vehicle",
+        "normalHelp": "Standard combustion car",
         "hybridHelp": "Combustion engine with electric assistance",
         "featuredHelp": "Feature this car in the showroom.",
         "imagesLabel": "Car images",
@@ -102,8 +134,8 @@
     },
     "pages": {
       "dashboardEyebrow": "Overview", "welcome": "Welcome back, {{name}}", "dashboardDescription": "Manage your showroom from one place.", "dashboardError": "Unable to load dashboard.",
-      "carsEyebrow": "Showroom inventory", "carsDescription": "Manage vehicle specifications, type, visibility, and images.", "addCar": "Add car",
-      "brandsEyebrow": "Vehicle catalog", "brandsDescription": "Manage the brands available in the showroom.", "addBrand": "Add brand",
+      "carsEyebrow": "Showroom inventory", "carsDescription": "Manage car specifications, type, visibility, and images.", "addCar": "Add car",
+      "brandsEyebrow": "Car catalog", "brandsDescription": "Manage the brands available in the showroom.", "addBrand": "Add brand",
       "slidersEyebrow": "Home page", "slidersDescription": "Manage promotional slides, display order, visibility, and imagery.", "addSlider": "Add slider",
       "adminsEyebrow": "Access control", "adminsDescription": "Manage who can access the ETA Company admin panel.", "addAdmin": "Add admin",
       "settingsEyebrow": "Preferences", "settingsDescription": "Personalize the ETA Company admin panel.",
@@ -116,7 +148,7 @@
       "allBrands": "All brands", "allTypes": "All types", "allStatuses": "All statuses",
       "loadingCars": "Loading cars…", "loadingBrands": "Loading brands…", "loadingSliders": "Loading sliders…", "loadingAdmins": "Loading admins…",
       "loadBrandsError": "Unable to load brands.", "noCars": "No cars yet", "noCarsMessage": "Add the first car to the showroom.", "brandRequired": "Create a brand before adding cars.",
-      "noBrands": "No brands yet", "noBrandsMessage": "Add the first brand for your vehicle catalog.", "noSliders": "No sliders yet", "noSlidersMessage": "Add a promotional slide for the home page.",
+      "noBrands": "No brands yet", "noBrandsMessage": "Add the first brand for your car catalog.", "noSliders": "No sliders yet", "noSlidersMessage": "Add a promotional slide for the home page.",
       "noAdmins": "No admins found", "noAdminsMessage": "Add an administrator to provide secure access.",
       "car": "Car", "brand": "Brand", "slider": "Slider", "specs": "Specifications", "created": "Created", "status": "Status", "actions": "Actions", "order": "Order",
       "edit": "Edit", "hide": "Hide", "activate": "Activate", "delete": "Delete", "unknown": "Unknown", "toggleFeatured": "Toggle featured",
