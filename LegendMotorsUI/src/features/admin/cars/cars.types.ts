@@ -1,7 +1,12 @@
 export type CarType = "normal" | "hybrid"
 export type Transmission = "automatic" | "manual" | "cvt"
 
-export type CarImage = { id: number; image: string; created_at: string }
+export type CarImage = { id: number; image: string; is_primary: boolean; created_at: string }
+
+export type CarImageSelection = {
+  files: Array<{ file: File; isPrimary: boolean }>
+  primaryExistingImageId: number | null
+}
 
 export type Car = {
   id: number

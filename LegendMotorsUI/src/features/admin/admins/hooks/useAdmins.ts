@@ -1,6 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
-import { queryKeys } from "@/shared/query/queryClient"
 import { AdminsApi } from "../admins.api"
 import type { Admin, AdminPayload } from "../admins.types"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
@@ -9,8 +8,6 @@ import { useI18n } from "@/localization/useI18n"
 export function useAdmins(currentAdminId: number | undefined) {
   const { toast, confirm } = useFeedback()
   const { t, language } = useI18n()
-  const queryClient = useQueryClient()
-
   const adminsQuery = useQuery({
     queryKey: queryKeys.admins,
     queryFn: AdminsApi.list,
@@ -20,7 +17,7 @@ export function useAdmins(currentAdminId: number | undefined) {
     mutationFn: AdminsApi.create,
     onSuccess: async (_, payload) => {
       toast.success(t("admin.feedback.admins.created"), t("admin.feedback.admins.createdMessage", { email: payload.email }))
-      await queryClient.invalidateQueries({ queryKey: queryKeys.admins })
+      await adminsQuery.refetch()
     },
   })
 
@@ -28,7 +25,7 @@ export function useAdmins(currentAdminId: number | undefined) {
     mutationFn: (admin: Admin) => AdminsApi.delete(admin.id),
     onSuccess: async (_, admin) => {
       toast.success(t("admin.feedback.admins.deleted"), t("admin.feedback.admins.deletedMessage", { email: admin.email }))
-      await queryClient.invalidateQueries({ queryKey: queryKeys.admins })
+      await adminsQuery.refetch()
     },
   })
 

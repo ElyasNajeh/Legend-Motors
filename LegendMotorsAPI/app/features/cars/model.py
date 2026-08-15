@@ -5,6 +5,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -127,7 +128,7 @@ class Car(Base):
         "CarImage",
         back_populates="car",
         cascade="all, delete-orphan",
-        order_by="CarImage.id",
+        order_by=lambda: (CarImage.is_primary.desc(), CarImage.id),
     )
 
 
@@ -200,6 +201,12 @@ class CarImage(Base):
         nullable=False,
     )
 
+    is_primary = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -210,3 +217,11 @@ class CarImage(Base):
         "Car",
         back_populates="images",
     )
+
+
+Index(
+    "uq_car_images_primary_per_car",
+    CarImage.car_id,
+    unique=True,
+    postgresql_where=CarImage.is_primary.is_(True),
+)

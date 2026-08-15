@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type MouseEvent, type ReactNode, type SyntheticEvent, type UIEvent } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery } from "@/shared/query/remoteData"
 import heroOne from "@/assets/site_assets/hero_1.webp"
 import heroTwo from "@/assets/site_assets/hero_2.webp"
 import { useI18n } from "@/localization/useI18n"
@@ -80,6 +80,10 @@ export function HomePage() {
     setCurrentSlideId(slideId)
     document.getElementById("cars")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
+  const scrollToInventory = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    document.getElementById("cars")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   return <>
     <section className="home-hero">
@@ -88,8 +92,16 @@ export function HomePage() {
       <div className="public-container home-hero__inner">
         <div className="home-hero__copy">
           <span className="site-eyebrow">{t("public.hero.eyebrow")}</span>
-          <h1>{t("public.hero.title")}</h1>
+          <h1 aria-label={t("public.hero.title")}>
+            <span className="home-hero__title-accent">{t("public.hero.titleAccent")}</span>
+            <span>{t("public.hero.titleMiddle")}</span>
+            <span>{t("public.hero.titleEnd")}</span>
+          </h1>
           <p>{t("public.hero.description")}</p>
+          <a className="home-hero__cta" href="#cars" onClick={scrollToInventory}>
+            <span>{t("public.hero.cta")}</span>
+            <SiteIcon name="arrow" />
+          </a>
         </div>
       </div>
 

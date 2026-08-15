@@ -1,19 +1,17 @@
 import { useMemo, useState } from "react"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
 import { BrandsApi } from "@/features/admin/brands/brands.api"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
-import { queryKeys } from "@/shared/query/queryClient"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
 import { useI18n } from "@/localization/useI18n"
 import { CarsApi } from "../cars.api"
-import type { Car, CarPayload } from "../cars.types"
+import type { Car, CarImageSelection, CarPayload } from "../cars.types"
 
 const PAGE_SIZE = 10
 
 export function useCars() {
   const { toast, confirm } = useFeedback()
   const { t, language } = useI18n()
-  const queryClient = useQueryClient()
   const [search, setSearchValue] = useState("")
   const [brandFilter, setBrandFilterValue] = useState("")
   const [typeFilter, setTypeFilterValue] = useState("")
@@ -27,10 +25,7 @@ export function useCars() {
     mutationFn: ({ car, payload }: { car: Car | null; payload: CarPayload }) => car ? CarsApi.update(car.id, payload) : CarsApi.create(payload),
     onSuccess: async (_, { car, payload }) => {
       toast.success(t(car ? "admin.feedback.cars.updated" : "admin.feedback.cars.created"), t("admin.feedback.cars.saved", { name: payload.model }))
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.cars }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats }),
-      ])
+      await carsQuery.refetch()
     },
   })
 
@@ -54,13 +49,18 @@ export function useCars() {
     setPage(1)
   }
 
-  async function saveCar(car: Car | null, payload: CarPayload, files: File[]) {
+  async function saveCar(car: Car | null, payload: CarPayload, images: CarImageSelection) {
     const saved = await saveMutation.mutateAsync({ car, payload })
-    for (const file of files) {
+    await Promise.all(images.files.map(async ({ file, isPrimary }) => {
       const image = await CarsApi.upload(file)
-      await CarsApi.addImage(saved.id, image)
+      await CarsApi.addImage(saved.id, image, isPrimary)
+    }))
+    if (images.primaryExistingImageId !== null) {
+      await CarsApi.setPrimaryImage(images.primaryExistingImageId)
     }
-    if (files.length) await queryClient.invalidateQueries({ queryKey: queryKeys.cars })
+    if (images.files.length || images.primaryExistingImageId !== null) {
+      await carsQuery.refetch()
+    }
   }
 
   async function deleteCar(car: Car) {
@@ -68,7 +68,7 @@ export function useCars() {
     try {
       await CarsApi.delete(car.id)
       toast.success(t("admin.feedback.cars.deleted"), t("admin.feedback.cars.removed", { name: car.model }))
-      await Promise.all([queryClient.invalidateQueries({ queryKey: queryKeys.cars }), queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats })])
+      await carsQuery.refetch()
     } catch (error) { toast.error(t("admin.feedback.cars.deleteFailed"), getLocalizedErrorMessage(error, language, t("admin.feedback.common.tryAgain"))) }
   }
 
@@ -76,7 +76,7 @@ export function useCars() {
     try {
       await (featured ? CarsApi.toggleFeatured(car.id) : CarsApi.toggleStatus(car.id))
       toast.success(t(featured ? "admin.feedback.cars.featuredUpdated" : "admin.feedback.cars.statusUpdated"))
-      await queryClient.invalidateQueries({ queryKey: queryKeys.cars })
+      await carsQuery.refetch()
     } catch (error) { toast.error(t("admin.feedback.cars.updateFailed"), getLocalizedErrorMessage(error, language, t("admin.feedback.common.tryAgain"))) }
   }
 

@@ -60,11 +60,17 @@ class CarUpdate(BaseModel):
 
 class CarImageCreate(BaseModel):
     image: str
+    is_primary: bool = False
+
+
+class CarImageUpdate(BaseModel):
+    image: str
 
 
 class CarImageResponse(BaseModel):
     id: int
     image: str
+    is_primary: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

@@ -28,7 +28,11 @@
     "hero": {
       "eyebrow": "سيارات مختارة في فلسطين",
       "title": "سيارتك الجاية أقرب مما بتتخيّل.",
+      "titleAccent": "سيارتك",
+      "titleMiddle": "الجاية أقرب",
+      "titleEnd": "مما بتتخيّل.",
       "description": "تصفّح السيارات المتوفرة، شوف كل التفاصيل والصور.",
+      "cta": "تصفّح السيارات",
       "slidesLabel": "لقطات من ليجند موتورز"
     },
     "cars": {
@@ -44,6 +48,7 @@
       "sort": "الترتيب",
       "all": "الكل",
       "newest": "الأحدث إضافة",
+      "featured": "مميزة",
       "yearNewest": "السنة: الأحدث",
       "mileageLowest": "الممشى: الأقل",
       "results": "{{count}} سيارة",
@@ -53,7 +58,14 @@
       "emptyDescription": "جرّب تغيّر البحث أو تمسح الفلاتر.",
       "noImage": "صورة السيارة مش متوفرة",
       "mileage": "{{count}} كم",
+      "mileageLabel": "المسافة المقطوعة",
       "normal": "عادية",
+      "hybrid": "هايبرد"
+    },
+    "fuels": {
+      "gasoline": "بنزين",
+      "diesel": "ديزل",
+      "electric": "كهرباء",
       "hybrid": "هايبرد"
     },
     "transmissions": {
@@ -81,8 +93,17 @@
       "yes": "نعم",
       "no": "لا",
       "noDescription": "احكي معنا عشان نعطيك تفاصيل أكثر عن السيارة.",
-      "whatsapp": "مهتم بهالسيارة",
-      "whatsappMessage": "مرحبا، أنا مهتم بسيارة {{name}}، سنة {{year}}، رقم السيارة {{id}}.\n{{url}}"
+      "whatsapp": "مهتم بالسيارة",
+      "whatsappMessage": "مرحبا، أنا مهتم بسيارة {{name}}، سنة {{year}}، رقم السيارة {{id}}.\n{{url}}",
+      "trustLabel": "مزايا ليجند موتورز",
+      "trustWarrantyTitle": "ضمان موثوق",
+      "trustWarrantyText": "وضوح وثقة بكل خطوة",
+      "trustInspectionTitle": "فحص معتمد",
+      "trustInspectionText": "اسألنا عن تفاصيل الفحص",
+      "trustPaymentTitle": "خيارات دفع مرنة",
+      "trustPaymentText": "اسألنا عن الخيارات المتاحة",
+      "trustSupportTitle": "دعم عملاء",
+      "trustSupportText": "بنساعدك بكل خطوة"
     },
     "about": {
       "eyebrow": "من نحن",
@@ -291,8 +312,17 @@
         "featuredHelp": "إظهار السيارة كمركبة اضافات.",
         "imagesLabel": "صور السيارة",
         "chooseImages": "اختار الصور",
-        "imagesSelected": "اخترت {{count}} صورة.",
-        "imagesHelp": "اختياري. يمكنك اختيار عدة صور وسيتم رفعها بعد حفظ السيارة.",
+        "addMoreImages": "أضف صور ثانية",
+        "imagesSelected": "{{count}} صورة جاهزة.",
+        "imagesHelp": "اختياري. اختار صورة أو أكثر وشوفها فوراً.",
+        "choosePrimaryImage": "اختار الصورة الرئيسية للسيارة",
+        "imagePreview": "صورة السيارة {{number}}",
+        "primaryImage": "الصورة الرئيسية",
+        "secondaryImage": "صورة إضافية",
+        "makePrimary": "تعيين كرئيسية",
+        "primaryImageHelp": "بتظهر أول صورة في بطاقة السيارة ومعرض الصور.",
+        "secondaryImageHelp": "بتظهر بعد الصورة الرئيسية.",
+        "removeImage": "حذف الصورة المختارة",
         "sections": {
           "type": "1. نوع السيارة",
           "basic": "2. المواصفات",

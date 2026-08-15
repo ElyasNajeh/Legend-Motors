@@ -1,7 +1,10 @@
 export type Hadith = { arabic: string; source?: string }
 
 export async function getRandomHadith(): Promise<Hadith> {
-  const response = await fetch("https://ummahapi.com/api/hadith/random", { signal: AbortSignal.timeout(8000) })
+  const response = await fetch("https://ummahapi.com/api/hadith/random", {
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
+  })
   if (!response.ok) throw new Error("Hadith service is unavailable")
   const payload = (await response.json()) as Record<string, unknown>
   const data = (payload.data ?? payload.hadith ?? payload) as Record<string, unknown>

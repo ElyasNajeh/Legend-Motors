@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
-import { queryKeys } from "@/shared/query/queryClient"
 import { SlidersApi } from "../sliders.api"
 import type { Slider, SliderPayload } from "../sliders.types"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
@@ -12,7 +11,6 @@ const PAGE_SIZE = 10
 export function useSliders() {
   const { toast, confirm } = useFeedback()
   const { t, language } = useI18n()
-  const queryClient = useQueryClient()
   const [search, setSearchValue] = useState("")
   const [statusFilter, setStatusFilterValue] = useState("")
   const [page, setPage] = useState(1)
@@ -48,17 +46,7 @@ export function useSliders() {
     onSuccess: async (_, { slider, payload }) => {
       toast.success(t(slider ? "admin.feedback.sliders.updated" : "admin.feedback.sliders.created"), t("admin.feedback.sliders.saved", { name: language === "ar" ? payload.title_ar : payload.title_en }))
 
-      const invalidations = [
-        queryClient.invalidateQueries({ queryKey: queryKeys.sliders }),
-      ]
-
-      if (!slider) {
-        invalidations.push(
-          queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats }),
-        )
-      }
-
-      await Promise.all(invalidations)
+      await slidersQuery.refetch()
     },
   })
 
@@ -66,10 +54,7 @@ export function useSliders() {
     mutationFn: (slider: Slider) => SlidersApi.delete(slider.id),
     onSuccess: async (_, slider) => {
       toast.success(t("admin.feedback.sliders.deleted"), t("admin.feedback.sliders.removed", { name: language === "ar" ? slider.title_ar : slider.title_en }))
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.sliders }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats }),
-      ])
+      await slidersQuery.refetch()
     },
   })
 
@@ -77,7 +62,7 @@ export function useSliders() {
     mutationFn: (slider: Slider) => SlidersApi.toggle(slider.id),
     onSuccess: async (_, slider) => {
       toast.success(t(slider.is_active ? "admin.feedback.sliders.hidden" : "admin.feedback.sliders.activated"), t(slider.is_active ? "admin.feedback.sliders.hiddenMessage" : "admin.feedback.sliders.activatedMessage"))
-      await queryClient.invalidateQueries({ queryKey: queryKeys.sliders })
+      await slidersQuery.refetch()
     },
   })
 

@@ -16,6 +16,7 @@ from app.features.cars.model import (
 from app.features.cars.schema import (
     CarCreate,
     CarImageCreate,
+    CarImageUpdate,
     CarUpdate,
 )
 from app.shared import crud
@@ -324,12 +325,28 @@ def create_car_image(
             detail="Car not found",
         )
 
-    car_image = CarImage(
-        car_id=car_id,
-        image=image_data.image,
-    )
+    has_images = db.query(CarImage.id).filter(CarImage.car_id == car_id).first()
+    make_primary = image_data.is_primary or has_images is None
 
-    return crud.create(db, car_image)
+    try:
+        if make_primary:
+            db.query(CarImage).filter(CarImage.car_id == car_id).update(
+                {CarImage.is_primary: False},
+                synchronize_session=False,
+            )
+
+        car_image = CarImage(
+            car_id=car_id,
+            image=image_data.image,
+            is_primary=make_primary,
+        )
+        db.add(car_image)
+        db.commit()
+        db.refresh(car_image)
+        return car_image
+    except Exception:
+        db.rollback()
+        raise
 
 
 def get_car_images(db: Session, car_id: int):
@@ -341,7 +358,12 @@ def get_car_images(db: Session, car_id: int):
             detail="Car not found",
         )
 
-    return db.query(CarImage).filter(CarImage.car_id == car_id).all()
+    return (
+        db.query(CarImage)
+        .filter(CarImage.car_id == car_id)
+        .order_by(CarImage.is_primary.desc(), CarImage.id)
+        .all()
+    )
 
 
 def get_car_image(db: Session, image_id: int):
@@ -359,7 +381,7 @@ def get_car_image(db: Session, image_id: int):
 def update_car_image(
     db: Session,
     image_id: int,
-    image_data: CarImageCreate,
+    image_data: CarImageUpdate,
 ):
     image = crud.get_by_id(db, CarImage, image_id)
 
@@ -377,8 +399,8 @@ def update_car_image(
     )
 
 
-def delete_car_image(db: Session, image_id: int):
-    image = crud.delete_by_id(db, CarImage, image_id)
+def set_primary_car_image(db: Session, image_id: int):
+    image = crud.get_by_id(db, CarImage, image_id)
 
     if not image:
         raise HTTPException(
@@ -386,7 +408,54 @@ def delete_car_image(db: Session, image_id: int):
             detail="Car image not found",
         )
 
-    return image
+    try:
+        db.query(CarImage).filter(
+            CarImage.car_id == image.car_id,
+            CarImage.id != image.id,
+        ).update(
+            {CarImage.is_primary: False},
+            synchronize_session=False,
+        )
+        image.is_primary = True
+        db.commit()
+        db.refresh(image)
+        return image
+    except Exception:
+        db.rollback()
+        raise
+
+
+def delete_car_image(db: Session, image_id: int):
+    image = crud.get_by_id(db, CarImage, image_id)
+
+    if not image:
+        raise HTTPException(
+            status_code=404,
+            detail="Car image not found",
+        )
+
+    car_id = image.car_id
+    was_primary = image.is_primary
+
+    try:
+        db.delete(image)
+        db.flush()
+
+        if was_primary:
+            next_image = (
+                db.query(CarImage)
+                .filter(CarImage.car_id == car_id)
+                .order_by(CarImage.id)
+                .first()
+            )
+            if next_image:
+                next_image.is_primary = True
+
+        db.commit()
+        return image
+    except Exception:
+        db.rollback()
+        raise
 
 
 def upload_image(file: UploadFile):

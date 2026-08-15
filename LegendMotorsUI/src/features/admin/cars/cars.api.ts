@@ -8,7 +8,8 @@ export const CarsApi = {
   delete: (id: number) => adminRequest<Car>({ url: `/cars/${id}`, method: "DELETE" }),
   toggleStatus: (id: number) => adminRequest<Car>({ url: `/cars/${id}/toggle-status`, method: "PATCH" }),
   toggleFeatured: (id: number) => adminRequest<Car>({ url: `/cars/${id}/toggle-featured`, method: "PATCH" }),
-  addImage: (carId: number, image: string) => adminRequest<CarImage>({ url: `/cars/${carId}/images`, method: "POST", data: { image } }),
+  addImage: (carId: number, image: string, isPrimary: boolean) => adminRequest<CarImage>({ url: `/cars/${carId}/images`, method: "POST", data: { image, is_primary: isPrimary } }),
+  setPrimaryImage: (imageId: number) => adminRequest<CarImage>({ url: `/cars/images/${imageId}/set-primary`, method: "PATCH" }),
   deleteImage: (imageId: number) => adminRequest<CarImage>({ url: `/cars/images/${imageId}`, method: "DELETE" }),
   async upload(file: File) {
     const data = new FormData()

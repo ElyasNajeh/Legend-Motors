@@ -8,20 +8,29 @@
     "hero": {
       "eyebrow": "Selected cars in Palestine",
       "title": "Your next car is closer than you think.",
+      "titleAccent": "Your next car",
+      "titleMiddle": "is closer than",
+      "titleEnd": "you think.",
       "description": "Explore the available cars and see every detail and photo.",
+      "cta": "Browse cars",
       "slidesLabel": "Inside Legend Motors"
     },
     "cars": {
       "title": "Explore all cars", "description": "Filter what suits you, then select any car to see its photos and details.",
       "search": "Search by brand or model", "filters": "Filters", "filterTitle": "Filter cars", "brand": "Brand", "type": "Car type", "fuel": "Fuel type", "transmission": "Transmission", "sort": "Sort",
-      "all": "All", "newest": "Recently added", "yearNewest": "Year: newest", "mileageLowest": "Mileage: lowest", "results": "{{count}} cars",
-      "loading": "Loading cars…", "errorTitle": "We could not load the cars", "emptyTitle": "No matching cars", "emptyDescription": "Try changing your search or clearing the filters.", "noImage": "Car image unavailable", "mileage": "{{count}} km", "normal": "Normal", "hybrid": "Hybrid"
+      "all": "All", "newest": "Recently added", "featured": "Featured", "yearNewest": "Year: newest", "mileageLowest": "Mileage: lowest", "results": "{{count}} cars",
+      "loading": "Loading cars…", "errorTitle": "We could not load the cars", "emptyTitle": "No matching cars", "emptyDescription": "Try changing your search or clearing the filters.", "noImage": "Car image unavailable", "mileage": "{{count}} km", "mileageLabel": "Mileage", "normal": "Normal", "hybrid": "Hybrid"
     },
+    "fuels": { "gasoline": "Gasoline", "diesel": "Diesel", "electric": "Electric", "hybrid": "Hybrid" },
     "transmissions": { "automatic": "Automatic", "manual": "Manual", "cvt": "CVT" },
     "detail": {
       "loading": "Loading car details…", "errorTitle": "This car is unavailable", "errorDescription": "The car may no longer be listed, or the link may be incorrect.", "carId": "Car ID {{id}}", "galleryLabel": "Photos of {{name}}", "imageAlt": "{{name}} — photo {{number}}",
       "description": "About this car", "specs": "Specifications", "year": "Year", "mileage": "Mileage", "fuel": "Fuel", "transmission": "Transmission", "horsepower": "Power", "engine": "Engine", "turbo": "Turbo", "battery": "Battery", "yes": "Yes", "no": "No", "noDescription": "Talk to us for more details about this car.",
-      "whatsapp": "I’m interested in this car", "whatsappMessage": "Hello, I’m interested in the {{name}}, year {{year}}, car ID {{id}}.\n{{url}}"
+      "whatsapp": "I’m interested in this car", "whatsappMessage": "Hello, I’m interested in the {{name}}, year {{year}}, car ID {{id}}.\n{{url}}",
+      "trustLabel": "Legend Motors benefits", "trustWarrantyTitle": "Trusted warranty", "trustWarrantyText": "Clarity and confidence at every step",
+      "trustInspectionTitle": "Certified inspection", "trustInspectionText": "Ask us about the inspection details",
+      "trustPaymentTitle": "Flexible payment options", "trustPaymentText": "Ask us about the available options",
+      "trustSupportTitle": "Customer support", "trustSupportText": "We help you at every step"
     },
     "about": {
       "eyebrow": "About us", "title": "Choosing a car should feel clear and comfortable.", "lead": "Legend Motors makes it easy to explore available cars, compare details, and contact us without unnecessary steps.", "detail": "Every car has its own page with photos, specifications, and a description. If it feels right, you can talk to us directly on WhatsApp.",
@@ -115,8 +124,17 @@
         "featuredHelp": "Feature this car in the showroom.",
         "imagesLabel": "Car images",
         "chooseImages": "Choose images",
-        "imagesSelected": "{{count}} image(s) selected.",
-        "imagesHelp": "Optional. You can select multiple images; they upload after the car is saved.",
+        "addMoreImages": "Add more images",
+        "imagesSelected": "{{count}} image(s) ready.",
+        "imagesHelp": "Optional. Select one or multiple images to preview them instantly.",
+        "choosePrimaryImage": "Choose the primary car image",
+        "imagePreview": "Car image {{number}}",
+        "primaryImage": "Primary image",
+        "secondaryImage": "Secondary",
+        "makePrimary": "Set as primary",
+        "primaryImageHelp": "Shown first on car cards and in the gallery.",
+        "secondaryImageHelp": "Shown after the primary image.",
+        "removeImage": "Remove selected image",
         "sections": { "type": "1. Car type", "basic": "2. Specifications", "descriptions": "3. Descriptions", "images": "4. Images", "options": "5. Options" }
       },
       "brand": { "eyebrow": "Brand details", "newTitle": "Add brand", "editTitle": "Edit brand", "save": "Save brand" },

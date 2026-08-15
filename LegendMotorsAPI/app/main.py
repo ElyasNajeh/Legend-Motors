@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -15,6 +15,15 @@ from app.features.dashboard.router import router as dashboard_router
 from app.features.sliders.router import router as sliders_router
 
 app = FastAPI(title=settings.APP_NAME)
+
+
+@app.middleware("http")
+async def disable_caching(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-store, no-cache, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 
 # Uploads
@@ -37,6 +46,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    max_age=0,
 )
 
 

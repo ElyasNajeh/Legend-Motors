@@ -1,11 +1,25 @@
-import { useRef, useState, type FormEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react"
 import type { Brand } from "@/features/admin/brands/brands.types"
+import { getAssetUrl } from "@/shared/api/assets"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
 import { Icon } from "@/shared/components/Icon"
 import { useI18n } from "@/localization/useI18n"
-import type { Car, CarFormValues, CarPayload } from "../cars.types"
+import type { Car, CarFormValues, CarImageSelection, CarPayload } from "../cars.types"
 
 type Errors = Partial<Record<keyof CarFormValues, string>>
+
+type ManagedImage =
+  | { key: string; kind: "existing"; id: number; previewUrl: string }
+  | { key: string; kind: "new"; file: File; previewUrl: string }
+
+function initialImages(car: Car | null): ManagedImage[] {
+  return (car?.images ?? []).map((image) => ({
+    key: `existing-${image.id}`,
+    kind: "existing",
+    id: image.id,
+    previewUrl: getAssetUrl(image.image),
+  }))
+}
 
 function initialValues(car: Car | null, brands: Brand[]): CarFormValues {
   return {
@@ -46,26 +60,74 @@ function toPayload(form: CarFormValues): CarPayload {
   }
 }
 
-export function CarFormDialog({ car, brands, onClose, onSave }: { car: Car | null; brands: Brand[]; onClose: () => void; onSave: (car: Car | null, payload: CarPayload, files: File[]) => Promise<void> }) {
+export function CarFormDialog({ car, brands, onClose, onSave }: { car: Car | null; brands: Brand[]; onClose: () => void; onSave: (car: Car | null, payload: CarPayload, images: CarImageSelection) => Promise<void> }) {
   const { t, direction, language } = useI18n()
   const [form, setForm] = useState(() => initialValues(car, brands))
-  const [files, setFiles] = useState<File[]>([])
+  const [images, setImages] = useState<ManagedImage[]>(() => initialImages(car))
+  const [primaryImageKey, setPrimaryImageKey] = useState<string | null>(() => {
+    const primary = car?.images.find((image) => image.is_primary) ?? car?.images[0]
+    return primary ? `existing-${primary.id}` : null
+  })
   const [errors, setErrors] = useState<Errors>({})
   const [formError, setFormError] = useState("")
   const [saving, setSaving] = useState(false)
   const imageInputRef = useRef<HTMLInputElement>(null)
+  const previewUrlsRef = useRef(new Set<string>())
+
+  useEffect(() => () => {
+    previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
+    previewUrlsRef.current.clear()
+  }, [])
+
   const change = <K extends keyof CarFormValues>(key: K, value: CarFormValues[K]) => {
     setForm((current) => ({ ...current, [key]: value }))
     setErrors((current) => ({ ...current, [key]: undefined }))
   }
   const fieldError = (key: keyof CarFormValues) => errors[key] ? <small className="field-error">{errors[key]}</small> : null
 
+  function selectImages(event: ChangeEvent<HTMLInputElement>) {
+    const selected = Array.from(event.target.files ?? []).map((file) => {
+      const previewUrl = URL.createObjectURL(file)
+      previewUrlsRef.current.add(previewUrl)
+      return {
+        key: `new-${crypto.randomUUID()}`,
+        kind: "new" as const,
+        file,
+        previewUrl,
+      }
+    })
+
+    if (selected.length) {
+      setImages((current) => [...current, ...selected])
+      setPrimaryImageKey((current) => current ?? selected[0].key)
+    }
+    event.target.value = ""
+  }
+
+  function removeNewImage(key: string) {
+    const image = images.find((item) => item.key === key)
+    if (!image || image.kind !== "new") return
+
+    URL.revokeObjectURL(image.previewUrl)
+    previewUrlsRef.current.delete(image.previewUrl)
+    const remaining = images.filter((item) => item.key !== key)
+    setImages(remaining)
+    if (primaryImageKey === key) setPrimaryImageKey(remaining[0]?.key ?? null)
+  }
+
   async function submit(event: FormEvent) {
     event.preventDefault()
     const nextErrors = validate(form, t("admin.validation.requiredField"), t("admin.validation.wholeNumber"))
     if (Object.keys(nextErrors).length) { setErrors(nextErrors); return }
     setSaving(true); setFormError("")
-    try { await onSave(car, toPayload(form), files); onClose() }
+    const selectedPrimary = images.find((image) => image.key === primaryImageKey)
+    const imageSelection: CarImageSelection = {
+      files: images
+        .filter((image): image is Extract<ManagedImage, { kind: "new" }> => image.kind === "new")
+        .map((image) => ({ file: image.file, isPrimary: image.key === primaryImageKey })),
+      primaryExistingImageId: selectedPrimary?.kind === "existing" ? selectedPrimary.id : null,
+    }
+    try { await onSave(car, toPayload(form), imageSelection); onClose() }
     catch (error) { setFormError(getLocalizedErrorMessage(error, language, t("admin.validation.saveFailed"))) }
     finally { setSaving(false) }
   }
@@ -96,13 +158,31 @@ export function CarFormDialog({ car, brands, onClose, onSave }: { car: Car | nul
           <label>{t("admin.fields.arabicDescription")}<textarea dir="rtl" value={form.description_ar} onChange={(e) => change("description_ar", e.target.value)} /><small>{t("admin.common.optional")}</small></label>
         </div></fieldset>
         <fieldset className="form-section"><legend>{t("admin.forms.car.sections.images")}</legend>
-          <div className="image-upload">
-            <div className="image-upload__preview"><Icon name="cars" size={36} /></div>
-            <div>
-              <input ref={imageInputRef} hidden type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={(event) => setFiles(Array.from(event.target.files ?? []))} />
-              <button className="button button--secondary" type="button" disabled={saving} onClick={() => imageInputRef.current?.click()}>{t("admin.forms.car.chooseImages")}</button>
-              <small>{files.length ? t("admin.forms.car.imagesSelected", { count: files.length }) : t("admin.forms.car.imagesHelp")}</small>
+          <div className="car-image-manager">
+            <div className="car-image-manager__picker">
+              <span className="car-image-manager__picker-icon"><Icon name="cars" size={28} /></span>
+              <div>
+                <input ref={imageInputRef} hidden type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={selectImages} />
+                <button className="button button--secondary" type="button" disabled={saving} onClick={() => imageInputRef.current?.click()}>{t(images.length ? "admin.forms.car.addMoreImages" : "admin.forms.car.chooseImages")}</button>
+                <small>{images.length ? t("admin.forms.car.imagesSelected", { count: images.length }) : t("admin.forms.car.imagesHelp")}</small>
+              </div>
             </div>
+            {images.length > 0 && <div className="car-image-grid" role="radiogroup" aria-label={t("admin.forms.car.choosePrimaryImage")}>
+              {images.map((image, index) => {
+                const isPrimary = image.key === primaryImageKey
+                return <article className={`car-image-card${isPrimary ? " is-primary" : ""}`} key={image.key}>
+                  <div className="car-image-card__preview">
+                    <img src={image.previewUrl} alt={t("admin.forms.car.imagePreview", { number: index + 1 })} loading="lazy" decoding="async" />
+                    <span>{t(isPrimary ? "admin.forms.car.primaryImage" : "admin.forms.car.secondaryImage")}</span>
+                    {image.kind === "new" && <button type="button" disabled={saving} aria-label={t("admin.forms.car.removeImage")} title={t("admin.forms.car.removeImage")} onClick={() => removeNewImage(image.key)}><Icon name="close" size={16} /></button>}
+                  </div>
+                  <label className="car-image-card__choice">
+                    <input type="radio" name="primary-car-image" checked={isPrimary} disabled={saving} onChange={() => setPrimaryImageKey(image.key)} />
+                    <span><strong>{t(isPrimary ? "admin.forms.car.primaryImage" : "admin.forms.car.makePrimary")}</strong><small>{t(isPrimary ? "admin.forms.car.primaryImageHelp" : "admin.forms.car.secondaryImageHelp")}</small></span>
+                  </label>
+                </article>
+              })}
+            </div>}
           </div>
         </fieldset>
         <fieldset className="form-section"><legend>{t("admin.forms.car.sections.options")}</legend><div className="car-switches">

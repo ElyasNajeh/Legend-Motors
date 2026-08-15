@@ -3,6 +3,7 @@ from sqlalchemy.engine import Engine
 
 
 COMMON_CAR_COLUMNS = {"fuel_type", "engine_cc", "is_turbo"}
+CAR_IMAGE_PRIMARY_INDEX = "uq_car_images_primary_per_car"
 
 
 def migrate_car_common_fields(engine: Engine) -> None:
@@ -131,5 +132,57 @@ def migrate_car_transmission(engine: Engine) -> None:
                 "ALTER TABLE cars "
                 "ADD COLUMN transmission VARCHAR(20) "
                 "NOT NULL DEFAULT 'automatic'"
+            )
+        )
+
+
+def migrate_car_image_primary(engine: Engine) -> None:
+    """Persist one primary image per car for databases created before this field."""
+    with engine.begin() as connection:
+        inspector = inspect(connection)
+        if "car_images" not in inspector.get_table_names():
+            return
+
+        image_columns = {
+            column["name"] for column in inspector.get_columns("car_images")
+        }
+        image_indexes = {
+            index["name"] for index in inspector.get_indexes("car_images")
+        }
+
+        if "is_primary" not in image_columns:
+            connection.execute(
+                text(
+                    "ALTER TABLE car_images "
+                    "ADD COLUMN is_primary BOOLEAN NOT NULL DEFAULT FALSE"
+                )
+            )
+
+        if CAR_IMAGE_PRIMARY_INDEX in image_indexes:
+            return
+
+        # Keep an existing primary when possible; otherwise promote the oldest image.
+        connection.execute(
+            text(
+                """
+                WITH ranked_images AS (
+                    SELECT id,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY car_id
+                               ORDER BY is_primary DESC, id ASC
+                           ) AS image_rank
+                    FROM car_images
+                )
+                UPDATE car_images AS image
+                SET is_primary = (ranked.image_rank = 1)
+                FROM ranked_images AS ranked
+                WHERE image.id = ranked.id
+                """
+            )
+        )
+        connection.execute(
+            text(
+                f"CREATE UNIQUE INDEX {CAR_IMAGE_PRIMARY_INDEX} "
+                "ON car_images (car_id) WHERE is_primary"
             )
         )

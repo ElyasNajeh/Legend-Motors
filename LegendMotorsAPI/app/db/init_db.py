@@ -3,7 +3,11 @@ from sqlalchemy import create_engine, text
 from app.core import security
 from app.core.config import settings
 from app.db.base import Base
-from app.db.migrations import migrate_car_common_fields, migrate_car_transmission
+from app.db.migrations import (
+    migrate_car_common_fields,
+    migrate_car_image_primary,
+    migrate_car_transmission,
+)
 from app.db.session import SessionLocal, engine
 
 # Import all models so SQLAlchemy registers them in Base.metadata
@@ -72,5 +76,6 @@ def init_db():
     create_database_if_not_exists()
     migrate_car_common_fields(engine)
     migrate_car_transmission(engine)
+    migrate_car_image_primary(engine)
     create_tables()
     seed_development_admin()

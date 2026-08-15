@@ -1,10 +1,9 @@
 import { useMemo, useState, type FormEvent } from "react"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
 import { EmptyState, LoadableContent, PageHeader, Pagination } from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
-import { queryKeys } from "@/shared/query/queryClient"
 import { useI18n } from "@/localization/useI18n"
 import { BrandsApi } from "./brands.api"
 import type { Brand, BrandPayload } from "./brands.types"
@@ -15,7 +14,6 @@ type EditingBrand = Brand | null | undefined
 export function BrandsPage() {
   const { t, language } = useI18n()
   const { toast, confirm } = useFeedback()
-  const queryClient = useQueryClient()
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
   const [editing, setEditing] = useState<EditingBrand>(() => new URLSearchParams(location.search).has("new") ? null : undefined)
@@ -24,7 +22,7 @@ export function BrandsPage() {
     mutationFn: ({ brand, payload }: { brand: Brand | null; payload: BrandPayload }) => brand ? BrandsApi.update(brand.id, payload) : BrandsApi.create(payload),
     onSuccess: async (_, { brand, payload }) => {
       toast.success(t(brand ? "admin.feedback.brands.updated" : "admin.feedback.brands.created"), t("admin.feedback.brands.saved", { name: language === "ar" ? payload.name_ar : payload.name_en }))
-      await Promise.all([queryClient.invalidateQueries({ queryKey: queryKeys.brands }), queryClient.invalidateQueries({ queryKey: queryKeys.cars }), queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats })])
+      await query.refetch()
     },
   })
   const filtered = useMemo(() => {
@@ -41,7 +39,7 @@ export function BrandsPage() {
     try {
       await BrandsApi.delete(brand.id)
       toast.success(t("admin.feedback.brands.deleted"), t("admin.feedback.brands.removed", { name }))
-      await Promise.all([queryClient.invalidateQueries({ queryKey: queryKeys.brands }), queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats })])
+      await query.refetch()
     } catch (error) { toast.error(t("admin.feedback.brands.deleteFailed"), getLocalizedErrorMessage(error, language, t("admin.feedback.brands.inUse"))) }
   }
 

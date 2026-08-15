@@ -11,6 +11,7 @@ export type PublicBrand = {
 export type PublicCarImage = {
   id: number
   image: string
+  is_primary: boolean
   created_at: string
 }
 

@@ -8,6 +8,7 @@ from app.features.cars.schema import (
     CarCreate,
     CarImageCreate,
     CarImageResponse,
+    CarImageUpdate,
     CarResponse,
     CarUpdate,
 )
@@ -85,7 +86,7 @@ def get_car_image(
 @router.put("/images/{image_id}", response_model=CarImageResponse)
 def update_car_image(
     image_id: int,
-    image_data: CarImageCreate,
+    image_data: CarImageUpdate,
     db: Session = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ):
@@ -94,6 +95,15 @@ def update_car_image(
         image_id,
         image_data,
     )
+
+
+@router.patch("/images/{image_id}/set-primary", response_model=CarImageResponse)
+def set_primary_car_image(
+    image_id: int,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user),
+):
+    return service.set_primary_car_image(db, image_id)
 
 
 @router.delete("/images/{image_id}", response_model=CarImageResponse)
