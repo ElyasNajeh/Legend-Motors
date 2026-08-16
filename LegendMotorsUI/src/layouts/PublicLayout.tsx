@@ -5,9 +5,9 @@ import { LanguageSwitcher } from "@/localization/LanguageSwitcher";
 import { useI18n } from "@/localization/useI18n";
 import { SocialLinks } from "@/features/site/components/SocialLinks";
 import { SiteIcon } from "@/features/site/components/SiteIcon";
-import { siteContact } from "@/features/site/contactInfo";
-import { getWhatsAppUrl } from "@/features/site/whatsapp";
-import "@/features/site/site.css";
+import { siteContact } from "@/features/site/shared/contactInfo";
+import { getWhatsAppUrl } from "@/features/site/shared/whatsapp";
+import "@/features/site/shared/site.css";
 
 export function PublicLayout() {
   const { t, language } = useI18n();
@@ -76,13 +76,6 @@ export function PublicLayout() {
               {t("public.nav.about")}
             </NavLink>
 
-            <NavLink
-              to="/contact"
-              className={navClass}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t("public.nav.contact")}
-            </NavLink>
           </nav>
 
           <div className="public-header__actions">
@@ -137,13 +130,6 @@ export function PublicLayout() {
                 {t("public.nav.about")}
               </NavLink>
 
-              <NavLink
-                to="/contact"
-                className={navClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                {t("public.nav.contact")}
-              </NavLink>
 
               <SocialLinks className="public-socials--menu" />
 
@@ -197,10 +183,9 @@ export function PublicLayout() {
             </address>
           </div>
 
-          <nav aria-label={t("public.nav.contact")}>
+          <nav aria-label={t("public.brandName")}>
             <Link to="/#cars">{t("public.nav.cars")}</Link>
             <Link to="/about">{t("public.nav.about")}</Link>
-            <Link to="/contact">{t("public.nav.contact")}</Link>
           </nav>
 
           <div className="public-footer__actions">

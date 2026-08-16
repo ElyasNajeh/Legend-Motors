@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/localization/useI18n";
 import { useQuery } from "@/shared/query/remoteData";
-import { SiteApi } from "../site.api";
-import type { PublicCar } from "../site.types";
+import { SiteApi } from "../shared/site.api";
+import type { PublicCar } from "../shared/site.types";
 import { CarCard } from "./CarCard";
 import { SiteIcon } from "./SiteIcon";
 

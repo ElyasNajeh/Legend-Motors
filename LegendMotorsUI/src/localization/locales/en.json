@@ -3,8 +3,22 @@
   "common": { "items": "items" },
   "public": {
     "brandName": "Legend Motors",
-    "nav": { "home": "Home", "cars": "Cars", "about": "About us", "contact": "Contact us", "open": "Open menu", "close": "Close menu" },
-    "actions": { "browse": "See the cars", "contact": "Talk to us", "details": "See details", "retry": "Try again", "backToCars": "Back to cars", "clearFilters": "Clear filters", "showCars": "Show cars" },
+    "nav": {
+      "home": "Home",
+      "cars": "Cars",
+      "about": "About us",
+      "open": "Open menu",
+      "close": "Close menu"
+    },
+    "actions": {
+      "browse": "See the cars",
+      "contact": "Talk to us",
+      "details": "See details",
+      "retry": "Try again",
+      "backToCars": "Back to cars",
+      "clearFilters": "Clear filters",
+      "showCars": "Show cars"
+    },
     "hero": {
       "eyebrow": "Selected cars in Palestine",
       "title": "Your next car is closer than you think.",
@@ -16,32 +30,128 @@
       "slidesLabel": "Inside Legend Motors"
     },
     "cars": {
-      "title": "Explore all cars", "description": "Filter what suits you, then select any car to see its photos and details.",
-      "search": "Search by brand or model", "filters": "Filters", "filterTitle": "Filter cars", "brand": "Brand", "type": "Car type", "fuel": "Fuel type", "transmission": "Transmission", "sort": "Sort",
-      "all": "All", "newest": "Recently added", "featured": "Featured", "yearNewest": "Year: newest", "mileageLowest": "Mileage: lowest", "results": "{{count}} cars",
-      "loading": "Loading cars…", "errorTitle": "We could not load the cars", "emptyTitle": "No matching cars", "emptyDescription": "Try changing your search or clearing the filters.", "noImage": "Car image unavailable", "mileage": "{{count}} km", "mileageLabel": "Mileage", "normal": "Normal", "hybrid": "Hybrid"
+      "title": "Explore all cars",
+      "description": "Filter what suits you, then select any car to see its photos and details.",
+      "search": "Search by brand or model",
+      "filters": "Filters",
+      "filterTitle": "Filter cars",
+      "brand": "Brand",
+      "type": "Car type",
+      "fuel": "Fuel type",
+      "transmission": "Transmission",
+      "sort": "Sort",
+      "all": "All",
+      "newest": "Recently added",
+      "featured": "Featured",
+      "yearNewest": "Year: newest",
+      "mileageLowest": "Mileage: lowest",
+      "results": "{{count}} cars",
+      "loading": "Loading cars…",
+      "errorTitle": "We could not load the cars",
+      "emptyTitle": "No matching cars",
+      "emptyDescription": "Try changing your search or clearing the filters.",
+      "noImage": "Car image unavailable",
+      "mileage": "{{count}} km",
+      "mileageLabel": "Mileage",
+      "normal": "Normal",
+      "hybrid": "Hybrid"
     },
-    "fuels": { "gasoline": "Gasoline", "diesel": "Diesel", "electric": "Electric", "hybrid": "Hybrid" },
-    "transmissions": { "automatic": "Automatic", "manual": "Manual", "cvt": "CVT" },
+    "fuels": {
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "hybrid": "Hybrid"
+    },
+    "transmissions": {
+      "automatic": "Automatic",
+      "manual": "Manual",
+      "cvt": "CVT"
+    },
     "detail": {
-      "loading": "Loading car details…", "errorTitle": "This car is unavailable", "errorDescription": "The car may no longer be listed, or the link may be incorrect.", "carId": "Car ID {{id}}", "galleryLabel": "Photos of {{name}}", "imageAlt": "{{name}} — photo {{number}}",
-      "description": "About this car", "specs": "Specifications", "year": "Year", "mileage": "Mileage", "fuel": "Fuel", "transmission": "Transmission", "horsepower": "Power", "engine": "Engine", "turbo": "Turbo", "battery": "Battery", "yes": "Yes", "no": "No", "noDescription": "Talk to us for more details about this car.",
-      "whatsapp": "Ask about this car", "mobileWhatsapp": "Ask about this car", "whatsappMessage": "Hello, I’m interested in the {{name}}, year {{year}}, car ID {{id}}.\n{{url}}",
-      "suggestionsEyebrow": "More options", "suggestionsTitle": "Cars you might like", "suggestionsDescription": "We picked cars with specifications close to this one.",
-      "suggestionsLoading": "Finding similar cars for you…", "suggestionsError": "We could not load the suggested cars", "suggestionsEmpty": "There are no similar cars right now", "suggestionsAllCars": "See all cars",
-      "suggestionReasons": { "sameBrand": "Same brand", "similarSpecs": "Similar specifications", "sameFuel": "Same fuel type", "sameTransmission": "Same transmission", "closeYear": "Similar year", "lowerMileage": "Lower mileage", "featured": "Featured car", "otherOption": "Another option" },
-      "trustLabel": "Legend Motors benefits", "trustWarrantyTitle": "Trusted warranty", "trustWarrantyText": "Clarity and confidence at every step",
-      "trustInspectionTitle": "Certified inspection", "trustInspectionText": "Ask us about the inspection details",
-      "trustPaymentTitle": "Flexible payment options", "trustPaymentText": "Ask us about the available options",
-      "trustSupportTitle": "Customer support", "trustSupportText": "We help you at every step"
+      "loading": "Loading car details…",
+      "errorTitle": "This car is unavailable",
+      "errorDescription": "The car may no longer be listed, or the link may be incorrect.",
+      "carId": "Car ID {{id}}",
+      "galleryLabel": "Photos of {{name}}",
+      "imageAlt": "{{name}} — photo {{number}}",
+      "description": "About this car",
+      "specs": "Specifications",
+      "year": "Year",
+      "mileage": "Mileage",
+      "fuel": "Fuel",
+      "transmission": "Transmission",
+      "horsepower": "Power",
+      "engine": "Engine",
+      "turbo": "Turbo",
+      "battery": "Battery",
+      "yes": "Yes",
+      "no": "No",
+      "noDescription": "Talk to us for more details about this car.",
+      "whatsapp": "Ask about this car",
+      "mobileWhatsapp": "Ask about this car",
+      "whatsappMessage": "Hello,\n I’m interested in the {{name}} - year {{year}}.\n\n{{url}}",
+      "suggestionsEyebrow": "More options",
+      "suggestionsTitle": "Cars you might like",
+      "suggestionsDescription": "We picked cars with specifications close to this one.",
+      "suggestionsLoading": "Finding similar cars for you…",
+      "suggestionsError": "We could not load the suggested cars",
+      "suggestionsEmpty": "There are no similar cars right now",
+      "suggestionsAllCars": "See all cars",
+      "suggestionReasons": {
+        "sameBrand": "Same brand",
+        "similarSpecs": "Similar specifications",
+        "sameFuel": "Same fuel type",
+        "sameTransmission": "Same transmission",
+        "closeYear": "Similar year",
+        "lowerMileage": "Lower mileage",
+        "featured": "Featured car",
+        "otherOption": "Another option"
+      },
+      "trustLabel": "Legend Motors benefits",
+      "trustWarrantyTitle": "Trusted warranty",
+      "trustWarrantyText": "Clarity and confidence at every step",
+      "trustInspectionTitle": "Certified inspection",
+      "trustInspectionText": "Ask us about the inspection details",
+      "trustPaymentTitle": "Flexible payment options",
+      "trustPaymentText": "Ask us about the available options",
+      "trustSupportTitle": "Customer support",
+      "trustSupportText": "We help you at every step"
     },
     "about": {
-      "eyebrow": "About us", "title": "Choosing a car should feel clear and comfortable.", "lead": "Legend Motors makes it easy to explore available cars, compare details, and contact us without unnecessary steps.", "detail": "Every car has its own page with photos, specifications, and a description. If it feels right, you can talk to us directly on WhatsApp.",
-      "valueOneTitle": "Clear details", "valueOneText": "The important information and photos are together in one place.", "valueTwoTitle": "Direct contact", "valueTwoText": "Go from the car you like to WhatsApp in one step.", "valueThreeTitle": "Arabic and English", "valueThreeText": "A comfortable experience in both languages and on every screen size."
+      "title": "About Us - Legends Motors",
+      "introductionTitle": "Dear Customers",
+      "introduction": "Legend Motors is a Palestinian car showroom in Ramallah, built around trust and customer happiness. We help every customer find the right car for their needs, with clear guidance and flexible payment options that make the journey easier.",
+      "galleryLabel": "Life at Legend Motors",
+      "galleryOneAlt": "A customer with a black BMW inside the Legend Motors showroom",
+      "galleryTwoAlt": "Two happy children beside a newly delivered car at Legend Motors",
+      "galleryThreeAlt": "Two children standing in front of their family car",
+      "visitEyebrow": "Visit Legend Motors",
+      "visitTitle": "Come see us in Ramallah",
+      "location": "Location",
+      "locationValue": "Ramallah - Nablus Street - Main Street - Opposite Al-Jalazone Camp",
+      "phone": "Phone number",
+      "email": "Email",
+      "mapTitle": "Legend Motors location in Ramallah",
+      "openMap": "Open in Google Maps",
+      "openMapLabel": "Open the Legend Motors location in Google Maps",
+      "statisticsLabel": "Legend Motors in numbers",
+      "brands": "Brands",
+      "cars": "Cars",
+      "happyCustomers": "Happy Customers"
     },
-    "contact": { "eyebrow": "Contact us", "title": "Like a car? Talk to us.", "lead": "Message us on WhatsApp and ask about any car or detail you need.", "email": "Email", "phone": "Phone", "follow": "Follow us", "whatsapp": "Open WhatsApp", "whatsappMessage": "Hello Legend Motors, I would like to ask about the available cars." },
-    "footer": { "tagline": "Selected cars, clear details, and direct contact.", "address": "Ramallah / Nablus Street / Main Street / Opposite Al-Jalazone Camp", "mobile": "Mobile", "rights": "© {{year}} Legend Motors" },
-    "notFound": { "title": "Page not found", "description": "Return home to see the available cars." }
+    "contact": {
+      "whatsappMessage": "Hello Legend Motors, I would like to ask about the available cars."
+    },
+    "footer": {
+      "tagline": "Selected cars, clear details, and direct contact.",
+      "address": "Ramallah / Nablus Street / Main Street / Opposite Al-Jalazone Camp",
+      "mobile": "Mobile",
+      "rights": "© {{year}} Legend Motors"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "Return home to see the available cars."
+    }
   },
   "admin": {
     "panel": "Admin Panel",
@@ -85,9 +195,17 @@
       "chooseImage": "Choose image",
       "imageHelp": "JPEG, PNG, WebP, or GIF."
     },
-    "stats": { "totalCars": "Total cars", "hybridCars": "Hybrid cars", "normalCars": "Normal cars" },
+    "stats": {
+      "totalCars": "Total cars",
+      "hybridCars": "Hybrid cars",
+      "normalCars": "Normal cars"
+    },
     "carTypes": { "normal": "Normal", "hybrid": "Hybrid" },
-    "transmissions": { "automatic": "Automatic", "manual": "Manual", "cvt": "CVT" },
+    "transmissions": {
+      "automatic": "Automatic",
+      "manual": "Manual",
+      "cvt": "CVT"
+    },
     "fields": {
       "brand": "Brand",
       "model": "Model",
@@ -105,17 +223,84 @@
       "englishDescription": "English description",
       "arabicDescription": "Arabic description"
     },
-    "validation": { "requiredField": "This field is required.", "wholeNumber": "Enter a whole number.", "saveFailed": "Unable to save changes." },
+    "validation": {
+      "requiredField": "This field is required.",
+      "wholeNumber": "Enter a whole number.",
+      "saveFailed": "Unable to save changes."
+    },
     "feedback": {
-      "common": { "cancel": "Cancel", "confirm": "Confirm", "tryAgain": "Please try again." },
-      "cars": { "created": "Car created", "updated": "Car updated", "saved": "{{name}} was saved successfully.", "deleteTitle": "Delete car?", "deleteMessage": "Permanently delete {{name}}?", "deleteConfirm": "Delete car", "deleted": "Car deleted", "removed": "{{name}} was removed from the showroom.", "deleteFailed": "Could not delete car", "featuredUpdated": "Featured status updated", "statusUpdated": "Car status updated", "updateFailed": "Could not update car", "loadFailed": "Unable to load cars." },
-      "brands": { "created": "Brand created", "updated": "Brand updated", "saved": "{{name}} was saved successfully.", "deleteTitle": "Delete brand?", "deleteMessage": "Delete {{name}}? Brands assigned to cars cannot be deleted.", "deleteConfirm": "Delete brand", "deleted": "Brand deleted", "removed": "{{name}} was removed.", "deleteFailed": "Could not delete brand", "inUse": "The brand may be assigned to a car." },
-      "sliders": { "created": "Slider created", "updated": "Slider updated", "saved": "{{name}} was saved successfully.", "deleted": "Slider deleted", "removed": "{{name}} was removed.", "hidden": "Slider hidden", "activated": "Slider activated", "hiddenMessage": "The slider is now hidden from the home page.", "activatedMessage": "The slider is now visible on the home page.", "deleteTitle": "Delete slider?", "deleteMessage": "Permanently delete {{name}}? This cannot be undone.", "deleteConfirm": "Delete slider", "deleteFailed": "Could not delete slider", "statusFailed": "Status update failed", "loadFailed": "Unable to load sliders." },
-      "admins": { "created": "Admin added", "createdMessage": "{{email}} can now sign in.", "deleted": "Admin deleted", "deletedMessage": "{{email}} no longer has access.", "deleteTitle": "Delete admin?", "deleteMessage": "Remove access for {{email}}? They will no longer be able to sign in.", "deleteConfirm": "Delete admin", "deleteFailed": "Could not delete admin", "loadFailed": "Unable to load admins." }
+      "common": {
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "tryAgain": "Please try again."
+      },
+      "cars": {
+        "created": "Car created",
+        "updated": "Car updated",
+        "saved": "{{name}} was saved successfully.",
+        "deleteTitle": "Delete car?",
+        "deleteMessage": "Permanently delete {{name}}?",
+        "deleteConfirm": "Delete car",
+        "deleted": "Car deleted",
+        "removed": "{{name}} was removed from the showroom.",
+        "deleteFailed": "Could not delete car",
+        "featuredUpdated": "Featured status updated",
+        "statusUpdated": "Car status updated",
+        "updateFailed": "Could not update car",
+        "loadFailed": "Unable to load cars."
+      },
+      "brands": {
+        "created": "Brand created",
+        "updated": "Brand updated",
+        "saved": "{{name}} was saved successfully.",
+        "deleteTitle": "Delete brand?",
+        "deleteMessage": "Delete {{name}}? Brands assigned to cars cannot be deleted.",
+        "deleteConfirm": "Delete brand",
+        "deleted": "Brand deleted",
+        "removed": "{{name}} was removed.",
+        "deleteFailed": "Could not delete brand",
+        "inUse": "The brand may be assigned to a car."
+      },
+      "sliders": {
+        "created": "Slider created",
+        "updated": "Slider updated",
+        "saved": "{{name}} was saved successfully.",
+        "deleted": "Slider deleted",
+        "removed": "{{name}} was removed.",
+        "hidden": "Slider hidden",
+        "activated": "Slider activated",
+        "hiddenMessage": "The slider is now hidden from the home page.",
+        "activatedMessage": "The slider is now visible on the home page.",
+        "deleteTitle": "Delete slider?",
+        "deleteMessage": "Permanently delete {{name}}? This cannot be undone.",
+        "deleteConfirm": "Delete slider",
+        "deleteFailed": "Could not delete slider",
+        "statusFailed": "Status update failed",
+        "loadFailed": "Unable to load sliders."
+      },
+      "admins": {
+        "created": "Admin added",
+        "createdMessage": "{{email}} can now sign in.",
+        "deleted": "Admin deleted",
+        "deletedMessage": "{{email}} no longer has access.",
+        "deleteTitle": "Delete admin?",
+        "deleteMessage": "Remove access for {{email}}? They will no longer be able to sign in.",
+        "deleteConfirm": "Delete admin",
+        "deleteFailed": "Could not delete admin",
+        "loadFailed": "Unable to load admins."
+      }
     },
     "forms": {
-      "common": { "cancel": "Cancel", "close": "Close", "saving": "Saving…", "sections": { "status": "3. Status" } },
-      "fields": { "englishTitle": "English title", "arabicTitle": "Arabic title" },
+      "common": {
+        "cancel": "Cancel",
+        "close": "Close",
+        "saving": "Saving…",
+        "sections": { "status": "3. Status" }
+      },
+      "fields": {
+        "englishTitle": "English title",
+        "arabicTitle": "Arabic title"
+      },
       "car": {
         "eyebrow": "Car details",
         "newTitle": "Add car",
@@ -138,42 +323,122 @@
         "primaryImageHelp": "Shown first on car cards and in the gallery.",
         "secondaryImageHelp": "Shown after the primary image.",
         "removeImage": "Remove selected image",
-        "sections": { "type": "1. Car type", "basic": "2. Specifications", "descriptions": "3. Descriptions", "images": "4. Images", "options": "5. Options" }
+        "sections": {
+          "type": "1. Car type",
+          "basic": "2. Specifications",
+          "descriptions": "3. Descriptions",
+          "images": "4. Images",
+          "options": "5. Options"
+        }
       },
-      "brand": { "eyebrow": "Brand details", "newTitle": "Add brand", "editTitle": "Edit brand", "save": "Save brand" },
+      "brand": {
+        "eyebrow": "Brand details",
+        "newTitle": "Add brand",
+        "editTitle": "Edit brand",
+        "save": "Save brand"
+      },
       "slider": {
-        "eyebrow": "Home page slide", "newTitle": "Add slider", "editTitle": "Edit slider", "save": "Save slider",
-        "displayOrder": "Display order", "displayOrderHelp": "Each slider must have a unique order number.",
-        "activeLabel": "Visible on home page", "activeHelp": "Visitors can see this slider.",
-        "sections": { "info": "1. Slider information", "image": "2. Slider image" },
-        "validation": { "required": "Both titles and an image are required.", "displayOrder": "Display order must be a whole number of zero or more.", "saveFailed": "Unable to save slider." }
+        "eyebrow": "Home page slide",
+        "newTitle": "Add slider",
+        "editTitle": "Edit slider",
+        "save": "Save slider",
+        "displayOrder": "Display order",
+        "displayOrderHelp": "Each slider must have a unique order number.",
+        "activeLabel": "Visible on home page",
+        "activeHelp": "Visitors can see this slider.",
+        "sections": {
+          "info": "1. Slider information",
+          "image": "2. Slider image"
+        },
+        "validation": {
+          "required": "Both titles and an image are required.",
+          "displayOrder": "Display order must be a whole number of zero or more.",
+          "saveFailed": "Unable to save slider."
+        }
       },
       "admin": {
-        "eyebrow": "New account", "newTitle": "Add admin", "save": "Add admin", "adding": "Adding…", "username": "Username", "email": "Email", "temporaryPassword": "Temporary password",
-        "validation": { "required": "Username, email, and password are required.", "saveFailed": "Unable to add admin." }
+        "eyebrow": "New account",
+        "newTitle": "Add admin",
+        "save": "Add admin",
+        "adding": "Adding…",
+        "username": "Username",
+        "email": "Email",
+        "temporaryPassword": "Temporary password",
+        "validation": {
+          "required": "Username, email, and password are required.",
+          "saveFailed": "Unable to add admin."
+        }
       }
     },
     "pages": {
-      "dashboardEyebrow": "Overview", "welcome": "Welcome back, {{name}}", "dashboardDescription": "Manage your showroom from one place.", "dashboardError": "Unable to load dashboard.",
-      "carsEyebrow": "Showroom inventory", "carsDescription": "Manage car specifications, type, visibility, and images.", "addCar": "Add car",
-      "brandsEyebrow": "Car catalog", "brandsDescription": "Manage the brands available in the showroom.", "addBrand": "Add brand",
-      "slidersEyebrow": "Home page", "slidersDescription": "Manage promotional slides, display order, visibility, and imagery.", "addSlider": "Add slider",
-      "adminsEyebrow": "Access control", "adminsDescription": "Manage who can access the ETA Company admin panel.", "addAdmin": "Add admin",
-      "settingsEyebrow": "Preferences", "settingsDescription": "Personalize the ETA Company admin panel.",
-      "appearance": "Appearance", "appearanceDescription": "Choose how the admin workspace looks on this device.", "appearanceThemes": "Appearance themes",
-      "light": "Light", "lightDescription": "A bright, clean workspace", "dark": "Dark", "darkDescription": "A calm, low-light workspace", "select": "Select"
+      "dashboardEyebrow": "Overview",
+      "welcome": "Welcome back, {{name}}",
+      "dashboardDescription": "Manage your showroom from one place.",
+      "dashboardError": "Unable to load dashboard.",
+      "carsEyebrow": "Showroom inventory",
+      "carsDescription": "Manage car specifications, type, visibility, and images.",
+      "addCar": "Add car",
+      "brandsEyebrow": "Car catalog",
+      "brandsDescription": "Manage the brands available in the showroom.",
+      "addBrand": "Add brand",
+      "slidersEyebrow": "Home page",
+      "slidersDescription": "Manage promotional slides, display order, visibility, and imagery.",
+      "addSlider": "Add slider",
+      "adminsEyebrow": "Access control",
+      "adminsDescription": "Manage who can access the ETA Company admin panel.",
+      "addAdmin": "Add admin",
+      "settingsEyebrow": "Preferences",
+      "settingsDescription": "Personalize the ETA Company admin panel.",
+      "appearance": "Appearance",
+      "appearanceDescription": "Choose how the admin workspace looks on this device.",
+      "appearanceThemes": "Appearance themes",
+      "light": "Light",
+      "lightDescription": "A bright, clean workspace",
+      "dark": "Dark",
+      "darkDescription": "A calm, low-light workspace",
+      "select": "Select"
     },
     "management": {
-      "searchCars": "Search cars…", "searchBrands": "Search brands…", "searchSliders": "Search sliders…",
-      "filterBrand": "Filter by brand", "filterType": "Filter by type", "filterStatus": "Filter by status",
-      "allBrands": "All brands", "allTypes": "All types", "allStatuses": "All statuses",
-      "loadingCars": "Loading cars…", "loadingBrands": "Loading brands…", "loadingSliders": "Loading sliders…", "loadingAdmins": "Loading admins…",
-      "loadBrandsError": "Unable to load brands.", "noCars": "No cars yet", "noCarsMessage": "Add the first car to the showroom.", "brandRequired": "Create a brand before adding cars.",
-      "noBrands": "No brands yet", "noBrandsMessage": "Add the first brand for your car catalog.", "noSliders": "No sliders yet", "noSlidersMessage": "Add a promotional slide for the home page.",
-      "noAdmins": "No admins found", "noAdminsMessage": "Add an administrator to provide secure access.",
-      "car": "Car", "brand": "Brand", "slider": "Slider", "specs": "Specifications", "created": "Created", "status": "Status", "actions": "Actions", "order": "Order",
-      "edit": "Edit", "hide": "Hide", "activate": "Activate", "delete": "Delete", "unknown": "Unknown", "toggleFeatured": "Toggle featured",
-      "currentAccount": "Current account", "cannotDeleteSelf": "You cannot delete your own account", "deleteAdmin": "Delete admin"
+      "searchCars": "Search cars…",
+      "searchBrands": "Search brands…",
+      "searchSliders": "Search sliders…",
+      "filterBrand": "Filter by brand",
+      "filterType": "Filter by type",
+      "filterStatus": "Filter by status",
+      "allBrands": "All brands",
+      "allTypes": "All types",
+      "allStatuses": "All statuses",
+      "loadingCars": "Loading cars…",
+      "loadingBrands": "Loading brands…",
+      "loadingSliders": "Loading sliders…",
+      "loadingAdmins": "Loading admins…",
+      "loadBrandsError": "Unable to load brands.",
+      "noCars": "No cars yet",
+      "noCarsMessage": "Add the first car to the showroom.",
+      "brandRequired": "Create a brand before adding cars.",
+      "noBrands": "No brands yet",
+      "noBrandsMessage": "Add the first brand for your car catalog.",
+      "noSliders": "No sliders yet",
+      "noSlidersMessage": "Add a promotional slide for the home page.",
+      "noAdmins": "No admins found",
+      "noAdminsMessage": "Add an administrator to provide secure access.",
+      "car": "Car",
+      "brand": "Brand",
+      "slider": "Slider",
+      "specs": "Specifications",
+      "created": "Created",
+      "status": "Status",
+      "actions": "Actions",
+      "order": "Order",
+      "edit": "Edit",
+      "hide": "Hide",
+      "activate": "Activate",
+      "delete": "Delete",
+      "unknown": "Unknown",
+      "toggleFeatured": "Toggle featured",
+      "currentAccount": "Current account",
+      "cannotDeleteSelf": "You cannot delete your own account",
+      "deleteAdmin": "Delete admin"
     }
   }
 }

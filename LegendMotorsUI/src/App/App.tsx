@@ -1,6 +1,5 @@
 import { RouterProvider } from "react-router-dom"
 
-import { AuthProvider } from "@/features/admin/Auth/AuthProvider"
 import { FeedbackProvider } from "@/shared/feedback/FeedbackProvider"
 import { RequestProvider } from "@/shared/request/RequestProvider"
 import { I18nProvider } from "@/localization/I18nProvider"
@@ -11,9 +10,7 @@ function App() {
     <I18nProvider>
       <FeedbackProvider>
         <RequestProvider>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
+          <RouterProvider router={router} />
         </RequestProvider>
       </FeedbackProvider>
     </I18nProvider>

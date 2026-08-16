@@ -1,4 +1,4 @@
-import { siteSocialLinks } from "../contactInfo"
+import { siteSocialLinks } from "../shared/contactInfo"
 import { SiteIcon } from "./SiteIcon"
 
 export function SocialLinks({ className }: { className: string }) {

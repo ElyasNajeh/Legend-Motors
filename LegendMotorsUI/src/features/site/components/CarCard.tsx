@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { getAssetUrl } from "@/shared/api/assets";
 import { useI18n } from "@/localization/useI18n";
-import { getFuelTranslationKey } from "../fuel";
-import type { PublicCar } from "../site.types";
+import { getFuelTranslationKey } from "../shared/fuel";
+import type { PublicCar } from "../shared/site.types";
 import { CarAssetIcon } from "./CarAssetIcon";
 import { SiteIcon } from "./SiteIcon";
 
