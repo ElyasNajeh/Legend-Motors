@@ -21,7 +21,7 @@ export const siteSocialLinks = [
   },
   {
     name: "Instagram",
-    href: "https://www.instagram.com/legendsmotorsps",
+    href: "https://www.instagram.com/legendmotors.ps",
     icon: "instagram",
   },
   {
