@@ -1,4 +1,5 @@
 import certifiedIcon from "@/assets/site_assets/certified-icon.png"
+import ccIcon from "@/assets/site_assets/cc-icon.png"
 import supportIcon from "@/assets/site_assets/customer-suppport-icon.png"
 import engineIcon from "@/assets/site_assets/engine-icon.png"
 import fuelIcon from "@/assets/site_assets/fuel-icon.png"
@@ -10,6 +11,7 @@ import turboIcon from "@/assets/site_assets/turbo-icon.png"
 import yearIcon from "@/assets/site_assets/year-icon.png"
 
 export type CarAssetIconName =
+  | "cc"
   | "engine"
   | "fuel"
   | "inspection"
@@ -22,6 +24,7 @@ export type CarAssetIconName =
   | "year"
 
 const icons: Record<CarAssetIconName, string> = {
+  cc: ccIcon,
   engine: engineIcon,
   fuel: fuelIcon,
   inspection: certifiedIcon,

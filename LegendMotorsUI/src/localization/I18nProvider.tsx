@@ -25,7 +25,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLanguage,
     toggleLanguage: () => setLanguage(language === "ar" ? "en" : "ar"),
     t: (key, params) => getMessage(language, key, params),
-    formatNumber: (number) => new Intl.NumberFormat(language === "ar" ? "ar-PS" : "en-PS").format(number),
+    formatNumber: (number) => new Intl.NumberFormat("en-US").format(number),
   }), [language])
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>

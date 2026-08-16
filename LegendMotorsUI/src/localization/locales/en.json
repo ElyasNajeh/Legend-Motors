@@ -26,7 +26,10 @@
     "detail": {
       "loading": "Loading car details…", "errorTitle": "This car is unavailable", "errorDescription": "The car may no longer be listed, or the link may be incorrect.", "carId": "Car ID {{id}}", "galleryLabel": "Photos of {{name}}", "imageAlt": "{{name}} — photo {{number}}",
       "description": "About this car", "specs": "Specifications", "year": "Year", "mileage": "Mileage", "fuel": "Fuel", "transmission": "Transmission", "horsepower": "Power", "engine": "Engine", "turbo": "Turbo", "battery": "Battery", "yes": "Yes", "no": "No", "noDescription": "Talk to us for more details about this car.",
-      "whatsapp": "I’m interested in this car", "whatsappMessage": "Hello, I’m interested in the {{name}}, year {{year}}, car ID {{id}}.\n{{url}}",
+      "whatsapp": "Ask about this car", "mobileWhatsapp": "Ask about this car", "whatsappMessage": "Hello, I’m interested in the {{name}}, year {{year}}, car ID {{id}}.\n{{url}}",
+      "suggestionsEyebrow": "More options", "suggestionsTitle": "Cars you might like", "suggestionsDescription": "We picked cars with specifications close to this one.",
+      "suggestionsLoading": "Finding similar cars for you…", "suggestionsError": "We could not load the suggested cars", "suggestionsEmpty": "There are no similar cars right now", "suggestionsAllCars": "See all cars",
+      "suggestionReasons": { "sameBrand": "Same brand", "similarSpecs": "Similar specifications", "sameFuel": "Same fuel type", "sameTransmission": "Same transmission", "closeYear": "Similar year", "lowerMileage": "Lower mileage", "featured": "Featured car", "otherOption": "Another option" },
       "trustLabel": "Legend Motors benefits", "trustWarrantyTitle": "Trusted warranty", "trustWarrantyText": "Clarity and confidence at every step",
       "trustInspectionTitle": "Certified inspection", "trustInspectionText": "Ask us about the inspection details",
       "trustPaymentTitle": "Flexible payment options", "trustPaymentText": "Ask us about the available options",
@@ -36,8 +39,8 @@
       "eyebrow": "About us", "title": "Choosing a car should feel clear and comfortable.", "lead": "Legend Motors makes it easy to explore available cars, compare details, and contact us without unnecessary steps.", "detail": "Every car has its own page with photos, specifications, and a description. If it feels right, you can talk to us directly on WhatsApp.",
       "valueOneTitle": "Clear details", "valueOneText": "The important information and photos are together in one place.", "valueTwoTitle": "Direct contact", "valueTwoText": "Go from the car you like to WhatsApp in one step.", "valueThreeTitle": "Arabic and English", "valueThreeText": "A comfortable experience in both languages and on every screen size."
     },
-    "contact": { "eyebrow": "Contact us", "title": "Like a car? Talk to us.", "lead": "Message us on WhatsApp and ask about any car or detail you need.", "whatsapp": "Open WhatsApp", "whatsappMessage": "Hello Legend Motors, I would like to ask about the available cars." },
-    "footer": { "tagline": "Selected cars, clear details, and direct contact.", "rights": "© {{year}} Legend Motors" },
+    "contact": { "eyebrow": "Contact us", "title": "Like a car? Talk to us.", "lead": "Message us on WhatsApp and ask about any car or detail you need.", "email": "Email", "phone": "Phone", "follow": "Follow us", "whatsapp": "Open WhatsApp", "whatsappMessage": "Hello Legend Motors, I would like to ask about the available cars." },
+    "footer": { "tagline": "Selected cars, clear details, and direct contact.", "address": "Ramallah / Nablus Street / Main Street / Opposite Al-Jalazone Camp", "mobile": "Mobile", "rights": "© {{year}} Legend Motors" },
     "notFound": { "title": "Page not found", "description": "Return home to see the available cars." }
   },
   "admin": {

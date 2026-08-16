@@ -1,45 +1,45 @@
-import { useEffect, useState } from "react"
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom"
-import logo from "@/assets/site_assets/logo.webp"
-import { LanguageSwitcher } from "@/localization/LanguageSwitcher"
-import { useI18n } from "@/localization/useI18n"
-import { SiteIcon } from "@/features/site/components/SiteIcon"
-import { getWhatsAppUrl } from "@/features/site/whatsapp"
-import "@/features/site/site.css"
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import logo from "@/assets/site_assets/logo.webp";
+import { LanguageSwitcher } from "@/localization/LanguageSwitcher";
+import { useI18n } from "@/localization/useI18n";
+import { SocialLinks } from "@/features/site/components/SocialLinks";
+import { SiteIcon } from "@/features/site/components/SiteIcon";
+import { siteContact } from "@/features/site/contactInfo";
+import { getWhatsAppUrl } from "@/features/site/whatsapp";
+import "@/features/site/site.css";
 
 export function PublicLayout() {
-  const { t, language } = useI18n()
-  const location = useLocation()
-  const [menuOpen, setMenuOpen] = useState(false)
+  const { t, language } = useI18n();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       if (location.hash) {
         document
           .querySelector(location.hash)
-          ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
-        window.scrollTo({ top: 0 })
+        window.scrollTo({ top: 0 });
       }
-    })
+    });
 
-    return () => window.cancelAnimationFrame(frame)
-  }, [location.hash, location.pathname])
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.hash, location.pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : ""
+    document.body.style.overflow = menuOpen ? "hidden" : "";
 
     return () => {
-      document.body.style.overflow = ""
-    }
-  }, [menuOpen])
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "is-active" : ""
+    isActive ? "is-active" : "";
 
-  const genericWhatsApp = getWhatsAppUrl(
-    t("public.contact.whatsappMessage"),
-  )
+  const genericWhatsApp = getWhatsAppUrl(t("public.contact.whatsappMessage"));
 
   return (
     <div className="public-site">
@@ -54,10 +54,7 @@ export function PublicLayout() {
             <strong>{t("public.brandName")}</strong>
           </Link>
 
-          <nav
-            className="public-nav"
-            aria-label={t("public.nav.home")}
-          >
+          <nav className="public-nav" aria-label={t("public.nav.home")}>
             <NavLink
               to="/"
               end
@@ -67,10 +64,7 @@ export function PublicLayout() {
               {t("public.nav.home")}
             </NavLink>
 
-            <Link
-              to="/#cars"
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link to="/#cars" onClick={() => setMenuOpen(false)}>
               {t("public.nav.cars")}
             </Link>
 
@@ -92,6 +86,8 @@ export function PublicLayout() {
           </nav>
 
           <div className="public-header__actions">
+            <SocialLinks className="public-socials--header" />
+
             <LanguageSwitcher className="public-language" />
 
             <a
@@ -109,15 +105,10 @@ export function PublicLayout() {
               className="public-menu-button"
               type="button"
               aria-expanded={menuOpen}
-              aria-label={t(
-                menuOpen ? "public.nav.close" : "public.nav.open",
-              )}
+              aria-label={t(menuOpen ? "public.nav.close" : "public.nav.open")}
               onClick={() => setMenuOpen((value) => !value)}
             >
-              <SiteIcon
-                name={menuOpen ? "close" : "menu"}
-                size={24}
-              />
+              <SiteIcon name={menuOpen ? "close" : "menu"} size={24} />
             </button>
           </div>
         </div>
@@ -134,10 +125,7 @@ export function PublicLayout() {
                 {t("public.nav.home")}
               </NavLink>
 
-              <Link
-                to="/#cars"
-                onClick={() => setMenuOpen(false)}
-              >
+              <Link to="/#cars" onClick={() => setMenuOpen(false)}>
                 {t("public.nav.cars")}
               </Link>
 
@@ -156,6 +144,8 @@ export function PublicLayout() {
               >
                 {t("public.nav.contact")}
               </NavLink>
+
+              <SocialLinks className="public-socials--menu" />
 
               <a
                 className="public-whatsapp"
@@ -177,13 +167,34 @@ export function PublicLayout() {
 
       <footer className="public-footer">
         <div className="public-container public-footer__grid">
-          <div className="public-footer__brand">
-            <img src={logo} alt="" />
+          <div className="public-footer__identity">
+            <Link
+              className="public-footer__brand"
+              to="/"
+              aria-label={t("public.brandName")}
+            >
+              <img src={logo} alt="" />
 
-            <div>
-              <strong>{t("public.brandName")}</strong>
-              <p>{t("public.footer.tagline")}</p>
-            </div>
+              <div>
+                <strong>{t("public.brandName")}</strong>
+                <p>{t("public.footer.tagline")}</p>
+              </div>
+            </Link>
+
+            <address className="public-footer__contact">
+              <span>
+                <SiteIcon name="mapPin" size={19} />
+                <span>{t("public.footer.address")}</span>
+              </span>
+
+              <a href={siteContact.phoneHref}>
+                <SiteIcon name="phone" size={19} />
+                <span>
+                  {t("public.footer.mobile")}{" "}
+                  <bdi dir="ltr">{siteContact.phoneDisplay}</bdi>
+                </span>
+              </a>
+            </address>
           </div>
 
           <nav aria-label={t("public.nav.contact")}>
@@ -192,15 +203,19 @@ export function PublicLayout() {
             <Link to="/contact">{t("public.nav.contact")}</Link>
           </nav>
 
-          <a
-            className="public-whatsapp"
-            href={genericWhatsApp}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <SiteIcon name="whatsapp" />
-            {t("public.actions.contact")}
-          </a>
+          <div className="public-footer__actions">
+            <a
+              className="public-whatsapp"
+              href={genericWhatsApp}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <SiteIcon name="whatsapp" />
+              {t("public.actions.contact")}
+            </a>
+
+            <SocialLinks className="public-socials--footer" />
+          </div>
         </div>
 
         <div className="public-container public-footer__bottom">
@@ -210,11 +225,9 @@ export function PublicLayout() {
             })}
           </span>
 
-          <span lang={language === "ar" ? "en" : "ar"}>
-            Legend Motors
-          </span>
+          <span lang={language === "ar" ? "en" : "ar"}>Legend Motors</span>
         </div>
       </footer>
     </div>
-  )
+  );
 }

@@ -1,43 +1,107 @@
-import { useEffect, useRef, useState, type ReactNode } from "react"
-import { useQuery } from "@/shared/query/remoteData"
-import { Link, useParams } from "react-router-dom"
-import logo from "@/assets/site_assets/logo.webp"
-import { useI18n } from "@/localization/useI18n"
-import { getAssetUrl } from "@/shared/api/assets"
-import { CarAssetIcon, type CarAssetIconName } from "./components/CarAssetIcon"
-import { SiteIcon } from "./components/SiteIcon"
-import { getFuelTranslationKey } from "./fuel"
-import { SiteApi } from "./site.api"
-import { getWhatsAppUrl } from "./whatsapp"
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useQuery } from "@/shared/query/remoteData";
+import { Link, useParams } from "react-router-dom";
+import logo from "@/assets/site_assets/logo.webp";
+import { useI18n } from "@/localization/useI18n";
+import { getAssetUrl } from "@/shared/api/assets";
+import { CarAssetIcon, type CarAssetIconName } from "./components/CarAssetIcon";
+import { SuggestedCars } from "./components/SuggestedCars";
+import { SiteIcon } from "./components/SiteIcon";
+import { getFuelTranslationKey } from "./fuel";
+import { SiteApi } from "./site.api";
+import { getWhatsAppUrl } from "./whatsapp";
 
 export function CarDetailPage() {
-  const { carId = "" } = useParams()
-  const id = Number(carId)
+  const { carId = "" } = useParams();
+  const id = Number(carId);
 
-  const { t, language, formatNumber } = useI18n()
+  const { t, language, formatNumber } = useI18n();
 
-  const [activeImage, setActiveImage] = useState(0)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [activeImage, setActiveImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [thumbnailsPerPage, setThumbnailsPerPage] = useState(2);
 
-  const swipeStartX = useRef<number | null>(null)
+  const swipeStartX = useRef<number | null>(null);
+  const thumbnailViewportRef = useRef<HTMLDivElement | null>(null);
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
 
   const carQuery = useQuery({
     queryKey: ["public", "car", id],
     queryFn: () => SiteApi.car(id),
     enabled: Number.isInteger(id) && id > 0,
-  })
+  });
 
-  const car = carQuery.data
-  const imageCount = car?.images.length ?? 0
+  const car = carQuery.data;
+  const imageCount = car?.images.length ?? 0;
+  const loadedCarId = car?.id;
+  const browserTitle = car
+    ? `${language === "ar" ? car.brand.name_ar : car.brand.name_en} ${car.model} ${car.year} | ${t("public.brandName")}`
+    : null;
 
   /*
    * Reset the gallery when navigating directly
    * from one car details page to another.
    */
   useEffect(() => {
-    setActiveImage(0)
-    setLightboxOpen(false)
-  }, [id])
+    const frame = window.requestAnimationFrame(() => {
+      setActiveImage(0);
+      setLightboxOpen(false);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [id]);
+
+  useEffect(() => {
+    if (!loadedCarId) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      headingRef.current?.focus({ preventScroll: true });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [loadedCarId]);
+
+  useEffect(() => {
+    if (!browserTitle) return;
+
+    document.title = browserTitle;
+
+    return () => {
+      document.title = t("public.brandName");
+    };
+  }, [browserTitle, t]);
+
+  useEffect(() => {
+    const viewport = thumbnailViewportRef.current;
+
+    if (!viewport || imageCount <= 1) return;
+
+    const updateThumbnailsPerPage = (width: number) => {
+      if (width < 300) {
+        setThumbnailsPerPage(2);
+      } else if (width < 520) {
+        setThumbnailsPerPage(3);
+      } else if (width < 760) {
+        setThumbnailsPerPage(4);
+      } else {
+        setThumbnailsPerPage(5);
+      }
+    };
+
+    updateThumbnailsPerPage(viewport.getBoundingClientRect().width);
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+
+      if (entry) {
+        updateThumbnailsPerPage(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(viewport);
+
+    return () => resizeObserver.disconnect();
+  }, [imageCount]);
 
   /*
    * Fullscreen gallery:
@@ -47,43 +111,43 @@ export function CarDetailPage() {
    * - Disable page scrolling while open
    */
   useEffect(() => {
-    if (!lightboxOpen) return
+    if (!lightboxOpen) return;
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setLightboxOpen(false)
-        return
+        setLightboxOpen(false);
+        return;
       }
 
-      if (imageCount <= 1) return
+      if (imageCount <= 1) return;
 
       if (event.key === "ArrowRight") {
-        event.preventDefault()
+        event.preventDefault();
 
         setActiveImage((current) => {
-          return (current + 1) % imageCount
-        })
+          return (current + 1) % imageCount;
+        });
       }
 
       if (event.key === "ArrowLeft") {
-        event.preventDefault()
+        event.preventDefault();
 
         setActiveImage((current) => {
-          return (current - 1 + imageCount) % imageCount
-        })
+          return (current - 1 + imageCount) % imageCount;
+        });
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [lightboxOpen, imageCount])
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [lightboxOpen, imageCount]);
 
   if (!Number.isInteger(id) || id <= 0 || carQuery.isError) {
     return (
@@ -91,7 +155,7 @@ export function CarDetailPage() {
         title={t("public.detail.errorTitle")}
         description={t("public.detail.errorDescription")}
       />
-    )
+    );
   }
 
   if (carQuery.isPending || !car) {
@@ -100,7 +164,7 @@ export function CarDetailPage() {
         <span className="site-loader" />
         <p>{t("public.detail.loading")}</p>
       </div>
-    )
+    );
   }
 
   /*
@@ -108,38 +172,31 @@ export function CarDetailPage() {
    * the images array if the route/car changes.
    */
   const safeActiveImage =
-    car.images.length > 0
-      ? Math.min(activeImage, car.images.length - 1)
-      : 0
+    car.images.length > 0 ? Math.min(activeImage, car.images.length - 1) : 0;
 
-  const image = car.images[safeActiveImage]
+  const image = car.images[safeActiveImage];
 
-  const brand =
-    language === "ar"
-      ? car.brand.name_ar
-      : car.brand.name_en
+  const brand = language === "ar" ? car.brand.name_ar : car.brand.name_en;
 
-  const name = `${brand} ${car.model}`
+  const name = `${brand} ${car.model}`;
 
   const description =
     language === "ar"
       ? car.description_ar || car.description_en
-      : car.description_en || car.description_ar
+      : car.description_en || car.description_ar;
 
   const message = t("public.detail.whatsappMessage", {
     name,
     year: car.year,
     id: car.id,
     url: window.location.href,
-  })
+  });
 
-  const whatsAppUrl = getWhatsAppUrl(message)
+  const whatsAppUrl = getWhatsAppUrl(message);
 
-  const fuelKey = getFuelTranslationKey(car.fuel_type)
+  const fuelKey = getFuelTranslationKey(car.fuel_type);
 
-  const fuel = fuelKey
-    ? t(`public.fuels.${fuelKey}`)
-    : car.fuel_type
+  const fuel = fuelKey ? t(`public.fuels.${fuelKey}`) : car.fuel_type;
 
   /*
    * Small accessibility strings.
@@ -152,25 +209,42 @@ export function CarDetailPage() {
           close: "إغلاق معرض الصور",
           previous: "الصورة السابقة",
           next: "الصورة التالية",
+          previousThumbnails: "مجموعة الصور السابقة",
+          nextThumbnails: "مجموعة الصور التالية",
         }
       : {
           open: "Open image fullscreen",
           close: "Close image gallery",
           previous: "Previous image",
           next: "Next image",
-        }
+          previousThumbnails: "Previous thumbnails",
+          nextThumbnails: "Next thumbnails",
+        };
 
   const goToImage = (direction: number) => {
-    if (car.images.length <= 1) return
+    if (car.images.length <= 1) return;
 
     setActiveImage((current) => {
-      return (
-        current +
-        direction +
-        car.images.length
-      ) % car.images.length
-    })
-  }
+      return (current + direction + car.images.length) % car.images.length;
+    });
+  };
+
+  const thumbnailPage = Math.floor(safeActiveImage / thumbnailsPerPage);
+  const thumbnailPageCount = Math.ceil(car.images.length / thumbnailsPerPage);
+  const thumbnailStart = thumbnailPage * thumbnailsPerPage;
+  const visibleThumbnails = car.images.slice(
+    thumbnailStart,
+    thumbnailStart + thumbnailsPerPage,
+  );
+
+  const goToThumbnailPage = (direction: number) => {
+    const nextPage = Math.min(
+      Math.max(thumbnailPage + direction, 0),
+      thumbnailPageCount - 1,
+    );
+
+    setActiveImage(nextPage * thumbnailsPerPage);
+  };
 
   /*
    * Amazon-style cursor zoom.
@@ -179,87 +253,72 @@ export function CarDetailPage() {
    * we update CSS variables directly on the gallery element.
    * This keeps the movement smooth.
    */
-  const handleZoomMove = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
-    const element = event.currentTarget
-    const rect = element.getBoundingClientRect()
+  const handleZoomMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const element = event.currentTarget;
+    const rect = element.getBoundingClientRect();
 
-    const x =
-      ((event.clientX - rect.left) / rect.width) * 100
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
 
-    const y =
-      ((event.clientY - rect.top) / rect.height) * 100
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    element.style.setProperty("--zoom-x", `${x}%`)
-    element.style.setProperty("--zoom-y", `${y}%`)
-  }
+    element.style.setProperty("--zoom-x", `${x}%`);
+    element.style.setProperty("--zoom-y", `${y}%`);
+  };
 
-  const handleZoomLeave = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
-    event.currentTarget.style.setProperty("--zoom-x", "50%")
-    event.currentTarget.style.setProperty("--zoom-y", "50%")
-  }
+  const handleZoomLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.currentTarget.style.setProperty("--zoom-x", "50%");
+    event.currentTarget.style.setProperty("--zoom-y", "50%");
+  };
 
   const openLightbox = () => {
-    if (!image) return
-    setLightboxOpen(true)
-  }
+    if (!image) return;
+    setLightboxOpen(true);
+  };
 
   const closeLightbox = () => {
-    setLightboxOpen(false)
-  }
+    setLightboxOpen(false);
+  };
 
   const handleMainImageKeyDown = (
     event: React.KeyboardEvent<HTMLDivElement>,
   ) => {
     if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault()
-      openLightbox()
+      event.preventDefault();
+      openLightbox();
     }
-  }
+  };
 
   /*
    * Mobile swipe support.
    */
-  const handleTouchStart = (
-    event: React.TouchEvent<HTMLDivElement>,
-  ) => {
-    swipeStartX.current =
-      event.touches[0]?.clientX ?? null
-  }
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    swipeStartX.current = event.touches[0]?.clientX ?? null;
+  };
 
-  const handleTouchEnd = (
-    event: React.TouchEvent<HTMLDivElement>,
-  ) => {
-    const startX = swipeStartX.current
-    const endX = event.changedTouches[0]?.clientX
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const startX = swipeStartX.current;
+    const endX = event.changedTouches[0]?.clientX;
 
-    swipeStartX.current = null
+    swipeStartX.current = null;
 
-    if (
-      startX === null ||
-      endX === undefined ||
-      car.images.length <= 1
-    ) {
-      return
+    if (startX === null || endX === undefined || car.images.length <= 1) {
+      return;
     }
 
-    const distance = endX - startX
+    const distance = endX - startX;
 
     /*
      * Require a reasonable swipe distance so normal taps
      * don't accidentally change the image.
      */
-    if (Math.abs(distance) < 55) return
+    if (Math.abs(distance) < 55) return;
 
     if (distance < 0) {
-      goToImage(1)
+      goToImage(1);
     } else {
-      goToImage(-1)
+      goToImage(-1);
     }
-  }
+  };
 
   return (
     <article className="car-detail">
@@ -313,30 +372,66 @@ export function CarDetailPage() {
 
           {car.images.length > 1 && (
             <div className="car-gallery__thumbs">
-              {car.images.map((item, index) => (
-                <button
-                  className={
-                    index === safeActiveImage
-                      ? "is-active"
-                      : ""
-                  }
-                  type="button"
-                  key={item.id}
-                  onClick={() => setActiveImage(index)}
-                  aria-label={t("public.detail.imageAlt", {
-                    name,
-                    number: index + 1,
-                  })}
-                  aria-pressed={index === safeActiveImage}
+              <button
+                className="car-gallery__thumb-nav car-gallery__thumb-nav--previous"
+                type="button"
+                onClick={() => goToThumbnailPage(-1)}
+                disabled={thumbnailPage === 0}
+                aria-label={galleryText.previousThumbnails}
+              >
+                <span aria-hidden="true">‹</span>
+              </button>
+
+              <div
+                className="car-gallery__thumbs-viewport"
+                ref={thumbnailViewportRef}
+              >
+                <div
+                  className="car-gallery__thumbs-grid"
+                  style={{
+                    gridTemplateColumns: `repeat(${thumbnailsPerPage}, minmax(0, 1fr))`,
+                  }}
                 >
-                  <img
-                    src={getAssetUrl(item.image)}
-                    alt=""
-                    loading="lazy"
-                    draggable={false}
-                  />
-                </button>
-              ))}
+                  {visibleThumbnails.map((item, visibleIndex) => {
+                    const index = thumbnailStart + visibleIndex;
+
+                    return (
+                      <button
+                        className={
+                          index === safeActiveImage
+                            ? "car-gallery__thumb is-active"
+                            : "car-gallery__thumb"
+                        }
+                        type="button"
+                        key={item.id}
+                        onClick={() => setActiveImage(index)}
+                        aria-label={t("public.detail.imageAlt", {
+                          name,
+                          number: index + 1,
+                        })}
+                        aria-pressed={index === safeActiveImage}
+                      >
+                        <img
+                          src={getAssetUrl(item.image)}
+                          alt=""
+                          loading="lazy"
+                          draggable={false}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
+                className="car-gallery__thumb-nav car-gallery__thumb-nav--next"
+                type="button"
+                onClick={() => goToThumbnailPage(1)}
+                disabled={thumbnailPage >= thumbnailPageCount - 1}
+                aria-label={galleryText.nextThumbnails}
+              >
+                <span aria-hidden="true">›</span>
+              </button>
             </div>
           )}
         </section>
@@ -349,13 +444,11 @@ export function CarDetailPage() {
               })}
             </span>
 
-            <span className="car-detail__brand">
-              {brand}
-            </span>
+            <span className="car-detail__brand">{brand}</span>
 
-            <h1>
+            <h1 ref={headingRef} tabIndex={-1}>
               <bdi dir="auto">
-                {car.model} {formatNumber(car.year)}
+                {car.model} {car.year}
               </bdi>
             </h1>
           </div>
@@ -372,9 +465,7 @@ export function CarDetailPage() {
             <QuickSpec
               icon="transmission"
               label={t("public.detail.transmission")}
-              value={t(
-                `public.transmissions.${car.transmission}`,
-              )}
+              value={t(`public.transmissions.${car.transmission}`)}
             />
 
             <QuickSpec
@@ -400,10 +491,7 @@ export function CarDetailPage() {
               {t("public.detail.description")}
             </h2>
 
-            <p>
-              {description ||
-                t("public.detail.noDescription")}
-            </p>
+            <p>{description || t("public.detail.noDescription")}</p>
           </section>
 
           <section className="car-specs">
@@ -416,7 +504,7 @@ export function CarDetailPage() {
               <DetailSpec
                 icon={<CarAssetIcon name="year" />}
                 label={t("public.detail.year")}
-                value={formatNumber(car.year)}
+                value={String(car.year)}
               />
 
               <DetailSpec
@@ -436,9 +524,7 @@ export function CarDetailPage() {
               <DetailSpec
                 icon={<CarAssetIcon name="transmission" />}
                 label={t("public.detail.transmission")}
-                value={t(
-                  `public.transmissions.${car.transmission}`,
-                )}
+                value={t(`public.transmissions.${car.transmission}`)}
               />
 
               <DetailSpec
@@ -453,29 +539,28 @@ export function CarDetailPage() {
                 value={`${formatNumber(car.engine_cc)} cc`}
               />
 
-              <DetailSpec
-                icon={<CarAssetIcon name="turbo" />}
-                label={t("public.detail.turbo")}
-                value={t(
-                  car.is_turbo
-                    ? "public.detail.yes"
-                    : "public.detail.no",
-                )}
-              />
-
               {car.hybrid_car?.battery_capacity && (
                 <DetailSpec
                   icon={<SiteIcon name="battery" />}
                   label={t("public.detail.battery")}
-                  value={
-                    car.hybrid_car.battery_capacity
-                  }
+                  value={car.hybrid_car.battery_capacity}
                 />
               )}
             </dl>
+
+            {car.is_turbo && (
+              <div className="car-specs__turbo">
+                <span className="car-specs__turbo-icon">
+                  <CarAssetIcon name="turbo" />
+                </span>
+                <strong>{t("public.detail.turbo")}</strong>
+              </div>
+            )}
           </section>
         </section>
       </div>
+
+      <SuggestedCars currentCar={car} />
 
       <section
         className="public-container car-detail__container car-trust"
@@ -483,44 +568,40 @@ export function CarDetailPage() {
       >
         <TrustItem
           icon="warranty"
-          title={t(
-            "public.detail.trustWarrantyTitle",
-          )}
-          description={t(
-            "public.detail.trustWarrantyText",
-          )}
+          title={t("public.detail.trustWarrantyTitle")}
+          description={t("public.detail.trustWarrantyText")}
         />
 
         <TrustItem
           icon="inspection"
-          title={t(
-            "public.detail.trustInspectionTitle",
-          )}
-          description={t(
-            "public.detail.trustInspectionText",
-          )}
+          title={t("public.detail.trustInspectionTitle")}
+          description={t("public.detail.trustInspectionText")}
         />
 
         <TrustItem
           icon="payment"
-          title={t(
-            "public.detail.trustPaymentTitle",
-          )}
-          description={t(
-            "public.detail.trustPaymentText",
-          )}
+          title={t("public.detail.trustPaymentTitle")}
+          description={t("public.detail.trustPaymentText")}
         />
 
         <TrustItem
           icon="support"
-          title={t(
-            "public.detail.trustSupportTitle",
-          )}
-          description={t(
-            "public.detail.trustSupportText",
-          )}
+          title={t("public.detail.trustSupportTitle")}
+          description={t("public.detail.trustSupportText")}
         />
       </section>
+
+      <div className="car-detail__mobile-contact">
+        <a
+          className="public-whatsapp"
+          href={whatsAppUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <SiteIcon name="whatsapp" size={22} />
+          {t("public.detail.mobileWhatsapp")}
+        </a>
+      </div>
 
       {/* FULLSCREEN IMAGE VIEWER */}
       {lightboxOpen && image && (
@@ -533,7 +614,7 @@ export function CarDetailPage() {
           })}
           onClick={(event) => {
             if (event.target === event.currentTarget) {
-              closeLightbox()
+              closeLightbox();
             }
           }}
         >
@@ -544,7 +625,9 @@ export function CarDetailPage() {
             aria-label={galleryText.close}
             autoFocus
           >
-            <span aria-hidden="true">×</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M6 6 18 18M18 6 6 18" />
+            </svg>
           </button>
 
           {car.images.length > 1 && (
@@ -554,14 +637,22 @@ export function CarDetailPage() {
                 className="car-lightbox__nav car-lightbox__nav--previous"
                 onClick={() => goToImage(-1)}
                 aria-label={galleryText.previous}
-              />
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m15 5-7 7 7 7" />
+                </svg>
+              </button>
 
               <button
                 type="button"
                 className="car-lightbox__nav car-lightbox__nav--next"
                 onClick={() => goToImage(1)}
                 aria-label={galleryText.next}
-              />
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </button>
             </>
           )}
 
@@ -591,7 +682,7 @@ export function CarDetailPage() {
         </div>
       )}
     </article>
-  )
+  );
 }
 
 function QuickSpec({
@@ -599,9 +690,9 @@ function QuickSpec({
   label,
   value,
 }: {
-  icon: CarAssetIconName
-  label: string
-  value: string
+  icon: CarAssetIconName;
+  label: string;
+  value: string;
 }) {
   return (
     <div>
@@ -609,7 +700,7 @@ function QuickSpec({
       <small>{label}</small>
       <strong>{value}</strong>
     </div>
-  )
+  );
 }
 
 function DetailSpec({
@@ -617,9 +708,9 @@ function DetailSpec({
   label,
   value,
 }: {
-  icon: ReactNode
-  label: string
-  value: string
+  icon: ReactNode;
+  label: string;
+  value: string;
 }) {
   return (
     <div>
@@ -629,7 +720,7 @@ function DetailSpec({
       </dt>
       <dd>{value}</dd>
     </div>
-  )
+  );
 }
 
 function TrustItem({
@@ -637,9 +728,9 @@ function TrustItem({
   title,
   description,
 }: {
-  icon: CarAssetIconName
-  title: string
-  description: string
+  icon: CarAssetIconName;
+  title: string;
+  description: string;
 }) {
   return (
     <div className="car-trust__item">
@@ -650,29 +741,26 @@ function TrustItem({
         <small>{description}</small>
       </span>
     </div>
-  )
+  );
 }
 
 function DetailState({
   title,
   description,
 }: {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }) {
-  const { t } = useI18n()
+  const { t } = useI18n();
 
   return (
     <div className="detail-state">
       <h1>{title}</h1>
       <p>{description}</p>
 
-      <Link
-        className="site-button site-button--dark"
-        to="/#cars"
-      >
+      <Link className="site-button site-button--dark" to="/#cars">
         {t("public.actions.backToCars")}
       </Link>
     </div>
-  )
+  );
 }
