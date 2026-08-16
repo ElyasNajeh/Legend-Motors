@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine, text
 
-from app.core import security
 from app.core.config import settings
 from app.db.base import Base
 from app.db.migrations import (
@@ -9,6 +8,7 @@ from app.db.migrations import (
     migrate_car_transmission,
 )
 from app.db.session import SessionLocal, engine
+from app.db.seeder import DatabaseSeeder
 
 # Import all models so SQLAlchemy registers them in Base.metadata
 from app.features.admins.model import Admin
@@ -50,21 +50,13 @@ def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
-def seed_development_admin():
+def seed_initial_data():
     db = SessionLocal()
 
     try:
-        admin = db.query(Admin).filter(Admin.email == "a@gmail.com").first()
-
-        if admin is None:
-            db.add(
-                Admin(
-                    username="admin",
-                    email="a@gmail.com",
-                    hashed_password=security.hash_password("1234"),
-                )
-            )
-            db.commit()
+        seeder = DatabaseSeeder(db)
+        seeder.seed_admin()
+        seeder.seed_showroom_data()
     except Exception:
         db.rollback()
         raise
@@ -78,4 +70,4 @@ def init_db():
     migrate_car_transmission(engine)
     migrate_car_image_primary(engine)
     create_tables()
-    seed_development_admin()
+    seed_initial_data()
