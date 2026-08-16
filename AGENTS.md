@@ -1,5 +1,16 @@
 # Legend Motors project instructions
 
+## Code style
+
+- Always format modified frontend files before finishing.
+- Follow the repository's Prettier configuration.
+- Never compress JSX children onto a single line when the element contains
+  multiple child elements.
+- Use multiline JSX for nested markup.
+- Put JSX props on separate lines when an element has several props.
+- Optimize for readability, not minimum line count.
+- After modifying TS/TSX/JS/JSX files, run the project's formatter.
+
 ## Scope and source of truth
 
 Legend Motors is a production full-stack automotive showroom: a React/Vite public site and admin UI backed by FastAPI, SQLAlchemy, PostgreSQL, and the existing APIs. The public frontend began as a fashion-store concept and must be converted through targeted changes, not a rewrite.

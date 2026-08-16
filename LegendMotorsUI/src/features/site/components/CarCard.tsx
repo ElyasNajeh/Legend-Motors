@@ -14,22 +14,77 @@ export function CarCard({ car }: { car: PublicCar }) {
   const fuelKey = getFuelTranslationKey(car.fuel_type)
   const fuel = fuelKey ? t(`public.fuels.${fuelKey}`) : car.fuel_type
 
-  return <Link className="car-card" to={`/cars/${car.id}`} aria-label={`${t("public.actions.details")}: ${car.year} ${name}`}>
-    <div className="car-card__image">
-      {cover ? <img src={getAssetUrl(cover)} alt={`${car.year} ${name}`} loading="lazy" /> : <div className="car-card__placeholder"><SiteIcon name="mileage" size={34} /><span>{t("public.cars.noImage")}</span></div>}
-      {car.is_featured && <span className="car-card__featured"><span>{t("public.cars.featured")}</span><SiteIcon name="sparkle" /></span>}
-    </div>
-    <div className="car-card__body">
-      <header className="car-card__heading">
-        <span className="car-card__manufacturer">{brand}</span>
-        <h3><bdi>{car.model}</bdi> <bdi>{formatNumber(car.year)}</bdi></h3>
-      </header>
-      <div className="car-card__specs">
-        <span className="car-card__spec"><CarAssetIcon name="mileage" /><strong>{t("public.cars.mileage", { count: formatNumber(car.mileage) })}</strong><small>{t("public.cars.mileageLabel")}</small></span>
-        <span className="car-card__spec"><CarAssetIcon name="transmission" /><strong>{t(`public.transmissions.${car.transmission}`)}</strong><small>{t("public.cars.transmission")}</small></span>
-        <span className="car-card__spec"><CarAssetIcon name="fuel" /><strong>{fuel}</strong><small>{t("public.cars.fuel")}</small></span>
+  return (
+    <Link
+      className="car-card"
+      to={`/cars/${car.id}`}
+      aria-label={`${t("public.actions.details")}: ${car.year} ${name}`}
+    >
+      <div className="car-card__image">
+        {cover ? (
+          <img
+            src={getAssetUrl(cover)}
+            alt={`${car.year} ${name}`}
+            loading="lazy"
+          />
+        ) : (
+          <div className="car-card__placeholder">
+            <SiteIcon name="mileage" size={34} />
+            <span>{t("public.cars.noImage")}</span>
+          </div>
+        )}
+
+        {car.is_featured && (
+          <span className="car-card__featured">
+            <span>{t("public.cars.featured")}</span>
+            <SiteIcon name="sparkle" />
+          </span>
+        )}
       </div>
-      <span className="car-card__link"><span>{t("public.actions.details")}</span><span className="car-card__link-icon"><SiteIcon name="arrowLong" /></span></span>
-    </div>
-  </Link>
+
+      <div className="car-card__body">
+        <header className="car-card__heading">
+          <span className="car-card__manufacturer">{brand}</span>
+
+          <h3>
+            <bdi>{car.model}</bdi> <bdi>{formatNumber(car.year)}</bdi>
+          </h3>
+        </header>
+
+        <div className="car-card__specs">
+          <span className="car-card__spec">
+            <CarAssetIcon name="mileage" />
+            <strong>
+              {t("public.cars.mileage", {
+                count: formatNumber(car.mileage),
+              })}
+            </strong>
+            <small>{t("public.cars.mileageLabel")}</small>
+          </span>
+
+          <span className="car-card__spec">
+            <CarAssetIcon name="transmission" />
+            <strong>
+              {t(`public.transmissions.${car.transmission}`)}
+            </strong>
+            <small>{t("public.cars.transmission")}</small>
+          </span>
+
+          <span className="car-card__spec">
+            <CarAssetIcon name="fuel" />
+            <strong>{fuel}</strong>
+            <small>{t("public.cars.fuel")}</small>
+          </span>
+        </div>
+
+        <span className="car-card__link">
+          <span>{t("public.actions.details")}</span>
+
+          <span className="car-card__link-icon">
+            <SiteIcon name="arrowLong" />
+          </span>
+        </span>
+      </div>
+    </Link>
+  )
 }

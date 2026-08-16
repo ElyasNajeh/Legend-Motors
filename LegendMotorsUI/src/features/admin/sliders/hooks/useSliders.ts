@@ -18,9 +18,11 @@ export function useSliders() {
   const slidersQuery = useQuery({
     queryKey: queryKeys.sliders,
     queryFn: SlidersApi.list,
-    select: (sliders) => [...sliders].sort(
-      (first, second) => first.display_order - second.display_order,
-    ),
+    select: (sliders) =>
+      [...sliders].sort(
+        (first, second) =>
+          first.display_order - second.display_order,
+      ),
   })
 
   const saveMutation = useMutation({
@@ -44,7 +46,19 @@ export function useSliders() {
       return savedSlider
     },
     onSuccess: async (_, { slider, payload }) => {
-      toast.success(t(slider ? "admin.feedback.sliders.updated" : "admin.feedback.sliders.created"), t("admin.feedback.sliders.saved", { name: language === "ar" ? payload.title_ar : payload.title_en }))
+      toast.success(
+        t(
+          slider
+            ? "admin.feedback.sliders.updated"
+            : "admin.feedback.sliders.created",
+        ),
+        t("admin.feedback.sliders.saved", {
+          name:
+            language === "ar"
+              ? payload.title_ar
+              : payload.title_en,
+        }),
+      )
 
       await slidersQuery.refetch()
     },
@@ -53,7 +67,16 @@ export function useSliders() {
   const deleteMutation = useMutation({
     mutationFn: (slider: Slider) => SlidersApi.delete(slider.id),
     onSuccess: async (_, slider) => {
-      toast.success(t("admin.feedback.sliders.deleted"), t("admin.feedback.sliders.removed", { name: language === "ar" ? slider.title_ar : slider.title_en }))
+      toast.success(
+        t("admin.feedback.sliders.deleted"),
+        t("admin.feedback.sliders.removed", {
+          name:
+            language === "ar"
+              ? slider.title_ar
+              : slider.title_en,
+        }),
+      )
+
       await slidersQuery.refetch()
     },
   })
@@ -61,7 +84,19 @@ export function useSliders() {
   const toggleMutation = useMutation({
     mutationFn: (slider: Slider) => SlidersApi.toggle(slider.id),
     onSuccess: async (_, slider) => {
-      toast.success(t(slider.is_active ? "admin.feedback.sliders.hidden" : "admin.feedback.sliders.activated"), t(slider.is_active ? "admin.feedback.sliders.hiddenMessage" : "admin.feedback.sliders.activatedMessage"))
+      toast.success(
+        t(
+          slider.is_active
+            ? "admin.feedback.sliders.hidden"
+            : "admin.feedback.sliders.activated",
+        ),
+        t(
+          slider.is_active
+            ? "admin.feedback.sliders.hiddenMessage"
+            : "admin.feedback.sliders.activatedMessage",
+        ),
+      )
+
       await slidersQuery.refetch()
     },
   })
@@ -70,11 +105,14 @@ export function useSliders() {
     const term = search.trim().toLocaleLowerCase()
 
     return (slidersQuery.data ?? []).filter((slider) => {
-      const matchesSearch = !term
-        || slider.title_en.toLocaleLowerCase().includes(term)
-        || slider.title_ar.toLocaleLowerCase().includes(term)
-      const matchesStatus = !statusFilter
-        || slider.is_active === (statusFilter === "true")
+      const matchesSearch =
+        !term ||
+        slider.title_en.toLocaleLowerCase().includes(term) ||
+        slider.title_ar.toLocaleLowerCase().includes(term)
+
+      const matchesStatus =
+        !statusFilter ||
+        slider.is_active === (statusFilter === "true")
 
       return matchesSearch && matchesStatus
     })
@@ -83,9 +121,15 @@ export function useSliders() {
   const totalItems = filteredItems.length
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
   const currentPage = Math.min(page, totalPages)
-  const items = filteredItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const items = filteredItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  )
 
-  function updateFilter(setter: (value: string) => void, value: string) {
+  function updateFilter(
+    setter: (value: string) => void,
+    value: string,
+  ) {
     setter(value)
     setPage(1)
   }
@@ -95,13 +139,22 @@ export function useSliders() {
     payload: SliderPayload,
     isActive: boolean,
   ) {
-    await saveMutation.mutateAsync({ slider, payload, isActive })
+    await saveMutation.mutateAsync({
+      slider,
+      payload,
+      isActive,
+    })
   }
 
   async function deleteSlider(slider: Slider) {
     const confirmed = await confirm({
       title: t("admin.feedback.sliders.deleteTitle"),
-      message: t("admin.feedback.sliders.deleteMessage", { name: language === "ar" ? slider.title_ar : slider.title_en }),
+      message: t("admin.feedback.sliders.deleteMessage", {
+        name:
+          language === "ar"
+            ? slider.title_ar
+            : slider.title_en,
+      }),
       confirmLabel: t("admin.feedback.sliders.deleteConfirm"),
       variant: "danger",
     })
@@ -113,7 +166,14 @@ export function useSliders() {
     try {
       await deleteMutation.mutateAsync(slider)
     } catch (caught) {
-      toast.error(t("admin.feedback.sliders.deleteFailed"), getLocalizedErrorMessage(caught, language, t("admin.feedback.common.tryAgain")))
+      toast.error(
+        t("admin.feedback.sliders.deleteFailed"),
+        getLocalizedErrorMessage(
+          caught,
+          language,
+          t("admin.feedback.common.tryAgain"),
+        ),
+      )
     }
   }
 
@@ -121,12 +181,23 @@ export function useSliders() {
     try {
       await toggleMutation.mutateAsync(slider)
     } catch (caught) {
-      toast.error(t("admin.feedback.sliders.statusFailed"), getLocalizedErrorMessage(caught, language, t("admin.feedback.common.tryAgain")))
+      toast.error(
+        t("admin.feedback.sliders.statusFailed"),
+        getLocalizedErrorMessage(
+          caught,
+          language,
+          t("admin.feedback.common.tryAgain"),
+        ),
+      )
     }
   }
 
   const error = slidersQuery.error
-    ? getLocalizedErrorMessage(slidersQuery.error, language, t("admin.feedback.sliders.loadFailed"))
+    ? getLocalizedErrorMessage(
+        slidersQuery.error,
+        language,
+        t("admin.feedback.sliders.loadFailed"),
+      )
     : ""
 
   return {
@@ -138,8 +209,10 @@ export function useSliders() {
     page: currentPage,
     totalPages,
     totalItems,
-    setSearch: (value: string) => updateFilter(setSearchValue, value),
-    setStatusFilter: (value: string) => updateFilter(setStatusFilterValue, value),
+    setSearch: (value: string) =>
+      updateFilter(setSearchValue, value),
+    setStatusFilter: (value: string) =>
+      updateFilter(setStatusFilterValue, value),
     setPage,
     reload: slidersQuery.refetch,
     saveSlider,

@@ -9,7 +9,17 @@ import warrantyIcon from "@/assets/site_assets/trusted=warranty-icon.png"
 import turboIcon from "@/assets/site_assets/turbo-icon.png"
 import yearIcon from "@/assets/site_assets/year-icon.png"
 
-export type CarAssetIconName = "engine" | "fuel" | "inspection" | "mileage" | "payment" | "support" | "transmission" | "turbo" | "warranty" | "year"
+export type CarAssetIconName =
+  | "engine"
+  | "fuel"
+  | "inspection"
+  | "mileage"
+  | "payment"
+  | "support"
+  | "transmission"
+  | "turbo"
+  | "warranty"
+  | "year"
 
 const icons: Record<CarAssetIconName, string> = {
   engine: engineIcon,
@@ -24,6 +34,21 @@ const icons: Record<CarAssetIconName, string> = {
   year: yearIcon,
 }
 
-export function CarAssetIcon({ name, className }: { name: CarAssetIconName; className?: string }) {
-  return <img className={["car-asset-icon", className].filter(Boolean).join(" ")} src={icons[name]} alt="" aria-hidden="true" width="48" height="48" />
+export function CarAssetIcon({
+  name,
+  className,
+}: {
+  name: CarAssetIconName
+  className?: string
+}) {
+  return (
+    <img
+      className={["car-asset-icon", className].filter(Boolean).join(" ")}
+      src={icons[name]}
+      alt=""
+      aria-hidden="true"
+      width="48"
+      height="48"
+    />
+  )
 }
