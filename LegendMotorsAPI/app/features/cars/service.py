@@ -1,7 +1,3 @@
-from pathlib import Path
-import shutil
-from uuid import uuid4
-
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import selectinload
@@ -20,8 +16,7 @@ from app.features.cars.schema import (
     CarUpdate,
 )
 from app.shared import crud
-
-UPLOAD_DIR = Path("/app/uploads/cars")
+from app.shared.images import optimize_car_upload
 
 
 def validate_car_type(car_data):
@@ -459,20 +454,8 @@ def delete_car_image(db: Session, image_id: int):
 
 
 def upload_image(file: UploadFile):
-    UPLOAD_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    extension = Path(file.filename).suffix.lower()
-
-    filename = f"{uuid4()}{extension}"
-
-    file_path = UPLOAD_DIR / filename
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
+    filename = optimize_car_upload(file)
     return {
         "filename": filename,
+        "path": f"/uploads/cars/{filename}",
     }

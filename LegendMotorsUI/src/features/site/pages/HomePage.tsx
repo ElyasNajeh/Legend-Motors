@@ -6,25 +6,25 @@ import {
   type ReactNode,
   type SyntheticEvent,
   type UIEvent,
-} from "react";
-import { useQuery } from "@/shared/query/remoteData";
-import heroOne from "@/assets/site_assets/hero_1.webp";
-import heroTwo from "@/assets/site_assets/hero_2.webp";
-import { useI18n } from "@/localization/useI18n";
-import { getAssetUrl } from "@/shared/api/assets";
-import { CarCard } from "../components/CarCard";
-import { FilterSheet } from "../components/FilterSheet";
-import { SiteIcon } from "../components/SiteIcon";
-import { SiteApi } from "../shared/site.api";
-import type { CarType, PublicBrand, Transmission } from "../shared/site.types";
+} from "react"
+import { useQuery } from "@/shared/query/remoteData"
+import heroOne from "@/assets/site_assets/hero_1.webp"
+import heroTwo from "@/assets/site_assets/hero_2.webp"
+import { useI18n } from "@/localization/useI18n"
+import { getAssetUrl } from "@/shared/api/assets"
+import { CarCard } from "../components/CarCard"
+import { FilterSheet } from "../components/FilterSheet"
+import { SiteIcon } from "../components/SiteIcon"
+import { SiteApi } from "../shared/site.api"
+import type { CarType, PublicBrand, Transmission } from "../shared/site.types"
 
 type Filters = {
-  brand: string;
-  type: "" | CarType;
-  fuel: string;
-  transmission: "" | Transmission;
-  sort: "newest" | "year" | "mileage";
-};
+  brand: string
+  type: "" | CarType
+  fuel: string
+  transmission: "" | Transmission
+  sort: "newest" | "year" | "mileage"
+}
 
 const initialFilters: Filters = {
   brand: "",
@@ -32,32 +32,30 @@ const initialFilters: Filters = {
   fuel: "",
   transmission: "",
   sort: "newest",
-};
+}
 
 export function HomePage() {
-  const { t, formatNumber } = useI18n();
-  const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [currentSlideId, setCurrentSlideId] = useState<number | null>(null);
+  const { t, formatNumber } = useI18n()
+  const [search, setSearch] = useState("")
+  const [filters, setFilters] = useState<Filters>(initialFilters)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [currentSlideId, setCurrentSlideId] = useState<number | null>(null)
 
   const carsQuery = useQuery({
     queryKey: ["public", "cars"],
     queryFn: SiteApi.cars,
-  });
-
+  })
   const brandsQuery = useQuery({
     queryKey: ["public", "brands"],
     queryFn: SiteApi.brands,
-  });
-
+  })
   const slidersQuery = useQuery({
     queryKey: ["public", "sliders"],
     queryFn: SiteApi.sliders,
-  });
+  })
 
-  const cars = useMemo(() => carsQuery.data ?? [], [carsQuery.data]);
-  const brands = brandsQuery.data ?? [];
+  const cars = useMemo(() => carsQuery.data ?? [], [carsQuery.data])
+  const brands = brandsQuery.data ?? []
 
   const fuels = useMemo(
     () =>
@@ -65,14 +63,14 @@ export function HomePage() {
         new Set(cars.map((car) => car.fuel_type).filter(Boolean)),
       ).sort(),
     [cars],
-  );
+  )
 
   const visibleCars = useMemo(() => {
-    const term = search.trim().toLocaleLowerCase();
+    const term = search.trim().toLocaleLowerCase()
 
     const filtered = cars.filter((car) => {
       const names =
-        `${car.brand.name_ar} ${car.brand.name_en} ${car.model} ${car.year}`.toLocaleLowerCase();
+        `${car.brand.name_ar} ${car.brand.name_en} ${car.model} ${car.year}`.toLocaleLowerCase()
 
       return (
         (!term || names.includes(term)) &&
@@ -80,80 +78,76 @@ export function HomePage() {
         (!filters.type || car.car_type === filters.type) &&
         (!filters.fuel || car.fuel_type === filters.fuel) &&
         (!filters.transmission || car.transmission === filters.transmission)
-      );
-    });
+      )
+    })
 
     return [...filtered].sort((first, second) => {
-      if (filters.sort === "year") return second.year - first.year;
-      if (filters.sort === "mileage") return first.mileage - second.mileage;
+      if (filters.sort === "year") return second.year - first.year
+      if (filters.sort === "mileage") return first.mileage - second.mileage
 
       return (
         new Date(second.created_at).getTime() -
         new Date(first.created_at).getTime()
-      );
-    });
-  }, [cars, filters, search]);
+      )
+    })
+  }, [cars, filters, search])
 
   const hasFilters = Boolean(
     search.trim() ||
-    filters.brand ||
-    filters.type ||
-    filters.fuel ||
-    filters.transmission ||
-    filters.sort !== "newest",
-  );
+      filters.brand ||
+      filters.type ||
+      filters.fuel ||
+      filters.transmission ||
+      filters.sort !== "newest",
+  )
 
   const clearFilters = () => {
-    setSearch("");
-    setFilters(initialFilters);
-  };
+    setSearch("")
+    setFilters(initialFilters)
+  }
 
-  const showcaseSlides = slidersQuery.data ?? [];
-  const activeSlideId = currentSlideId ?? showcaseSlides[0]?.id ?? null;
+  const showcaseSlides = slidersQuery.data ?? []
+  const activeSlideId = currentSlideId ?? showcaseSlides[0]?.id ?? null
 
   const handleShowcaseScroll = (event: UIEvent<HTMLDivElement>) => {
-    const viewport = event.currentTarget.getBoundingClientRect();
-    const viewportCenter = viewport.left + viewport.width / 2;
+    const viewport = event.currentTarget.getBoundingClientRect()
+    const viewportCenter = viewport.left + viewport.width / 2
     const items =
-      event.currentTarget.querySelectorAll<HTMLElement>(".hero-slide");
+      event.currentTarget.querySelectorAll<HTMLElement>(".hero-slide")
 
-    let nearestId: number | null = null;
-    let nearestDistance = Number.POSITIVE_INFINITY;
+    let nearestId: number | null = null
+    let nearestDistance = Number.POSITIVE_INFINITY
 
     items.forEach((item) => {
-      const bounds = item.getBoundingClientRect();
-      const distance = Math.abs(
-        bounds.left + bounds.width / 2 - viewportCenter,
-      );
+      const bounds = item.getBoundingClientRect()
+      const distance = Math.abs(bounds.left + bounds.width / 2 - viewportCenter)
 
       if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestId = Number(item.dataset.slideId);
+        nearestDistance = distance
+        nearestId = Number(item.dataset.slideId)
       }
-    });
+    })
 
-    if (nearestId !== null) setCurrentSlideId(nearestId);
-  };
+    if (nearestId !== null) setCurrentSlideId(nearestId)
+  }
 
   const scrollToCars = (
     event: MouseEvent<HTMLAnchorElement>,
     slideId: number,
   ) => {
-    event.preventDefault();
-    setCurrentSlideId(slideId);
-
+    event.preventDefault()
+    setCurrentSlideId(slideId)
     document
       .getElementById("cars")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   const scrollToInventory = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-
+    event.preventDefault()
     document
       .getElementById("cars")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   return (
     <>
@@ -173,7 +167,6 @@ export function HomePage() {
               <span className="home-hero__title-accent">
                 {t("public.hero.titleAccent")}
               </span>
-
               <span>{t("public.hero.titleMiddle")}</span>
               <span>{t("public.hero.titleEnd")}</span>
             </h1>
@@ -198,9 +191,11 @@ export function HomePage() {
         >
           <div className="hero-slider__track">
             {showcaseSlides.map((slide, index) => {
-              const primaryTitle = slide.title_en;
-              const secondaryTitle = slide.title_ar;
-              const isActive = activeSlideId === slide.id;
+              const primaryTitle = slide.title_en
+              const secondaryTitle = slide.title_ar
+              const primaryLanguage = "en"
+              const secondaryLanguage = "ar"
+              const isActive = activeSlideId === slide.id
 
               return (
                 <a
@@ -220,7 +215,7 @@ export function HomePage() {
                   <span className="hero-slide__figure" aria-hidden="true">
                     <ShowcaseCarImage
                       src={getAssetUrl(slide.image)}
-                      loading={index < 3 ? "eager" : "lazy"}
+                      loading="eager"
                     />
                   </span>
 
@@ -231,14 +226,18 @@ export function HomePage() {
                       {String(index + 1)}
                     </small>
 
-                    <strong className="hero-slide__title" lang="en" dir="ltr">
+                    <strong
+                      className="hero-slide__title"
+                      lang={primaryLanguage}
+                      dir="ltr"
+                    >
                       {primaryTitle}
                     </strong>
 
                     {secondaryTitle && (
                       <span
                         className="hero-slide__subtitle"
-                        lang="ar"
+                        lang={secondaryLanguage}
                         dir="rtl"
                       >
                         {secondaryTitle}
@@ -246,7 +245,7 @@ export function HomePage() {
                     )}
                   </span>
                 </a>
-              );
+              )
             })}
           </div>
         </div>
@@ -270,7 +269,6 @@ export function HomePage() {
           <div className="cars-toolbar">
             <label className="cars-search">
               <SiteIcon name="search" />
-
               <input
                 type="search"
                 value={search}
@@ -309,9 +307,7 @@ export function HomePage() {
                   aria-label={t("public.cars.sort")}
                 >
                   <option value="newest">{t("public.cars.newest")}</option>
-
                   <option value="year">{t("public.cars.yearNewest")}</option>
-
                   <option value="mileage">
                     {t("public.cars.mileageLowest")}
                   </option>
@@ -347,13 +343,12 @@ export function HomePage() {
           ) : carsQuery.isError || brandsQuery.isError ? (
             <CarsState>
               <h3>{t("public.cars.errorTitle")}</h3>
-
               <button
                 className="site-button site-button--dark"
                 type="button"
                 onClick={() => {
-                  void carsQuery.refetch();
-                  void brandsQuery.refetch();
+                  void carsQuery.refetch()
+                  void brandsQuery.refetch()
                 }}
               >
                 {t("public.actions.retry")}
@@ -369,7 +364,6 @@ export function HomePage() {
             <CarsState>
               <h3>{t("public.cars.emptyTitle")}</h3>
               <p>{t("public.cars.emptyDescription")}</p>
-
               <button
                 className="site-button site-button--dark"
                 type="button"
@@ -404,125 +398,96 @@ export function HomePage() {
         )}
       </FilterSheet>
     </>
-  );
+  )
 }
 
 function ShowcaseCarImage({
   src,
   loading,
 }: {
-  src: string;
-  loading: "eager" | "lazy";
+  src: string
+  loading: "eager" | "lazy"
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [renderMode, setRenderMode] = useState<"loading" | "canvas" | "image">(
     "loading",
-  );
+  )
 
-  const prepareImage = (event: SyntheticEvent<HTMLImageElement>) => {
-    const image = event.currentTarget;
-    const canvas = canvasRef.current;
-
-    if (!canvas || !image.naturalWidth || !image.naturalHeight) return;
+  const trimTransparentPadding = (event: SyntheticEvent<HTMLImageElement>) => {
+    const image = event.currentTarget
+    const canvas = canvasRef.current
+    if (!canvas || !image.naturalWidth || !image.naturalHeight) return
 
     try {
-      const scanCanvas = document.createElement("canvas");
-
+      const scanCanvas = document.createElement("canvas")
       const scanScale = Math.min(
         1,
         360 / Math.max(image.naturalWidth, image.naturalHeight),
-      );
-
-      scanCanvas.width = Math.max(
-        1,
-        Math.round(image.naturalWidth * scanScale),
-      );
-
+      )
+      scanCanvas.width = Math.max(1, Math.round(image.naturalWidth * scanScale))
       scanCanvas.height = Math.max(
         1,
         Math.round(image.naturalHeight * scanScale),
-      );
+      )
 
-      const scanContext = scanCanvas.getContext("2d", {
-        willReadFrequently: true,
-      });
+      const context = scanCanvas.getContext("2d", { willReadFrequently: true })
+      if (!context) throw new Error("Canvas is unavailable")
 
-      if (!scanContext) throw new Error("Canvas is unavailable");
-
-      scanContext.drawImage(image, 0, 0, scanCanvas.width, scanCanvas.height);
-
-      const pixels = scanContext.getImageData(
+      context.drawImage(image, 0, 0, scanCanvas.width, scanCanvas.height)
+      const pixels = context.getImageData(
         0,
         0,
         scanCanvas.width,
         scanCanvas.height,
-      ).data;
-
-      let minX = scanCanvas.width;
-      let minY = scanCanvas.height;
-      let maxX = -1;
-      let maxY = -1;
+      ).data
+      let minX = scanCanvas.width
+      let minY = scanCanvas.height
+      let maxX = -1
+      let maxY = -1
 
       for (let y = 0; y < scanCanvas.height; y += 1) {
         for (let x = 0; x < scanCanvas.width; x += 1) {
-          if (pixels[(y * scanCanvas.width + x) * 4 + 3] < 32) continue;
-
-          minX = Math.min(minX, x);
-          minY = Math.min(minY, y);
-          maxX = Math.max(maxX, x);
-          maxY = Math.max(maxY, y);
+          if (pixels[(y * scanCanvas.width + x) * 4 + 3] < 16) continue
+          minX = Math.min(minX, x)
+          minY = Math.min(minY, y)
+          maxX = Math.max(maxX, x)
+          maxY = Math.max(maxY, y)
         }
       }
 
-      if (maxX < minX || maxY < minY) {
-        throw new Error("Image has no visible pixels");
-      }
+      if (maxX < minX || maxY < minY) throw new Error("No visible subject")
 
-      const sourceX = Math.max(0, Math.floor(minX / scanScale));
-
-      const sourceY = Math.max(0, Math.floor(minY / scanScale));
-
+      const sourceX = Math.max(0, Math.floor(minX / scanScale))
+      const sourceY = Math.max(0, Math.floor(minY / scanScale))
       const sourceRight = Math.min(
         image.naturalWidth,
         Math.ceil((maxX + 1) / scanScale),
-      );
-
+      )
       const sourceBottom = Math.min(
         image.naturalHeight,
         Math.ceil((maxY + 1) / scanScale),
-      );
+      )
+      canvas.width = sourceRight - sourceX
+      canvas.height = sourceBottom - sourceY
 
-      const sourceWidth = sourceRight - sourceX;
-      const sourceHeight = sourceBottom - sourceY;
-
-      const outputScale = Math.min(1, 720 / sourceWidth);
-
-      canvas.width = Math.max(1, Math.round(sourceWidth * outputScale));
-
-      canvas.height = Math.max(1, Math.round(sourceHeight * outputScale));
-
-      const outputContext = canvas.getContext("2d");
-
-      if (!outputContext) throw new Error("Canvas is unavailable");
-
-      outputContext.drawImage(
+      const output = canvas.getContext("2d")
+      if (!output) throw new Error("Canvas is unavailable")
+      output.drawImage(
         image,
         sourceX,
         sourceY,
-        sourceWidth,
-        sourceHeight,
+        canvas.width,
+        canvas.height,
         0,
         0,
         canvas.width,
         canvas.height,
-      );
-
-      setRenderMode("canvas");
+      )
+      setRenderMode("canvas")
     } catch {
-      setRenderMode("image");
+      setRenderMode("image")
     }
-  };
+  }
 
   return (
     <span className={`hero-slide__asset is-${renderMode}`}>
@@ -531,13 +496,12 @@ function ShowcaseCarImage({
         alt=""
         crossOrigin="anonymous"
         loading={loading}
-        onLoad={prepareImage}
+        onLoad={trimTransparentPadding}
         onError={() => setRenderMode("image")}
       />
-
       <canvas ref={canvasRef} />
     </span>
-  );
+  )
 }
 
 function CarFilters({
@@ -547,16 +511,16 @@ function CarFilters({
   fuels,
   includeSort = true,
 }: {
-  filters: Filters;
-  setFilters: (value: Filters) => void;
-  brands: PublicBrand[];
-  fuels: string[];
-  includeSort?: boolean;
+  filters: Filters
+  setFilters: (value: Filters) => void
+  brands: PublicBrand[]
+  fuels: string[]
+  includeSort?: boolean
 }) {
-  const { t, language } = useI18n();
+  const { t, language } = useI18n()
 
   const field = <K extends keyof Filters>(key: K, value: Filters[K]) =>
-    setFilters({ ...filters, [key]: value });
+    setFilters({ ...filters, [key]: value })
 
   return (
     <>
@@ -583,9 +547,7 @@ function CarFilters({
           }
         >
           <option value="">{t("public.cars.type")}</option>
-
           <option value="normal">{t("public.cars.normal")}</option>
-
           <option value="hybrid">{t("public.cars.hybrid")}</option>
         </select>
       </Filter>
@@ -613,13 +575,10 @@ function CarFilters({
           }
         >
           <option value="">{t("public.cars.transmission")}</option>
-
           <option value="automatic">
             {t("public.transmissions.automatic")}
           </option>
-
           <option value="manual">{t("public.transmissions.manual")}</option>
-
           <option value="cvt">{t("public.transmissions.cvt")}</option>
         </select>
       </Filter>
@@ -633,15 +592,13 @@ function CarFilters({
             }
           >
             <option value="newest">{t("public.cars.newest")}</option>
-
             <option value="year">{t("public.cars.yearNewest")}</option>
-
             <option value="mileage">{t("public.cars.mileageLowest")}</option>
           </select>
         </Filter>
       )}
     </>
-  );
+  )
 }
 
 function Filter({ label, children }: { label: string; children: ReactNode }) {
@@ -650,9 +607,9 @@ function Filter({ label, children }: { label: string; children: ReactNode }) {
       <span>{label}</span>
       {children}
     </label>
-  );
+  )
 }
 
 function CarsState({ children }: { children: ReactNode }) {
-  return <div className="cars-state">{children}</div>;
+  return <div className="cars-state">{children}</div>
 }

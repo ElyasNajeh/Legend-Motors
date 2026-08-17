@@ -1,15 +1,13 @@
-from pathlib import Path
-import shutil
-from uuid import uuid4
-
 from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.features.sliders.model import Slider
 from app.features.sliders.schema import SliderCreate, SliderUpdate
 from app.shared import crud
-
-UPLOAD_DIR = Path("/app/uploads/sliders")
+from app.shared.images import (
+    delete_uploaded_image,
+    optimize_slider_upload,
+)
 
 
 def create_slider(db: Session, slider_data: SliderCreate):
@@ -121,16 +119,20 @@ def update_slider(
             detail="Display order already exists",
         )
 
-    return crud.update_by_id(
+    old_image = slider.image
+    updated_slider = crud.update_by_id(
         db,
         Slider,
         slider_id,
         slider_data.model_dump(),
     )
+    if old_image != updated_slider.image:
+        delete_uploaded_image(old_image, "sliders")
+    return updated_slider
 
 
 def delete_slider(db: Session, slider_id: int):
-    slider = crud.delete_by_id(db, Slider, slider_id)
+    slider = crud.get_by_id(db, Slider, slider_id)
 
     if not slider:
         raise HTTPException(
@@ -138,7 +140,10 @@ def delete_slider(db: Session, slider_id: int):
             detail="Slider not found",
         )
 
-    return slider
+    image = slider.image
+    deleted_slider = crud.delete_by_id(db, Slider, slider_id)
+    delete_uploaded_image(image, "sliders")
+    return deleted_slider
 
 
 def toggle_slider_status(db: Session, slider_id: int):
@@ -159,20 +164,8 @@ def toggle_slider_status(db: Session, slider_id: int):
 
 
 def upload_image(file: UploadFile):
-    UPLOAD_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    extension = Path(file.filename).suffix.lower()
-
-    filename = f"{uuid4()}{extension}"
-
-    file_path = UPLOAD_DIR / filename
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
+    filename = optimize_slider_upload(file)
     return {
         "filename": filename,
+        "path": f"/uploads/sliders/{filename}",
     }

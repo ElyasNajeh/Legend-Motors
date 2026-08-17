@@ -362,6 +362,9 @@ html[data-theme="dark"] .stat-card small,html[data-theme="dark"] .stat-card stro
 .filters.filters--sliders{grid-template-columns:minmax(230px,1fr) 160px}
 .product-table.slider-table{grid-template-columns:minmax(300px,1.4fr) 80px 130px 100px 120px}
 .slider-cell img{width:96px;height:54px}
+.slider-image-upload .image-upload{grid-template-columns:minmax(220px,320px) 1fr}
+.slider-image-upload .image-upload__preview{height:auto;aspect-ratio:16/9;background-color:#e9dfd4;background-image:linear-gradient(45deg,rgba(255,255,255,.42) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.42) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.42) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.42) 75%);background-position:0 0,0 8px,8px -8px,-8px 0;background-size:16px 16px}
+.slider-image-upload .image-upload__preview img{object-fit:contain;object-position:center bottom}
 .slider-order-field{max-width:250px}
 .slider-order-field small{color:var(--muted);font-weight:500}
 .slider-order-field input{width:100%;height:43px;padding:0 11px;border:1px solid #d8e1ed;border-radius:9px;color:#172033;background:#fff;outline:none}
@@ -378,6 +381,7 @@ html[data-theme="dark"] .slider-order-field input{color:#e8eef7;border-color:#34
   .slider-table>span:nth-child(2)::before{content:"Order: ";margin-inline-end:4px;color:var(--muted)}
   .slider-table>span:nth-child(3)::before{content:"Created: ";margin-inline-end:4px;color:var(--muted)}
   .slider-cell img{width:82px;height:50px}
+  .slider-image-upload .image-upload{grid-template-columns:1fr}
 }
 
 @media(max-width:600px){

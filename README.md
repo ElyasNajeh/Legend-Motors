@@ -109,6 +109,18 @@ Run in detached mode:
 docker compose up --build -d
 ```
 
+To preview optimization of existing database-backed car and slider images:
+
+```bash
+docker compose exec api python -m app.scripts.optimize_existing_images
+```
+
+Review the dry-run output, then apply it safely with:
+
+```bash
+docker compose exec api python -m app.scripts.optimize_existing_images --apply
+```
+
 Stop the project:
 
 ```bash

@@ -6,6 +6,11 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+ENV U2NET_HOME=/app/models
+
+# Bundle the background-removal model so uploads never depend on runtime downloads.
+RUN python -c "from rembg import new_session; new_session('u2net')"
+
 COPY . .
 
 EXPOSE 8000

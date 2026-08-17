@@ -20,8 +20,7 @@ export function useSliders() {
     queryFn: SlidersApi.list,
     select: (sliders) =>
       [...sliders].sort(
-        (first, second) =>
-          first.display_order - second.display_order,
+        (first, second) => first.display_order - second.display_order,
       ),
   })
 
@@ -53,10 +52,7 @@ export function useSliders() {
             : "admin.feedback.sliders.created",
         ),
         t("admin.feedback.sliders.saved", {
-          name:
-            language === "ar"
-              ? payload.title_ar
-              : payload.title_en,
+          name: language === "ar" ? payload.title_ar : payload.title_en,
         }),
       )
 
@@ -70,10 +66,7 @@ export function useSliders() {
       toast.success(
         t("admin.feedback.sliders.deleted"),
         t("admin.feedback.sliders.removed", {
-          name:
-            language === "ar"
-              ? slider.title_ar
-              : slider.title_en,
+          name: language === "ar" ? slider.title_ar : slider.title_en,
         }),
       )
 
@@ -111,8 +104,7 @@ export function useSliders() {
         slider.title_ar.toLocaleLowerCase().includes(term)
 
       const matchesStatus =
-        !statusFilter ||
-        slider.is_active === (statusFilter === "true")
+        !statusFilter || slider.is_active === (statusFilter === "true")
 
       return matchesSearch && matchesStatus
     })
@@ -125,11 +117,14 @@ export function useSliders() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   )
+  const nextDisplayOrder = slidersQuery.data
+    ? slidersQuery.data.reduce(
+        (highestOrder, slider) => Math.max(highestOrder, slider.display_order),
+        0,
+      ) + 1
+    : null
 
-  function updateFilter(
-    setter: (value: string) => void,
-    value: string,
-  ) {
+  function updateFilter(setter: (value: string) => void, value: string) {
     setter(value)
     setPage(1)
   }
@@ -150,10 +145,7 @@ export function useSliders() {
     const confirmed = await confirm({
       title: t("admin.feedback.sliders.deleteTitle"),
       message: t("admin.feedback.sliders.deleteMessage", {
-        name:
-          language === "ar"
-            ? slider.title_ar
-            : slider.title_en,
+        name: language === "ar" ? slider.title_ar : slider.title_en,
       }),
       confirmLabel: t("admin.feedback.sliders.deleteConfirm"),
       variant: "danger",
@@ -209,8 +201,8 @@ export function useSliders() {
     page: currentPage,
     totalPages,
     totalItems,
-    setSearch: (value: string) =>
-      updateFilter(setSearchValue, value),
+    nextDisplayOrder,
+    setSearch: (value: string) => updateFilter(setSearchValue, value),
     setStatusFilter: (value: string) =>
       updateFilter(setStatusFilterValue, value),
     setPage,

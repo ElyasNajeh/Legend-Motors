@@ -23,7 +23,11 @@ export function SlidersPage() {
         icon="sliders"
         title={t("admin.sliders")}
         description={t("admin.pages.slidersDescription")}
-        actions={<button className="button" onClick={() => setEditingSlider(null)}>+ {t("admin.pages.addSlider")}</button>}
+        actions={
+          <button className="button" onClick={() => setEditingSlider(null)}>
+            + {t("admin.pages.addSlider")}
+          </button>
+        }
       />
 
       <SliderFilters
@@ -48,6 +52,7 @@ export function SlidersPage() {
         <SliderFormDialog
           key={editingSlider?.id ?? "new"}
           slider={editingSlider}
+          nextDisplayOrder={sliders.nextDisplayOrder}
           onClose={() => setEditingSlider(undefined)}
           onSave={sliders.saveSlider}
         />

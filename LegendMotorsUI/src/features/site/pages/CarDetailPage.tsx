@@ -23,7 +23,6 @@ export function CarDetailPage() {
 
   const swipeStartX = useRef<number | null>(null);
   const thumbnailViewportRef = useRef<HTMLDivElement | null>(null);
-  const headingRef = useRef<HTMLHeadingElement | null>(null);
 
   const carQuery = useQuery({
     queryKey: ["public", "car", id],
@@ -33,7 +32,6 @@ export function CarDetailPage() {
 
   const car = carQuery.data;
   const imageCount = car?.images.length ?? 0;
-  const loadedCarId = car?.id;
   const browserTitle = car
     ? `${language === "ar" ? car.brand.name_ar : car.brand.name_en} ${car.model} ${car.year} | ${t("public.brandName")}`
     : null;
@@ -50,16 +48,6 @@ export function CarDetailPage() {
 
     return () => window.cancelAnimationFrame(frame);
   }, [id]);
-
-  useEffect(() => {
-    if (!loadedCarId) return;
-
-    const frame = window.requestAnimationFrame(() => {
-      headingRef.current?.focus({ preventScroll: true });
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [loadedCarId]);
 
   useEffect(() => {
     if (!browserTitle) return;
@@ -356,6 +344,13 @@ export function CarDetailPage() {
               </div>
             )}
 
+            {car.is_featured && (
+              <span className="car-card__featured">
+                <span>{t("public.cars.featured")}</span>
+                <SiteIcon name="sparkle" />
+              </span>
+            )}
+
             {car.images.length > 1 && (
               <div className="car-gallery__count">
                 {formatNumber(safeActiveImage + 1)}
@@ -435,7 +430,7 @@ export function CarDetailPage() {
           <div className="car-detail__identity">
             <span className="car-detail__brand">{brand}</span>
 
-            <h1 ref={headingRef} tabIndex={-1}>
+            <h1>
               <bdi dir="auto">
                 {car.model} {car.year}
               </bdi>
@@ -579,18 +574,6 @@ export function CarDetailPage() {
           description={t("public.detail.trustSupportText")}
         />
       </section>
-
-      <div className="car-detail__mobile-contact">
-        <a
-          className="public-whatsapp"
-          href={whatsAppUrl}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SiteIcon name="whatsapp" size={22} />
-          {t("public.detail.mobileWhatsapp")}
-        </a>
-      </div>
 
       {/* FULLSCREEN IMAGE VIEWER */}
       {lightboxOpen && image && (

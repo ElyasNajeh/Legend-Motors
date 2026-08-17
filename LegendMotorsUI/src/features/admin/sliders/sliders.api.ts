@@ -39,12 +39,12 @@ export const SlidersApi = {
     const body = new FormData()
     body.append("file", file)
 
-    const result = await adminRequest<{ filename: string }>({
+    const result = await adminRequest<{ filename: string; path: string }>({
       url: "/sliders/upload-image",
       method: "POST",
       data: body,
     })
 
-    return `/uploads/sliders/${result.filename}`
+    return result.path ?? `/uploads/sliders/${result.filename}`
   },
 }

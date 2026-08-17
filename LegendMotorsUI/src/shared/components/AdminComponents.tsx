@@ -82,10 +82,7 @@ export function LoadableContent(props: LoadableContentProps) {
         <p>{props.error}</p>
 
         {props.onRetry && (
-          <button
-            className="button button--secondary"
-            onClick={props.onRetry}
-          >
+          <button className="button button--secondary" onClick={props.onRetry}>
             {t("admin.common.tryAgain")}
           </button>
         )}
@@ -130,9 +127,7 @@ export function Pagination({
     (_, index) => index + 1,
   ).filter(
     (value) =>
-      value === 1 ||
-      value === totalPages ||
-      Math.abs(value - page) <= 1,
+      value === 1 || value === totalPages || Math.abs(value - page) <= 1,
   )
 
   return (
@@ -141,10 +136,7 @@ export function Pagination({
         {formatNumber(totalItems)} {t("common.items")}
       </span>
 
-      <button
-        disabled={page === 1}
-        onClick={() => onChange(page - 1)}
-      >
+      <button disabled={page === 1} onClick={() => onChange(page - 1)}>
         {t("admin.common.previous")}
       </button>
 
@@ -171,10 +163,7 @@ export function Pagination({
         })}
       </strong>
 
-      <button
-        disabled={page === totalPages}
-        onClick={() => onChange(page + 1)}
-      >
+      <button disabled={page === totalPages} onClick={() => onChange(page + 1)}>
         {t("admin.common.next")}
       </button>
     </nav>
@@ -186,11 +175,17 @@ export function ImageUpload({
   onChange,
   upload,
   disabled,
+  busyLabel,
+  helpText,
+  onBusyChange,
 }: {
   value: string
   onChange: (url: string) => void
   upload: (file: File) => Promise<string>
   disabled?: boolean
+  busyLabel?: string
+  helpText?: string
+  onBusyChange?: (busy: boolean) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -206,6 +201,7 @@ export function ImageUpload({
 
     setError("")
     setUploading(true)
+    onBusyChange?.(true)
 
     try {
       onChange(await upload(file))
@@ -219,6 +215,7 @@ export function ImageUpload({
       )
     } finally {
       setUploading(false)
+      onBusyChange?.(false)
       event.target.value = ""
     }
   }
@@ -227,10 +224,7 @@ export function ImageUpload({
     <div className="image-upload">
       <div className="image-upload__preview">
         {value ? (
-          <img
-            src={getAssetUrl(value)}
-            alt={t("admin.common.uploadPreview")}
-          />
+          <img src={getAssetUrl(value)} alt={t("admin.common.uploadPreview")} />
         ) : (
           <span>{t("admin.common.imagePreview")}</span>
         )}
@@ -252,13 +246,13 @@ export function ImageUpload({
           onClick={() => inputRef.current?.click()}
         >
           {uploading
-            ? t("admin.common.uploading")
+            ? (busyLabel ?? t("admin.common.uploading"))
             : value
               ? t("admin.common.replaceImage")
               : t("admin.common.chooseImage")}
         </button>
 
-        <small>{t("admin.common.imageHelp")}</small>
+        <small>{helpText ?? t("admin.common.imageHelp")}</small>
 
         {error && <p className="field-error">{error}</p>}
       </div>

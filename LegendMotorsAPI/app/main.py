@@ -1,3 +1,4 @@
+import mimetypes
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -20,6 +21,9 @@ app = FastAPI(title=settings.APP_NAME)
 @app.middleware("http")
 async def disable_caching(request: Request, call_next):
     response = await call_next(request)
+    if request.url.path.startswith("/uploads/") and response.status_code == 200:
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
     response.headers["Cache-Control"] = "no-store, no-cache, max-age=0, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
@@ -29,6 +33,10 @@ async def disable_caching(request: Request, call_next):
 # Uploads
 UPLOAD_DIR = Path("/app/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+# Minimal container images do not always ship a MIME database that knows WebP.
+# StaticFiles relies on mimetypes, so register it explicitly for browser images.
+mimetypes.add_type("image/webp", ".webp")
 
 app.mount(
     "/uploads",
