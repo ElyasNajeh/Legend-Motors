@@ -55,7 +55,6 @@ services:
 
     volumes:
       - uploads_data:/app/uploads
-      - ./LegendMotorsUI/src/assets/site_assets:/app/seed_assets:ro
 
 
   ui:

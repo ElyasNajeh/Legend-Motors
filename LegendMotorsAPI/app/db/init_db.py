@@ -7,8 +7,7 @@ from app.db.migrations import (
     migrate_car_image_primary,
     migrate_car_transmission,
 )
-from app.db.session import SessionLocal, engine
-from app.db.seeder import DatabaseSeeder
+from app.db.session import engine
 
 # Import all models so SQLAlchemy registers them in Base.metadata
 from app.features.admins.model import Admin
@@ -50,24 +49,9 @@ def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
-def seed_initial_data():
-    db = SessionLocal()
-
-    try:
-        seeder = DatabaseSeeder(db)
-        seeder.seed_admin()
-        seeder.seed_showroom_data()
-    except Exception:
-        db.rollback()
-        raise
-    finally:
-        db.close()
-
-
 def init_db():
     create_database_if_not_exists()
     migrate_car_common_fields(engine)
     migrate_car_transmission(engine)
     migrate_car_image_primary(engine)
     create_tables()
-    seed_initial_data()
