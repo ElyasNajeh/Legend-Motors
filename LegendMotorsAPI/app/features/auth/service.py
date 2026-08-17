@@ -44,11 +44,20 @@ def login(
     )
 
     response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+
+    response.set_cookie(
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False,
-        samesite="strict",
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
     )
 
@@ -63,6 +72,7 @@ def login(
 
 def refresh_access_token(
     request: Request,
+    response: Response,
 ):
     refresh_token = request.cookies.get("refresh_token")
 
@@ -89,6 +99,15 @@ def refresh_access_token(
         token_type="access",
     )
 
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+
     return {
         "message": "Access token refreshed",
         "access_token": new_access_token,
@@ -98,17 +117,16 @@ def refresh_access_token(
 
 
 def logout(response: Response):
-    # Remove the old access-token cookie for clients upgrading from the previous flow.
     response.delete_cookie(
         key="access_token",
-        samesite="strict",
-        secure=False,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
     )
 
     response.delete_cookie(
         key="refresh_token",
-        samesite="strict",
-        secure=False,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
     )
 
     return {

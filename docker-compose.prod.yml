@@ -1,0 +1,80 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: legend-motors-postgres
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  adminer:
+    image: adminer:latest
+    container_name: legend-motors-adminer
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "127.0.0.1:8081:8080"
+
+
+  api:
+    build:
+      context: ./LegendMotorsAPI
+
+    container_name: legend-motors-api
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "127.0.0.1:8001:8000"
+
+    volumes:
+      - uploads_data:/app/uploads
+      - ./LegendMotorsUI/src/assets/site_assets:/app/seed_assets:ro
+
+
+  ui:
+    build:
+      context: ./LegendMotorsUI
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+
+    container_name: legend-motors-ui
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:5174:80"
+
+    depends_on:
+      - api
+
+
+volumes:
+  postgres_data:
+  uploads_data:
