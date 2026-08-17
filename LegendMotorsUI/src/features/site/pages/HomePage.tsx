@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -6,25 +7,25 @@ import {
   type ReactNode,
   type SyntheticEvent,
   type UIEvent,
-} from "react"
-import { useQuery } from "@/shared/query/remoteData"
-import heroOne from "@/assets/site_assets/hero_1.webp"
-import heroTwo from "@/assets/site_assets/hero_2.webp"
-import { useI18n } from "@/localization/useI18n"
-import { getAssetUrl } from "@/shared/api/assets"
-import { CarCard } from "../components/CarCard"
-import { FilterSheet } from "../components/FilterSheet"
-import { SiteIcon } from "../components/SiteIcon"
-import { SiteApi } from "../shared/site.api"
-import type { CarType, PublicBrand, Transmission } from "../shared/site.types"
+} from "react";
+import { useQuery } from "@/shared/query/remoteData";
+import heroOne from "@/assets/site_assets/hero_1.webp";
+import heroTwo from "@/assets/site_assets/hero_2.webp";
+import { useI18n } from "@/localization/useI18n";
+import { getAssetUrl } from "@/shared/api/assets";
+import { CarCard } from "../components/CarCard";
+import { FilterSheet } from "../components/FilterSheet";
+import { SiteIcon } from "../components/SiteIcon";
+import { SiteApi } from "../shared/site.api";
+import type { CarType, PublicBrand, Transmission } from "../shared/site.types";
 
 type Filters = {
-  brand: string
-  type: "" | CarType
-  fuel: string
-  transmission: "" | Transmission
-  sort: "newest" | "year" | "mileage"
-}
+  brand: string;
+  type: "" | CarType;
+  fuel: string;
+  transmission: "" | Transmission;
+  sort: "newest" | "year" | "mileage";
+};
 
 const initialFilters: Filters = {
   brand: "",
@@ -32,30 +33,33 @@ const initialFilters: Filters = {
   fuel: "",
   transmission: "",
   sort: "newest",
-}
+};
 
 export function HomePage() {
-  const { t, formatNumber } = useI18n()
-  const [search, setSearch] = useState("")
-  const [filters, setFilters] = useState<Filters>(initialFilters)
-  const [filtersOpen, setFiltersOpen] = useState(false)
-  const [currentSlideId, setCurrentSlideId] = useState<number | null>(null)
+  const { t, formatNumber } = useI18n();
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [currentSlideId, setCurrentSlideId] = useState<number | null>(null);
+  const sliderViewportRef = useRef<HTMLDivElement | null>(null);
+  const currentSlideIdRef = useRef<number | null>(null);
+  const autoplayPauseUntilRef = useRef(0);
 
   const carsQuery = useQuery({
     queryKey: ["public", "cars"],
     queryFn: SiteApi.cars,
-  })
+  });
   const brandsQuery = useQuery({
     queryKey: ["public", "brands"],
     queryFn: SiteApi.brands,
-  })
+  });
   const slidersQuery = useQuery({
     queryKey: ["public", "sliders"],
     queryFn: SiteApi.sliders,
-  })
+  });
 
-  const cars = useMemo(() => carsQuery.data ?? [], [carsQuery.data])
-  const brands = brandsQuery.data ?? []
+  const cars = useMemo(() => carsQuery.data ?? [], [carsQuery.data]);
+  const brands = brandsQuery.data ?? [];
 
   const fuels = useMemo(
     () =>
@@ -63,14 +67,14 @@ export function HomePage() {
         new Set(cars.map((car) => car.fuel_type).filter(Boolean)),
       ).sort(),
     [cars],
-  )
+  );
 
   const visibleCars = useMemo(() => {
-    const term = search.trim().toLocaleLowerCase()
+    const term = search.trim().toLocaleLowerCase();
 
     const filtered = cars.filter((car) => {
       const names =
-        `${car.brand.name_ar} ${car.brand.name_en} ${car.model} ${car.year}`.toLocaleLowerCase()
+        `${car.brand.name_ar} ${car.brand.name_en} ${car.model} ${car.year}`.toLocaleLowerCase();
 
       return (
         (!term || names.includes(term)) &&
@@ -78,76 +82,140 @@ export function HomePage() {
         (!filters.type || car.car_type === filters.type) &&
         (!filters.fuel || car.fuel_type === filters.fuel) &&
         (!filters.transmission || car.transmission === filters.transmission)
-      )
-    })
+      );
+    });
 
     return [...filtered].sort((first, second) => {
-      if (filters.sort === "year") return second.year - first.year
-      if (filters.sort === "mileage") return first.mileage - second.mileage
+      if (filters.sort === "year") return second.year - first.year;
+      if (filters.sort === "mileage") return first.mileage - second.mileage;
 
       return (
         new Date(second.created_at).getTime() -
         new Date(first.created_at).getTime()
-      )
-    })
-  }, [cars, filters, search])
+      );
+    });
+  }, [cars, filters, search]);
 
   const hasFilters = Boolean(
     search.trim() ||
-      filters.brand ||
-      filters.type ||
-      filters.fuel ||
-      filters.transmission ||
-      filters.sort !== "newest",
-  )
+    filters.brand ||
+    filters.type ||
+    filters.fuel ||
+    filters.transmission ||
+    filters.sort !== "newest",
+  );
 
   const clearFilters = () => {
-    setSearch("")
-    setFilters(initialFilters)
-  }
+    setSearch("");
+    setFilters(initialFilters);
+  };
 
-  const showcaseSlides = slidersQuery.data ?? []
-  const activeSlideId = currentSlideId ?? showcaseSlides[0]?.id ?? null
+  const showcaseSlides = useMemo(
+    () => slidersQuery.data ?? [],
+    [slidersQuery.data],
+  );
+  const activeSlideId = currentSlideId ?? showcaseSlides[0]?.id ?? null;
+
+  const setActiveShowcaseSlide = (slideId: number) => {
+    currentSlideIdRef.current = slideId;
+    setCurrentSlideId(slideId);
+  };
+
+  const pauseShowcaseAutoplay = () => {
+    autoplayPauseUntilRef.current = Date.now() + 3000;
+  };
+
+  useEffect(() => {
+    const viewport = sliderViewportRef.current;
+
+    if (!viewport || showcaseSlides.length <= 1) return;
+
+    const mobileQuery = window.matchMedia("(max-width: 720px)");
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    const interval = window.setInterval(() => {
+      const bounds = viewport.getBoundingClientRect();
+      const sliderIsVisible =
+        bounds.bottom > 0 && bounds.top < window.innerHeight;
+
+      if (
+        !mobileQuery.matches ||
+        reducedMotionQuery.matches ||
+        document.hidden ||
+        !sliderIsVisible ||
+        Date.now() < autoplayPauseUntilRef.current
+      ) {
+        return;
+      }
+
+      const items = Array.from(
+        viewport.querySelectorAll<HTMLElement>(".hero-slide"),
+      );
+      const currentId =
+        currentSlideIdRef.current ?? showcaseSlides[0]?.id ?? null;
+      const currentIndex = showcaseSlides.findIndex(
+        (slide) => slide.id === currentId,
+      );
+      const nextIndex = (Math.max(currentIndex, 0) + 1) % showcaseSlides.length;
+      const nextSlide = showcaseSlides[nextIndex];
+      const nextItem = items[nextIndex];
+
+      if (!nextSlide || !nextItem) return;
+
+      setActiveShowcaseSlide(nextSlide.id);
+      nextItem.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }, 1500);
+
+    return () => window.clearInterval(interval);
+  }, [showcaseSlides]);
 
   const handleShowcaseScroll = (event: UIEvent<HTMLDivElement>) => {
-    const viewport = event.currentTarget.getBoundingClientRect()
-    const viewportCenter = viewport.left + viewport.width / 2
+    const viewport = event.currentTarget.getBoundingClientRect();
+    const viewportCenter = viewport.left + viewport.width / 2;
     const items =
-      event.currentTarget.querySelectorAll<HTMLElement>(".hero-slide")
+      event.currentTarget.querySelectorAll<HTMLElement>(".hero-slide");
 
-    let nearestId: number | null = null
-    let nearestDistance = Number.POSITIVE_INFINITY
+    let nearestId: number | null = null;
+    let nearestDistance = Number.POSITIVE_INFINITY;
 
     items.forEach((item) => {
-      const bounds = item.getBoundingClientRect()
-      const distance = Math.abs(bounds.left + bounds.width / 2 - viewportCenter)
+      const bounds = item.getBoundingClientRect();
+      const distance = Math.abs(
+        bounds.left + bounds.width / 2 - viewportCenter,
+      );
 
       if (distance < nearestDistance) {
-        nearestDistance = distance
-        nearestId = Number(item.dataset.slideId)
+        nearestDistance = distance;
+        nearestId = Number(item.dataset.slideId);
       }
-    })
+    });
 
-    if (nearestId !== null) setCurrentSlideId(nearestId)
-  }
+    if (nearestId !== null) setActiveShowcaseSlide(nearestId);
+  };
 
   const scrollToCars = (
     event: MouseEvent<HTMLAnchorElement>,
     slideId: number,
   ) => {
-    event.preventDefault()
-    setCurrentSlideId(slideId)
+    event.preventDefault();
+    setActiveShowcaseSlide(slideId);
     document
       .getElementById("cars")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const scrollToInventory = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
+    event.preventDefault();
     document
       .getElementById("cars")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <>
@@ -186,16 +254,20 @@ export function HomePage() {
 
         <div
           className="hero-slider has-active"
+          ref={sliderViewportRef}
           aria-label={t("public.hero.slidesLabel")}
           onScroll={handleShowcaseScroll}
+          onPointerDown={pauseShowcaseAutoplay}
+          onWheel={pauseShowcaseAutoplay}
+          onFocusCapture={pauseShowcaseAutoplay}
         >
           <div className="hero-slider__track">
             {showcaseSlides.map((slide, index) => {
-              const primaryTitle = slide.title_en
-              const secondaryTitle = slide.title_ar
-              const primaryLanguage = "en"
-              const secondaryLanguage = "ar"
-              const isActive = activeSlideId === slide.id
+              const primaryTitle = slide.title_en;
+              const secondaryTitle = slide.title_ar;
+              const primaryLanguage = "en";
+              const secondaryLanguage = "ar";
+              const isActive = activeSlideId === slide.id;
 
               return (
                 <a
@@ -209,7 +281,7 @@ export function HomePage() {
                     .filter(Boolean)
                     .join(" — ")}
                   aria-current={isActive ? "true" : undefined}
-                  onFocus={() => setCurrentSlideId(slide.id)}
+                  onFocus={() => setActiveShowcaseSlide(slide.id)}
                   onClick={(event) => scrollToCars(event, slide.id)}
                 >
                   <span className="hero-slide__figure" aria-hidden="true">
@@ -245,7 +317,7 @@ export function HomePage() {
                     )}
                   </span>
                 </a>
-              )
+              );
             })}
           </div>
         </div>
@@ -347,8 +419,8 @@ export function HomePage() {
                 className="site-button site-button--dark"
                 type="button"
                 onClick={() => {
-                  void carsQuery.refetch()
-                  void brandsQuery.refetch()
+                  void carsQuery.refetch();
+                  void brandsQuery.refetch();
                 }}
               >
                 {t("public.actions.retry")}
@@ -398,80 +470,83 @@ export function HomePage() {
         )}
       </FilterSheet>
     </>
-  )
+  );
 }
 
 function ShowcaseCarImage({
   src,
   loading,
 }: {
-  src: string
-  loading: "eager" | "lazy"
+  src: string;
+  loading: "eager" | "lazy";
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [renderMode, setRenderMode] = useState<"loading" | "canvas" | "image">(
     "loading",
-  )
+  );
 
   const trimTransparentPadding = (event: SyntheticEvent<HTMLImageElement>) => {
-    const image = event.currentTarget
-    const canvas = canvasRef.current
-    if (!canvas || !image.naturalWidth || !image.naturalHeight) return
+    const image = event.currentTarget;
+    const canvas = canvasRef.current;
+    if (!canvas || !image.naturalWidth || !image.naturalHeight) return;
 
     try {
-      const scanCanvas = document.createElement("canvas")
+      const scanCanvas = document.createElement("canvas");
       const scanScale = Math.min(
         1,
         360 / Math.max(image.naturalWidth, image.naturalHeight),
-      )
-      scanCanvas.width = Math.max(1, Math.round(image.naturalWidth * scanScale))
+      );
+      scanCanvas.width = Math.max(
+        1,
+        Math.round(image.naturalWidth * scanScale),
+      );
       scanCanvas.height = Math.max(
         1,
         Math.round(image.naturalHeight * scanScale),
-      )
+      );
 
-      const context = scanCanvas.getContext("2d", { willReadFrequently: true })
-      if (!context) throw new Error("Canvas is unavailable")
+      const context = scanCanvas.getContext("2d", { willReadFrequently: true });
+      if (!context) throw new Error("Canvas is unavailable");
 
-      context.drawImage(image, 0, 0, scanCanvas.width, scanCanvas.height)
+      context.drawImage(image, 0, 0, scanCanvas.width, scanCanvas.height);
       const pixels = context.getImageData(
         0,
         0,
         scanCanvas.width,
         scanCanvas.height,
-      ).data
-      let minX = scanCanvas.width
-      let minY = scanCanvas.height
-      let maxX = -1
-      let maxY = -1
+      ).data;
+      let minX = scanCanvas.width;
+      let minY = scanCanvas.height;
+      let maxX = -1;
+      let maxY = -1;
 
       for (let y = 0; y < scanCanvas.height; y += 1) {
         for (let x = 0; x < scanCanvas.width; x += 1) {
-          if (pixels[(y * scanCanvas.width + x) * 4 + 3] < 16) continue
-          minX = Math.min(minX, x)
-          minY = Math.min(minY, y)
-          maxX = Math.max(maxX, x)
-          maxY = Math.max(maxY, y)
+          if (pixels[(y * scanCanvas.width + x) * 4 + 3] < 16) continue;
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
         }
       }
 
-      if (maxX < minX || maxY < minY) throw new Error("No visible subject")
+      if (maxX < minX || maxY < minY) throw new Error("No visible subject");
 
-      const sourceX = Math.max(0, Math.floor(minX / scanScale))
-      const sourceY = Math.max(0, Math.floor(minY / scanScale))
+      const sourceX = Math.max(0, Math.floor(minX / scanScale));
+      const sourceY = Math.max(0, Math.floor(minY / scanScale));
       const sourceRight = Math.min(
         image.naturalWidth,
         Math.ceil((maxX + 1) / scanScale),
-      )
+      );
       const sourceBottom = Math.min(
         image.naturalHeight,
         Math.ceil((maxY + 1) / scanScale),
-      )
-      canvas.width = sourceRight - sourceX
-      canvas.height = sourceBottom - sourceY
+      );
+      canvas.width = sourceRight - sourceX;
+      canvas.height = sourceBottom - sourceY;
 
-      const output = canvas.getContext("2d")
-      if (!output) throw new Error("Canvas is unavailable")
+      const output = canvas.getContext("2d");
+      if (!output) throw new Error("Canvas is unavailable");
       output.drawImage(
         image,
         sourceX,
@@ -482,12 +557,12 @@ function ShowcaseCarImage({
         0,
         canvas.width,
         canvas.height,
-      )
-      setRenderMode("canvas")
+      );
+      setRenderMode("canvas");
     } catch {
-      setRenderMode("image")
+      setRenderMode("image");
     }
-  }
+  };
 
   return (
     <span className={`hero-slide__asset is-${renderMode}`}>
@@ -501,7 +576,7 @@ function ShowcaseCarImage({
       />
       <canvas ref={canvasRef} />
     </span>
-  )
+  );
 }
 
 function CarFilters({
@@ -511,16 +586,16 @@ function CarFilters({
   fuels,
   includeSort = true,
 }: {
-  filters: Filters
-  setFilters: (value: Filters) => void
-  brands: PublicBrand[]
-  fuels: string[]
-  includeSort?: boolean
+  filters: Filters;
+  setFilters: (value: Filters) => void;
+  brands: PublicBrand[];
+  fuels: string[];
+  includeSort?: boolean;
 }) {
-  const { t, language } = useI18n()
+  const { t, language } = useI18n();
 
   const field = <K extends keyof Filters>(key: K, value: Filters[K]) =>
-    setFilters({ ...filters, [key]: value })
+    setFilters({ ...filters, [key]: value });
 
   return (
     <>
@@ -598,7 +673,7 @@ function CarFilters({
         </Filter>
       )}
     </>
-  )
+  );
 }
 
 function Filter({ label, children }: { label: string; children: ReactNode }) {
@@ -607,9 +682,9 @@ function Filter({ label, children }: { label: string; children: ReactNode }) {
       <span>{label}</span>
       {children}
     </label>
-  )
+  );
 }
 
 function CarsState({ children }: { children: ReactNode }) {
-  return <div className="cars-state">{children}</div>
+  return <div className="cars-state">{children}</div>;
 }

@@ -4,7 +4,10 @@ import { Link, useParams } from "react-router-dom";
 import logo from "@/assets/site_assets/logo.webp";
 import { useI18n } from "@/localization/useI18n";
 import { getAssetUrl } from "@/shared/api/assets";
-import { CarAssetIcon, type CarAssetIconName } from "../components/CarAssetIcon";
+import {
+  CarAssetIcon,
+  type CarAssetIconName,
+} from "../components/CarAssetIcon";
 import { SuggestedCars } from "../components/SuggestedCars";
 import { SiteIcon } from "../components/SiteIcon";
 import { getFuelTranslationKey } from "../shared/fuel";
@@ -574,6 +577,18 @@ export function CarDetailPage() {
           description={t("public.detail.trustSupportText")}
         />
       </section>
+
+      <div className="car-detail__mobile-whatsapp">
+        <a
+          className="public-whatsapp car-detail__mobile-whatsapp-button"
+          href={whatsAppUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <SiteIcon name="whatsapp" size={15} />
+          {t("public.detail.whatsapp")}
+        </a>
+      </div>
 
       {/* FULLSCREEN IMAGE VIEWER */}
       {lightboxOpen && image && (

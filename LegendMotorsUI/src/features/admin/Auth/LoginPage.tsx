@@ -6,6 +6,7 @@ import { useAuth } from "./AuthProvider"
 import { AuthLoader } from "./AuthLoader"
 import logo from "@/assets/dashboard_assets/logo.png"
 import { Icon } from "@/shared/components/Icon"
+import { LanguageSwitcher } from "@/localization/LanguageSwitcher"
 import { useI18n } from "@/localization/useI18n"
 
 export function LoginPage() {
@@ -60,6 +61,8 @@ export function LoginPage() {
         className="login-panel"
         aria-labelledby="login-title"
       >
+        <LanguageSwitcher className="login-language" />
+
         <Link
           className="login-logo"
           to="/admin"
