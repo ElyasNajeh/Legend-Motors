@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 
 from app.core.config import settings
 from app.db.base import Base
@@ -7,7 +7,8 @@ from app.db.migrations import (
     migrate_car_image_primary,
     migrate_car_transmission,
 )
-from app.db.session import engine
+from app.db.seeder import DatabaseSeeder
+from app.db.session import SessionLocal, engine
 
 # Import all models so SQLAlchemy registers them in Base.metadata
 from app.features.admins.model import Admin
@@ -49,9 +50,34 @@ def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
+def application_schema_exists() -> bool:
+    """Return whether this database already contains any application table."""
+    existing_tables = set(inspect(engine).get_table_names())
+    application_tables = {table.name for table in Base.metadata.sorted_tables}
+    return bool(existing_tables & application_tables)
+
+
+def seed_initial_data():
+    db = SessionLocal()
+
+    try:
+        seeder = DatabaseSeeder(db)
+        seeder.seed_admin()
+        seeder.seed_showroom_data()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 def init_db():
     create_database_if_not_exists()
+    is_fresh_installation = not application_schema_exists()
     migrate_car_common_fields(engine)
     migrate_car_transmission(engine)
     migrate_car_image_primary(engine)
     create_tables()
+
+    if is_fresh_installation:
+        seed_initial_data()

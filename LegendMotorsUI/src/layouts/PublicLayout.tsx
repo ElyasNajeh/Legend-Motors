@@ -45,14 +45,14 @@ export function PublicLayout() {
     <div className="public-site">
       <header className={`public-header${menuOpen ? " is-open" : ""}`}>
         <div className="public-container public-header__inner">
-          <Link
+          <a
             className="public-brand"
-            to="/"
+            href="/"
             aria-label={t("public.brandName")}
           >
             <img src={logo} alt="" />
             <strong>{t("public.brandName")}</strong>
-          </Link>
+          </a>
 
           <nav className="public-nav" aria-label={t("public.nav.home")}>
             <NavLink
@@ -154,9 +154,9 @@ export function PublicLayout() {
       <footer className="public-footer">
         <div className="public-container public-footer__grid">
           <div className="public-footer__identity">
-            <Link
+            <a
               className="public-footer__brand"
-              to="/"
+              href="/"
               aria-label={t("public.brandName")}
             >
               <img src={logo} alt="" />
@@ -165,7 +165,7 @@ export function PublicLayout() {
                 <strong>{t("public.brandName")}</strong>
                 <p>{t("public.footer.tagline")}</p>
               </div>
-            </Link>
+            </a>
 
             <address className="public-footer__contact">
               <span>
