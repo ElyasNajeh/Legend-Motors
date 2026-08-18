@@ -94,9 +94,11 @@ html[dir="rtl"] .home-hero h1 { letter-spacing: 0; font-weight: 780; line-height
 .site-button:hover { transform: translateY(-1px); }
 
 .hero-slider { position: absolute; z-index: 5; inset-inline: 0; bottom: calc(0px - var(--hero-slider-overflow-height)); width: 100%; overflow: hidden; padding: 20px 0 env(safe-area-inset-bottom, 0px); }
+.hero-slider.is-auto-scrolling { scroll-snap-type: none; }
 .hero-slider__track { --showcase-figure-height: clamp(180px, 15vw, 220px); position: relative; width: min(1480px, calc(100% - 36px)); margin-inline: auto; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(132px, 1fr); align-items: end; gap: clamp(14px, 2vw, 32px); }
 .hero-slider__track::before { content: ""; position: absolute; z-index: 0; inset-inline: 5%; top: calc(var(--showcase-figure-height) + 11px); height: 1px; background: linear-gradient(90deg, transparent, rgba(173,181,189,.34) 8%, rgba(222,226,230,.58) 50%, rgba(173,181,189,.34) 92%, transparent); pointer-events: none; }
 .hero-slide { position: relative; z-index: 1; min-width: 0; display: grid; grid-template-rows: var(--showcase-figure-height) 22px var(--hero-slider-label-height); justify-items: center; padding: 0 4px; border: 0; color: inherit; background: transparent; outline: 2px solid transparent; outline-offset: 3px; text-align: center; text-decoration: none; cursor: pointer; touch-action: auto; transition: opacity .42s ease, filter .42s ease, transform .46s cubic-bezier(.22,1,.36,1); }
+.hero-slider.is-auto-scrolling .hero-slide { scroll-snap-stop: normal; }
 .hero-slide__figure { position: relative; width: 100%; height: 100%; display: grid; place-items: end center; isolation: isolate; transform-origin: 50% 100%; transition: transform .48s cubic-bezier(.22,1,.36,1); }
 .hero-slide__figure::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 68%; height: 15px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.6), transparent 72%); filter: blur(4px); opacity: .42; transform: translateX(-50%); transition: opacity .42s ease, transform .48s cubic-bezier(.22,1,.36,1); pointer-events: none; }
 .hero-slide__asset { position: absolute; z-index: 1; inset: 0; display: grid; place-items: end center; pointer-events: none; }
@@ -111,9 +113,10 @@ html[dir="rtl"] .home-hero h1 { letter-spacing: 0; font-weight: 780; line-height
 .hero-slider.has-active .hero-slide.is-muted { opacity: .92; filter: saturate(.9) brightness(.94); }
 .hero-slide:focus-visible { outline-color: var(--site-gold-bright); }
 .hero-slide:focus-visible, .hero-slide.is-active { opacity: 1; filter: none; }
-.hero-slide:focus-visible .hero-slide__figure::after, .hero-slide.is-active .hero-slide__figure::after { opacity: .64; }
-.hero-slide:focus-visible .hero-slide__asset.is-canvas canvas, .hero-slide.is-active .hero-slide__asset.is-canvas canvas, .hero-slide:focus-visible .hero-slide__asset.is-image img, .hero-slide.is-active .hero-slide__asset.is-image img { opacity: 1; filter: grayscale(0) saturate(.94) contrast(1.07) brightness(1.02) drop-shadow(0 8px 10px rgba(0,0,0,.44)) drop-shadow(0 0 12px rgba(222,226,230,.16)); }
-.hero-slide:focus-visible .hero-slide__dot, .hero-slide.is-active .hero-slide__dot { width: 11px; height: 11px; background: var(--site-light); box-shadow: 0 0 0 5px rgba(8,8,8,.62), 0 0 15px rgba(222,226,230,.24); transform: translateY(-1px); }
+.hero-slide:focus-visible .hero-slide__figure, .hero-slide.is-active .hero-slide__figure { transform: scale(1.04); }
+.hero-slide:focus-visible .hero-slide__figure::after, .hero-slide.is-active .hero-slide__figure::after { opacity: .72; transform: translateX(-50%) scale(1.08); }
+.hero-slide:focus-visible .hero-slide__asset.is-canvas canvas, .hero-slide.is-active .hero-slide__asset.is-canvas canvas, .hero-slide:focus-visible .hero-slide__asset.is-image img, .hero-slide.is-active .hero-slide__asset.is-image img { opacity: 1; filter: grayscale(0) saturate(.98) contrast(1.08) brightness(1.05) drop-shadow(0 8px 10px rgba(0,0,0,.46)) drop-shadow(0 0 14px rgba(222,226,230,.18)); }
+.hero-slide:focus-visible .hero-slide__dot, .hero-slide.is-active .hero-slide__dot { width: 12px; height: 12px; background: var(--site-light); box-shadow: 0 0 0 5px rgba(8,8,8,.66), 0 0 18px rgba(222,226,230,.28); transform: translateY(-1px); }
 .hero-slide:focus-visible .hero-slide__index, .hero-slide.is-active .hero-slide__index { color: var(--site-ink); transform: translateY(-1px); }
 .hero-slide:focus-visible .hero-slide__title, .hero-slide.is-active .hero-slide__title { color: var(--site-ink); }
 .hero-slide:focus-visible .hero-slide__subtitle, .hero-slide.is-active .hero-slide__subtitle { color: var(--site-muted); }
@@ -406,6 +409,43 @@ html[dir="rtl"] .public-whatsapp svg { transform: none; }
   .hero-slider__track { --showcase-item-width: clamp(178px, 31vw, 220px); width: max-content; min-width: 100%; grid-auto-columns: var(--showcase-item-width); justify-content: start; gap: 18px; padding-inline: max(18px, calc((100vw - var(--showcase-item-width)) / 2)); }
   .hero-slider__track::before { inset-inline: calc(max(18px, (100vw - var(--showcase-item-width)) / 2) + (var(--showcase-item-width) / 2)); }
   .hero-slide { scroll-snap-align: center; scroll-snap-stop: always; }
+}
+
+@media (min-width: 1101px) {
+  .hero-slider {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+  }
+
+  .hero-slider::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-slider__track {
+    --showcase-item-width: clamp(210px, 16vw, 240px);
+    width: max-content;
+    min-width: 100%;
+    grid-auto-columns: var(--showcase-item-width);
+    justify-content: start;
+    padding-inline: max(
+      24px,
+      calc((100vw - var(--showcase-item-width)) / 2)
+    );
+  }
+
+  .hero-slider__track::before {
+    inset-inline: calc(
+      max(24px, (100vw - var(--showcase-item-width)) / 2) +
+        (var(--showcase-item-width) / 2)
+    );
+  }
+
+  .hero-slide {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
 }
 
 @media (max-width: 720px) {

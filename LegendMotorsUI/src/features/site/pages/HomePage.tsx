@@ -35,6 +35,9 @@ const initialFilters: Filters = {
   sort: "newest",
 };
 
+const SHOWCASE_AUTOPLAY_INTERVAL_MS = 2500;
+const SHOWCASE_SCROLL_DURATION_MS = 1400;
+
 export function HomePage() {
   const { t, formatNumber } = useI18n();
   const [search, setSearch] = useState("");
@@ -44,6 +47,7 @@ export function HomePage() {
   const sliderViewportRef = useRef<HTMLDivElement | null>(null);
   const currentSlideIdRef = useRef<number | null>(null);
   const autoplayPauseUntilRef = useRef(0);
+  const showcaseScrollFrameRef = useRef<number | null>(null);
 
   const carsQuery = useQuery({
     queryKey: ["public", "cars"],
@@ -98,11 +102,11 @@ export function HomePage() {
 
   const hasFilters = Boolean(
     search.trim() ||
-    filters.brand ||
-    filters.type ||
-    filters.fuel ||
-    filters.transmission ||
-    filters.sort !== "newest",
+      filters.brand ||
+      filters.type ||
+      filters.fuel ||
+      filters.transmission ||
+      filters.sort !== "newest",
   );
 
   const clearFilters = () => {
@@ -123,6 +127,13 @@ export function HomePage() {
 
   const pauseShowcaseAutoplay = () => {
     autoplayPauseUntilRef.current = Date.now() + 3000;
+
+    if (showcaseScrollFrameRef.current !== null) {
+      window.cancelAnimationFrame(showcaseScrollFrameRef.current);
+      showcaseScrollFrameRef.current = null;
+    }
+
+    sliderViewportRef.current?.classList.remove("is-auto-scrolling");
   };
 
   useEffect(() => {
@@ -130,7 +141,6 @@ export function HomePage() {
 
     if (!viewport || showcaseSlides.length <= 1) return;
 
-    const mobileQuery = window.matchMedia("(max-width: 720px)");
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
@@ -141,7 +151,6 @@ export function HomePage() {
         bounds.bottom > 0 && bounds.top < window.innerHeight;
 
       if (
-        !mobileQuery.matches ||
         reducedMotionQuery.matches ||
         document.hidden ||
         !sliderIsVisible ||
@@ -164,15 +173,55 @@ export function HomePage() {
 
       if (!nextSlide || !nextItem) return;
 
-      setActiveShowcaseSlide(nextSlide.id);
-      nextItem.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
-    }, 1500);
+      if (showcaseScrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(showcaseScrollFrameRef.current);
+      }
 
-    return () => window.clearInterval(interval);
+      viewport.classList.add("is-auto-scrolling");
+
+      const viewportBounds = viewport.getBoundingClientRect();
+      const itemBounds = nextItem.getBoundingClientRect();
+      const startScrollLeft = viewport.scrollLeft;
+      const scrollDistance =
+        itemBounds.left +
+        itemBounds.width / 2 -
+        (viewportBounds.left + viewportBounds.width / 2);
+      const startedAt = window.performance.now();
+
+      const animateScroll = (timestamp: number) => {
+        const progress = Math.min(
+          (timestamp - startedAt) / SHOWCASE_SCROLL_DURATION_MS,
+          1,
+        );
+        const easedProgress = 0.5 - Math.cos(Math.PI * progress) / 2;
+
+        viewport.scrollLeft = startScrollLeft + scrollDistance * easedProgress;
+
+        if (progress < 1) {
+          showcaseScrollFrameRef.current =
+            window.requestAnimationFrame(animateScroll);
+        } else {
+          viewport.scrollLeft = startScrollLeft + scrollDistance;
+          viewport.classList.remove("is-auto-scrolling");
+          setActiveShowcaseSlide(nextSlide.id);
+          showcaseScrollFrameRef.current = null;
+        }
+      };
+
+      showcaseScrollFrameRef.current =
+        window.requestAnimationFrame(animateScroll);
+    }, SHOWCASE_AUTOPLAY_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(interval);
+
+      if (showcaseScrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(showcaseScrollFrameRef.current);
+        showcaseScrollFrameRef.current = null;
+      }
+
+      viewport.classList.remove("is-auto-scrolling");
+    };
   }, [showcaseSlides]);
 
   const handleShowcaseScroll = (event: UIEvent<HTMLDivElement>) => {
