@@ -243,7 +243,6 @@ export function ImageUpload({
           ref={inputRef}
           hidden
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
           onChange={(event) => void select(event)}
         />
 

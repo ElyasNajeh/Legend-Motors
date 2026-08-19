@@ -87,11 +87,36 @@ export function useCars() {
     payload: CarPayload,
     images: CarImageSelection,
   ) {
+    const preparedImages: Array<{
+      image: string
+      isPrimary: boolean
+    }> = []
+
+    // For a new car, finish processing every phone photo before creating the
+    // inventory record. A failed upload therefore cannot leave a duplicate or
+    // image-less car behind when the administrator retries.
+    if (!car) {
+      for (const { file, isPrimary } of images.files) {
+        preparedImages.push({
+          image: await CarsApi.upload(file),
+          isPrimary,
+        })
+      }
+    }
+
     const saved = await saveMutation.mutateAsync({ car, payload })
 
     try {
-      for (const { file, isPrimary } of images.files) {
-        const image = await CarsApi.upload(file)
+      const imagesToAttach = car
+        ? await Promise.all(
+            images.files.map(async ({ file, isPrimary }) => ({
+              image: await CarsApi.upload(file),
+              isPrimary,
+            })),
+          )
+        : preparedImages
+
+      for (const { image, isPrimary } of imagesToAttach) {
         await CarsApi.addImage(saved.id, image, isPrimary)
       }
 

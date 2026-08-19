@@ -10,4 +10,5 @@ passlib[bcrypt]
 bcrypt
 python-multipart
 Pillow
+pillow-heif
 rembg[cpu]

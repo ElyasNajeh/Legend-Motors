@@ -9,13 +9,21 @@ from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 from PIL import Image, ImageOps, UnidentifiedImageError
+import pillow_heif
 
 
 logger = logging.getLogger(__name__)
 UPLOAD_ROOT = Path("/app/uploads")
-MAX_UPLOAD_BYTES = 25 * 1024 * 1024
-MAX_IMAGE_PIXELS = 60_000_000
 READ_CHUNK_SIZE = 1024 * 1024
+
+# Phone cameras commonly produce HEIC/HEIF (and increasingly AVIF) files.
+# Register those formats with Pillow and allow Pillow to decode images of any
+# dimensions; uploads are resized before they are written to permanent storage.
+pillow_heif.register_heif_opener()
+register_avif_opener = getattr(pillow_heif, "register_avif_opener", None)
+if register_avif_opener:
+    register_avif_opener()
+Image.MAX_IMAGE_PIXELS = None
 
 CAR_MAX_SIZE = (1920, 1080)
 CAR_WEBP_QUALITY = 82
@@ -47,8 +55,6 @@ def optimize_upload(
         total = 0
         while chunk := upload.file.read(READ_CHUNK_SIZE):
             total += len(chunk)
-            if total > MAX_UPLOAD_BYTES:
-                raise HTTPException(status_code=413, detail="Image is too large")
             source.write(chunk)
 
         if total == 0:
@@ -222,9 +228,6 @@ def _write_optimized_webp(
         with warnings.catch_warnings():
             warnings.simplefilter("error", Image.DecompressionBombWarning)
             with Image.open(source) as opened:
-                if opened.width * opened.height > MAX_IMAGE_PIXELS:
-                    raise ValueError("Image dimensions are too large")
-
                 opened.seek(0)
                 image = ImageOps.exif_transpose(opened)
                 has_alpha = image.mode in {"RGBA", "LA"} or (

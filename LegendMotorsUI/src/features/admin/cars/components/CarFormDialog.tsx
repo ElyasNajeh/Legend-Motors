@@ -571,7 +571,6 @@ export function CarFormDialog({
                   ref={imageInputRef}
                   hidden
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
                   multiple
                   onChange={selectImages}
                 />
