@@ -72,7 +72,6 @@ def login(
 
 def refresh_access_token(
     request: Request,
-    response: Response,
 ):
     refresh_token = request.cookies.get("refresh_token")
 
@@ -97,15 +96,6 @@ def refresh_access_token(
         {"sub": email},
         timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         token_type="access",
-    )
-
-    response.set_cookie(
-        key="access_token",
-        value=new_access_token,
-        httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
     return {
