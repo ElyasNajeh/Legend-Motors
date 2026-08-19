@@ -693,6 +693,7 @@ html[dir="rtl"] .public-whatsapp svg { transform: none; }
 }
 
 .car-gallery__main.has-image {
+  cursor: pointer;
   outline: none;
 }
 
