@@ -232,30 +232,6 @@ export function CarDetailPage() {
     );
   };
 
-  /*
-   * Amazon-style cursor zoom.
-   *
-   * Instead of updating React state on every mouse movement,
-   * we update CSS variables directly on the gallery element.
-   * This keeps the movement smooth.
-   */
-  const handleZoomMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const element = event.currentTarget;
-    const rect = element.getBoundingClientRect();
-
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-
-    element.style.setProperty("--zoom-x", `${x}%`);
-    element.style.setProperty("--zoom-y", `${y}%`);
-  };
-
-  const handleZoomLeave = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.currentTarget.style.setProperty("--zoom-x", "50%");
-    event.currentTarget.style.setProperty("--zoom-y", "50%");
-  };
-
   const openLightbox = () => {
     if (!image) return;
     setLightboxOpen(true);
@@ -322,8 +298,6 @@ export function CarDetailPage() {
         >
           <div
             className={`car-gallery__main${image ? " has-image" : ""}`}
-            onMouseMove={image ? handleZoomMove : undefined}
-            onMouseLeave={image ? handleZoomLeave : undefined}
             onClick={image ? openLightbox : undefined}
             onKeyDown={image ? handleMainImageKeyDown : undefined}
             role={image ? "button" : undefined}

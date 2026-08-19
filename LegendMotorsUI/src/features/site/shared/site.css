@@ -685,22 +685,14 @@ html[dir="rtl"] .public-whatsapp svg { transform: none; }
 
 /* =========================================================
    CAR DETAILS GALLERY
-   Cursor zoom + fullscreen viewer
+   Fullscreen viewer
    ========================================================= */
 
 .car-gallery__main {
-  --zoom-x: 50%;
-  --zoom-y: 50%;
-  --gallery-zoom: 3.25;
-
   isolation: isolate;
 }
 
-/*
- * Only make the gallery interactive when an image exists.
- */
 .car-gallery__main.has-image {
-  cursor: zoom-in;
   outline: none;
 }
 
@@ -709,16 +701,7 @@ html[dir="rtl"] .public-whatsapp svg { transform: none; }
   outline-offset: 4px;
 }
 
-/*
- * Important:
- * transform-origin follows the mouse position.
- */
 .car-gallery__main.has-image > img {
-  transform: scale(1);
-  transform-origin: var(--zoom-x) var(--zoom-y);
-  transition:
-    transform 240ms cubic-bezier(.22, 1, .36, 1);
-  will-change: transform;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -730,18 +713,6 @@ html[dir="rtl"] .public-whatsapp svg { transform: none; }
   z-index: 5;
   pointer-events: none;
 }
-
-
-/* ---------------------------------------------------------
-   AMAZON-STYLE DESKTOP ZOOM
-   --------------------------------------------------------- */
-
-@media (hover: hover) and (pointer: fine) {
-  .car-gallery__main.has-image:hover > img {
-    transform: scale(var(--gallery-zoom));
-  }
-}
-
 
 /* =========================================================
    FULLSCREEN LIGHTBOX
@@ -965,14 +936,6 @@ html[dir="rtl"] .car-lightbox__close {
    ========================================================= */
 
 @media (max-width: 720px) {
-  /*
-   * No hover zoom on touch devices.
-   * Clicking still opens fullscreen.
-   */
-  .car-gallery__main.has-image {
-    cursor: pointer;
-  }
-
   .car-lightbox {
     padding:
       max(12px, env(safe-area-inset-top))
