@@ -43,20 +43,6 @@ export function useCars() {
       car
         ? CarsApi.update(car.id, payload)
         : CarsApi.create(payload),
-    onSuccess: async (_, { car, payload }) => {
-      toast.success(
-        t(
-          car
-            ? "admin.feedback.cars.updated"
-            : "admin.feedback.cars.created",
-        ),
-        t("admin.feedback.cars.saved", {
-          name: payload.model,
-        }),
-      )
-
-      await carsQuery.refetch()
-    },
   })
 
   const filteredItems = useMemo(() => {
@@ -103,24 +89,48 @@ export function useCars() {
   ) {
     const saved = await saveMutation.mutateAsync({ car, payload })
 
-    await Promise.all(
-      images.files.map(async ({ file, isPrimary }) => {
+    try {
+      for (const { file, isPrimary } of images.files) {
         const image = await CarsApi.upload(file)
         await CarsApi.addImage(saved.id, image, isPrimary)
-      }),
-    )
+      }
 
-    if (images.primaryExistingImageId !== null) {
-      await CarsApi.setPrimaryImage(
-        images.primaryExistingImageId,
-      )
-    }
+      for (const imageId of images.deletedExistingImageIds) {
+        await CarsApi.deleteImage(imageId)
+      }
 
-    if (
-      images.files.length ||
-      images.primaryExistingImageId !== null
-    ) {
+      if (images.primaryExistingImageId !== null) {
+        await CarsApi.setPrimaryImage(
+          images.primaryExistingImageId,
+        )
+      }
+
       await carsQuery.refetch()
+
+      toast.success(
+        t(
+          car
+            ? "admin.feedback.cars.updated"
+            : "admin.feedback.cars.created",
+        ),
+        t(
+          car
+            ? "admin.feedback.cars.updatedMessage"
+            : "admin.feedback.cars.createdMessage",
+          { name: payload.model },
+        ),
+      )
+    } catch (error) {
+      if (!car) {
+        try {
+          await CarsApi.delete(saved.id)
+          await carsQuery.refetch()
+        } catch {
+          // Keep the original image/save error for the administrator.
+        }
+      }
+
+      throw error
     }
   }
 
@@ -155,7 +165,7 @@ export function useCars() {
         getLocalizedErrorMessage(
           error,
           language,
-          t("admin.feedback.common.tryAgain"),
+          t("admin.feedback.cars.deleteFailedMessage"),
         ),
       )
     }
@@ -163,7 +173,7 @@ export function useCars() {
 
   async function toggle(car: Car, featured = false) {
     try {
-      await (featured
+      const updated = await (featured
         ? CarsApi.toggleFeatured(car.id)
         : CarsApi.toggleStatus(car.id))
 
@@ -172,6 +182,16 @@ export function useCars() {
           featured
             ? "admin.feedback.cars.featuredUpdated"
             : "admin.feedback.cars.statusUpdated",
+        ),
+        t(
+          featured
+            ? updated.is_featured
+              ? "admin.feedback.cars.featuredEnabledMessage"
+              : "admin.feedback.cars.featuredDisabledMessage"
+            : updated.is_active
+              ? "admin.feedback.cars.activatedMessage"
+              : "admin.feedback.cars.hiddenMessage",
+          { name: car.model },
         ),
       )
 
@@ -182,7 +202,7 @@ export function useCars() {
         getLocalizedErrorMessage(
           error,
           language,
-          t("admin.feedback.common.tryAgain"),
+          t("admin.feedback.cars.updateFailedMessage"),
         ),
       )
     }

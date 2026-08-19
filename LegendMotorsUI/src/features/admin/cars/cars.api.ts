@@ -22,7 +22,7 @@ export const CarsApi = {
     }),
 
   delete: (id: number) =>
-    adminRequest<Car>({
+    adminRequest<void>({
       url: `/cars/${id}`,
       method: "DELETE",
     }),

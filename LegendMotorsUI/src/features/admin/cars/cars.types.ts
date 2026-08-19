@@ -6,6 +6,7 @@ export type CarImage = { id: number; image: string; is_primary: boolean; created
 export type CarImageSelection = {
   files: Array<{ file: File; isPrimary: boolean }>
   primaryExistingImageId: number | null
+  deletedExistingImageIds: number[]
 }
 
 export type Car = {

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
 import { Icon } from "@/shared/components/Icon"
+import { RequiredMark } from "@/shared/components/AdminComponents"
 import { useI18n } from "@/localization/useI18n"
 import type { AdminPayload } from "../admins.types"
 
@@ -78,11 +79,15 @@ export function AdminFormDialog({
 
         <div className="form-grid form-grid--single">
           <label>
-            {t("admin.forms.admin.username")}
+            <span>
+              {t("admin.forms.admin.username")} <RequiredMark />
+            </span>
             <input value={username} maxLength={255} onChange={(event) => setUsername(event.target.value)} required disabled={saving} />
           </label>
           <label>
-            {t("admin.forms.admin.email")}
+            <span>
+              {t("admin.forms.admin.email")} <RequiredMark />
+            </span>
 
             <input
               type="email"
@@ -97,7 +102,9 @@ export function AdminFormDialog({
           </label>
 
           <label>
-            {t("admin.forms.admin.temporaryPassword")}
+            <span>
+              {t("admin.forms.admin.temporaryPassword")} <RequiredMark />
+            </span>
 
             <input
               type="password"

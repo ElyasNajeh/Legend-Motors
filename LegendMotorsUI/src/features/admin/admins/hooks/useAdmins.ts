@@ -52,7 +52,7 @@ export function useAdmins(currentAdminId: number | undefined) {
     try {
       await deleteMutation.mutateAsync(admin)
     } catch (caught) {
-      toast.error(t("admin.feedback.admins.deleteFailed"), getLocalizedErrorMessage(caught, language, t("admin.feedback.common.tryAgain")))
+      toast.error(t("admin.feedback.admins.deleteFailed"), getLocalizedErrorMessage(caught, language, t("admin.feedback.admins.deleteFailedMessage")))
     }
   }
 

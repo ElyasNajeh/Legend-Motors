@@ -60,7 +60,7 @@ export function DashboardPage() {
       .catch(() => setHadithFailed(true))
   }, [])
 
-  const adminName = user?.email.split("@")[0] ?? "Admin"
+  const adminName = user?.email.split("@")[0] ?? t("admin.common.admin")
 
   const error = statsQuery.error
     ? getLocalizedErrorMessage(
@@ -128,7 +128,8 @@ function HadithCard({
   hadith: Hadith | null
   failed: boolean
 }) {
-  let content = <p>جارٍ تحميل الحديث…</p>
+  const { t } = useI18n()
+  let content = <p>{t("admin.pages.hadithLoading")}</p>
 
   if (hadith) {
     content = (
@@ -138,17 +139,12 @@ function HadithCard({
       </>
     )
   } else if (failed) {
-    content = (
-      <p>
-        تعذّر تحميل الحديث اليوم. يمكنك متابعة إدارة النظام بشكل
-        طبيعي.
-      </p>
-    )
+    content = <p>{t("admin.pages.hadithFailed")}</p>
   }
 
   return (
     <article className="hadith-card" dir="rtl">
-      <span>حديث اليوم</span>
+      <span>{t("admin.pages.hadithTitle")}</span>
       {content}
     </article>
   )

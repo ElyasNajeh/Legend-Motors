@@ -121,6 +121,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
           <div
             className={`toast toast--${item.type}`}
             key={item.id}
+            role={item.type === "error" ? "alert" : "status"}
           >
             <span className="toast__icon">
               <Icon
@@ -142,7 +143,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
 
             <button
               type="button"
-              aria-label="Dismiss notification"
+              aria-label={t("admin.feedback.common.dismissNotification")}
               onClick={() =>
                 setToasts((items) =>
                   items.filter(({ id }) => id !== item.id),

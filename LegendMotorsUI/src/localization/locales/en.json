@@ -181,12 +181,13 @@
       "active": "Active",
       "hidden": "Hidden",
       "optional": "Optional",
+      "admin": "Admin",
       "tryAgain": "Try again",
       "pagination": "Pagination",
       "previous": "Previous",
       "next": "Next",
       "pageOf": "Page {{page}} of {{total}}",
-      "uploadFailed": "Image upload failed",
+      "uploadFailed": "The image could not be uploaded. Use a JPEG, PNG, WebP, or GIF file and check your connection before trying again.",
       "uploadPreview": "Uploaded image preview",
       "imagePreview": "Image preview",
       "uploading": "Uploading…",
@@ -225,28 +226,39 @@
     "validation": {
       "requiredField": "This field is required.",
       "wholeNumber": "Enter a whole number.",
-      "saveFailed": "Unable to save changes."
+      "saveFailed": "Unable to save changes. Check your connection and try again.",
+      "reviewFields": "Review the highlighted fields, then save again."
     },
     "feedback": {
       "common": {
         "cancel": "Cancel",
         "confirm": "Confirm",
-        "tryAgain": "Please try again."
+        "tryAgain": "Please try again.",
+        "dismissNotification": "Dismiss notification"
       },
       "cars": {
         "created": "Car created",
         "updated": "Car updated",
-        "saved": "{{name}} was saved successfully.",
+        "createdMessage": "{{name}} and its images are now available in the showroom inventory.",
+        "updatedMessage": "The details and image gallery for {{name}} were saved successfully.",
+        "createFailedMessage": "The car could not be added with all of its images. Check the inventory before retrying to avoid creating a duplicate.",
+        "updateSaveFailedMessage": "The car update could not be completed. Reopen the car to review its current details and images before trying again.",
         "deleteTitle": "Delete car?",
         "deleteMessage": "Permanently delete {{name}}?",
         "deleteConfirm": "Delete car",
         "deleted": "Car deleted",
         "removed": "{{name}} was removed from the showroom.",
         "deleteFailed": "Could not delete car",
+        "deleteFailedMessage": "The car is still in the showroom. Check your connection and try deleting it again.",
         "featuredUpdated": "Featured status updated",
         "statusUpdated": "Car status updated",
+        "featuredEnabledMessage": "{{name}} is now featured in the showroom.",
+        "featuredDisabledMessage": "{{name}} is no longer featured, but remains in the inventory.",
+        "activatedMessage": "{{name}} is now visible to showroom visitors.",
+        "hiddenMessage": "{{name}} is now hidden from visitors, but remains in the inventory.",
         "updateFailed": "Could not update car",
-        "loadFailed": "Unable to load cars."
+        "updateFailedMessage": "The car's visibility or featured setting was not changed. Check your connection and try again.",
+        "loadFailed": "Unable to load the car inventory. Check your connection and try again."
       },
       "brands": {
         "created": "Brand created",
@@ -258,7 +270,9 @@
         "deleted": "Brand deleted",
         "removed": "{{name}} was removed.",
         "deleteFailed": "Could not delete brand",
-        "inUse": "The brand may be assigned to a car."
+        "deleteFailedMessage": "The brand was not deleted. Check your connection, refresh the list, and try again.",
+        "inUse": "This brand is assigned to one or more cars. Move or delete those cars before deleting the brand.",
+        "duplicate": "A brand with this English or Arabic name already exists. Use a unique name in both fields."
       },
       "sliders": {
         "created": "Slider created",
@@ -274,8 +288,10 @@
         "deleteMessage": "Permanently delete {{name}}? This cannot be undone.",
         "deleteConfirm": "Delete slider",
         "deleteFailed": "Could not delete slider",
+        "deleteFailedMessage": "The slider is still available. Check your connection and try deleting it again.",
         "statusFailed": "Status update failed",
-        "loadFailed": "Unable to load sliders."
+        "statusFailedMessage": "The slider visibility was not changed. Check your connection and try again.",
+        "loadFailed": "Unable to load home-page sliders. Check your connection and try again."
       },
       "admins": {
         "created": "Admin added",
@@ -286,7 +302,8 @@
         "deleteMessage": "Remove access for {{email}}? They will no longer be able to sign in.",
         "deleteConfirm": "Delete admin",
         "deleteFailed": "Could not delete admin",
-        "loadFailed": "Unable to load admins."
+        "deleteFailedMessage": "The administrator still has access. Check your connection and try again.",
+        "loadFailed": "Unable to load administrator accounts. Check your connection and try again."
       }
     },
     "forms": {
@@ -313,7 +330,7 @@
         "chooseImages": "Choose images",
         "addMoreImages": "Add more images",
         "imagesSelected": "{{count}} image(s) ready.",
-        "imagesHelp": "Optional. Select one or multiple images to preview them instantly.",
+        "imagesHelp": "Choose at least one image to enable saving. The first image becomes primary automatically.",
         "choosePrimaryImage": "Choose the primary car image",
         "imagePreview": "Car image {{number}}",
         "primaryImage": "Primary image",
@@ -322,6 +339,10 @@
         "primaryImageHelp": "Shown first on car cards and in the gallery.",
         "secondaryImageHelp": "Shown after the primary image.",
         "removeImage": "Remove selected image",
+        "imagesPendingDeletion": "{{count}} existing image(s) will be deleted when you save. Cancel to keep them.",
+        "validation": {
+          "imageRequired": "Add at least one clear car image before saving."
+        },
         "sections": {
           "type": "1. Car type",
           "basic": "2. Specifications",
@@ -354,7 +375,7 @@
         "validation": {
           "required": "Both titles and an image are required.",
           "displayOrder": "Display order must be a whole number of zero or more.",
-          "saveFailed": "Unable to save slider."
+          "saveFailed": "The slider could not be saved. Review its titles, image, and display order, then try again."
         }
       },
       "admin": {
@@ -367,7 +388,7 @@
         "temporaryPassword": "Temporary password",
         "validation": {
           "required": "Username, email, and password are required.",
-          "saveFailed": "Unable to add admin."
+          "saveFailed": "The administrator could not be added. Verify the email and account details, then try again."
         }
       }
     },
@@ -375,7 +396,10 @@
       "dashboardEyebrow": "Overview",
       "welcome": "Welcome back, {{name}}",
       "dashboardDescription": "Manage your showroom from one place.",
-      "dashboardError": "Unable to load dashboard.",
+      "dashboardError": "Unable to load dashboard statistics. Check your connection and try again.",
+      "hadithTitle": "Hadith of the day",
+      "hadithLoading": "Loading today's hadith…",
+      "hadithFailed": "Today's hadith could not be loaded. You can continue managing the system normally.",
       "carsEyebrow": "Showroom inventory",
       "carsDescription": "Manage car specifications, type, visibility, and images.",
       "addCar": "Add car",

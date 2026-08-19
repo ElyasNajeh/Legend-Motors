@@ -8,6 +8,7 @@ import {
 import type { Brand } from "@/features/admin/brands/brands.types"
 import { getAssetUrl } from "@/shared/api/assets"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
+import { RequiredMark } from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
 import { useI18n } from "@/localization/useI18n"
 import type {
@@ -156,6 +157,8 @@ export function CarFormDialog({
 
     return primary ? `existing-${primary.id}` : null
   })
+  const [deletedExistingImageIds, setDeletedExistingImageIds] =
+    useState<number[]>([])
   const [errors, setErrors] = useState<Errors>({})
   const [formError, setFormError] = useState("")
   const [saving, setSaving] = useState(false)
@@ -178,6 +181,7 @@ export function CarFormDialog({
   ) => {
     setForm((current) => ({ ...current, [key]: value }))
     setErrors((current) => ({ ...current, [key]: undefined }))
+    setFormError("")
   }
 
   const fieldError = (key: keyof CarFormValues) =>
@@ -203,18 +207,26 @@ export function CarFormDialog({
     if (selected.length) {
       setImages((current) => [...current, ...selected])
       setPrimaryImageKey((current) => current ?? selected[0].key)
+      setFormError("")
     }
 
     event.target.value = ""
   }
 
-  function removeNewImage(key: string) {
+  function removeImage(key: string) {
     const image = images.find((item) => item.key === key)
 
-    if (!image || image.kind !== "new") return
+    if (!image) return
 
-    URL.revokeObjectURL(image.previewUrl)
-    previewUrlsRef.current.delete(image.previewUrl)
+    if (image.kind === "new") {
+      URL.revokeObjectURL(image.previewUrl)
+      previewUrlsRef.current.delete(image.previewUrl)
+    } else {
+      setDeletedExistingImageIds((current) => [
+        ...current,
+        image.id,
+      ])
+    }
 
     const remaining = images.filter((item) => item.key !== key)
 
@@ -234,8 +246,13 @@ export function CarFormDialog({
       t("admin.validation.wholeNumber"),
     )
 
-    if (Object.keys(nextErrors).length) {
+    if (Object.keys(nextErrors).length || images.length === 0) {
       setErrors(nextErrors)
+      setFormError(
+        images.length === 0
+          ? t("admin.forms.car.validation.imageRequired")
+          : t("admin.validation.reviewFields"),
+      )
       return
     }
 
@@ -264,6 +281,7 @@ export function CarFormDialog({
         selectedPrimary?.kind === "existing"
           ? selectedPrimary.id
           : null,
+      deletedExistingImageIds,
     }
 
     try {
@@ -274,7 +292,11 @@ export function CarFormDialog({
         getLocalizedErrorMessage(
           error,
           language,
-          t("admin.validation.saveFailed"),
+          t(
+            car
+              ? "admin.feedback.cars.updateSaveFailedMessage"
+              : "admin.feedback.cars.createFailedMessage",
+          ),
         ),
       )
     } finally {
@@ -362,7 +384,9 @@ export function CarFormDialog({
 
           <div className="form-grid">
             <label>
-              {t("admin.fields.brand")}
+              <span>
+                {t("admin.fields.brand")} <RequiredMark />
+              </span>
 
               <select
                 value={form.brand_id}
@@ -388,7 +412,9 @@ export function CarFormDialog({
             </label>
 
             <label>
-              {t("admin.fields.model")}
+              <span>
+                {t("admin.fields.model")} <RequiredMark />
+              </span>
 
               <input
                 value={form.model}
@@ -415,7 +441,9 @@ export function CarFormDialog({
             />
 
             <label>
-              {t("admin.fields.transmission")}
+              <span>
+                {t("admin.fields.transmission")} <RequiredMark />
+              </span>
 
               <select
                 value={form.transmission}
@@ -457,7 +485,9 @@ export function CarFormDialog({
             />
 
             <label>
-              {t("admin.fields.fuelType")}
+              <span>
+                {t("admin.fields.fuelType")} <RequiredMark />
+              </span>
 
               <input
                 value={form.fuel_type}
@@ -526,7 +556,9 @@ export function CarFormDialog({
         </fieldset>
 
         <fieldset className="form-section">
-          <legend>{t("admin.forms.car.sections.images")}</legend>
+          <legend>
+            {t("admin.forms.car.sections.images")} <RequiredMark />
+          </legend>
 
           <div className="car-image-manager">
             <div className="car-image-manager__picker">
@@ -557,7 +589,7 @@ export function CarFormDialog({
                   )}
                 </button>
 
-                <small>
+                <small id="car-images-help">
                   {images.length
                     ? t("admin.forms.car.imagesSelected", {
                         count: images.length,
@@ -607,23 +639,19 @@ export function CarFormDialog({
                           )}
                         </span>
 
-                        {image.kind === "new" && (
-                          <button
-                            type="button"
-                            disabled={saving}
-                            aria-label={t(
-                              "admin.forms.car.removeImage",
-                            )}
-                            title={t(
-                              "admin.forms.car.removeImage",
-                            )}
-                            onClick={() =>
-                              removeNewImage(image.key)
-                            }
-                          >
-                            <Icon name="close" size={16} />
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          disabled={saving}
+                          aria-label={t(
+                            "admin.forms.car.removeImage",
+                          )}
+                          title={t(
+                            "admin.forms.car.removeImage",
+                          )}
+                          onClick={() => removeImage(image.key)}
+                        >
+                          <Icon name="close" size={16} />
+                        </button>
                       </div>
 
                       <label className="car-image-card__choice">
@@ -659,6 +687,14 @@ export function CarFormDialog({
                   )
                 })}
               </div>
+            )}
+
+            {deletedExistingImageIds.length > 0 && (
+              <small className="car-image-manager__pending">
+                {t("admin.forms.car.imagesPendingDeletion", {
+                  count: deletedExistingImageIds.length,
+                })}
+              </small>
             )}
           </div>
         </fieldset>
@@ -712,7 +748,17 @@ export function CarFormDialog({
             {t("admin.forms.common.cancel")}
           </button>
 
-          <button className="button" disabled={saving}>
+          <button
+            className={`button${
+              images.length === 0 ? " is-image-required" : ""
+            }`}
+            disabled={saving || images.length === 0}
+            aria-describedby={
+              images.length === 0
+                ? "car-images-help"
+                : undefined
+            }
+          >
             {saving
               ? t("admin.forms.common.saving")
               : t("admin.forms.car.save")}
@@ -736,7 +782,9 @@ function NumberField({
 }) {
   return (
     <label>
-      {label}
+      <span>
+        {label} <RequiredMark />
+      </span>
 
       <input
         type="number"

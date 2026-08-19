@@ -179,7 +179,8 @@ export function CarsPage() {
                 <span>
                   <strong>{car.horsepower} HP</strong>
                   <small>
-                    {car.engine_cc} cc ·{" "}
+                    {car.engine_cc}
+                    {car.is_turbo ? " cc" : ""} ·{" "}
                     {t(
                       `admin.transmissions.${car.transmission}`,
                     )}{" "}

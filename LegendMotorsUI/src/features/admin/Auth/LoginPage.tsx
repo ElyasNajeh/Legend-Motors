@@ -6,6 +6,7 @@ import { useAuth } from "./AuthProvider"
 import { AuthLoader } from "./AuthLoader"
 import logo from "@/assets/dashboard_assets/logo.png"
 import { Icon } from "@/shared/components/Icon"
+import { RequiredMark } from "@/shared/components/AdminComponents"
 import { LanguageSwitcher } from "@/localization/LanguageSwitcher"
 import { useI18n } from "@/localization/useI18n"
 
@@ -94,7 +95,9 @@ export function LoginPage() {
             className="form-field"
             htmlFor="email"
           >
-            <span>{t("admin.login.email")}</span>
+            <span>
+              {t("admin.login.email")} <RequiredMark />
+            </span>
 
             <input
               id="email"
@@ -116,7 +119,9 @@ export function LoginPage() {
             className="form-field"
             htmlFor="password"
           >
-            <span>{t("admin.login.password")}</span>
+            <span>
+              {t("admin.login.password")} <RequiredMark />
+            </span>
 
             <span className="password-field">
               <input

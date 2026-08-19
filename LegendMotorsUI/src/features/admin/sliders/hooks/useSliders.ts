@@ -163,7 +163,7 @@ export function useSliders() {
         getLocalizedErrorMessage(
           caught,
           language,
-          t("admin.feedback.common.tryAgain"),
+          t("admin.feedback.sliders.deleteFailedMessage"),
         ),
       )
     }
@@ -178,7 +178,7 @@ export function useSliders() {
         getLocalizedErrorMessage(
           caught,
           language,
-          t("admin.feedback.common.tryAgain"),
+          t("admin.feedback.sliders.statusFailedMessage"),
         ),
       )
     }

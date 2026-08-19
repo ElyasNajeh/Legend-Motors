@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.core.security import get_current_user
@@ -142,13 +142,14 @@ def update_car(
     )
 
 
-@router.delete("/{car_id}", response_model=CarResponse)
+@router.delete("/{car_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_car(
     car_id: int,
     db: Session = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ):
-    return service.delete_car(db, car_id)
+    service.delete_car(db, car_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.patch("/{car_id}/toggle-status", response_model=CarResponse)

@@ -24,6 +24,10 @@ export function getLocalizedErrorMessage(
   language: "en" | "ar",
   fallback: string,
 ) {
+  if (error instanceof ApiError && error.status === 0) {
+    return fallback
+  }
+
   return language === "ar"
     ? fallback
     : error instanceof Error && error.message

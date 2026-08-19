@@ -1,11 +1,15 @@
 import { useMemo, useState, type FormEvent } from "react"
 import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
-import { getLocalizedErrorMessage } from "@/shared/api/error"
+import {
+  getLocalizedErrorMessage,
+  isApiError,
+} from "@/shared/api/error"
 import {
   EmptyState,
   LoadableContent,
   PageHeader,
   Pagination,
+  RequiredMark,
 } from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
@@ -104,11 +108,13 @@ export function BrandsPage() {
     } catch (error) {
       toast.error(
         t("admin.feedback.brands.deleteFailed"),
-        getLocalizedErrorMessage(
-          error,
-          language,
-          t("admin.feedback.brands.inUse"),
-        ),
+        isApiError(error) && error.status === 409
+          ? t("admin.feedback.brands.inUse")
+          : getLocalizedErrorMessage(
+              error,
+              language,
+              t("admin.feedback.brands.deleteFailedMessage"),
+            ),
       )
     }
   }
@@ -315,11 +321,13 @@ function BrandFormDialog({
       onClose()
     } catch (error) {
       setFormError(
-        getLocalizedErrorMessage(
-          error,
-          language,
-          t("admin.validation.saveFailed"),
-        ),
+        isApiError(error) && error.status === 400
+          ? t("admin.feedback.brands.duplicate")
+          : getLocalizedErrorMessage(
+              error,
+              language,
+              t("admin.validation.saveFailed"),
+            ),
       )
     } finally {
       setSaving(false)
@@ -358,7 +366,9 @@ function BrandFormDialog({
 
         <div className="form-grid">
           <label>
-            {t("admin.fields.englishName")}
+            <span>
+              {t("admin.fields.englishName")} <RequiredMark />
+            </span>
 
             <input
               dir="ltr"
@@ -379,7 +389,9 @@ function BrandFormDialog({
           </label>
 
           <label>
-            {t("admin.fields.arabicName")}
+            <span>
+              {t("admin.fields.arabicName")} <RequiredMark />
+            </span>
 
             <input
               dir="rtl"

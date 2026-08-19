@@ -4,6 +4,14 @@ import { getLocalizedErrorMessage } from "@/shared/api/error"
 import { Icon, type IconName } from "./Icon"
 import { useI18n } from "@/localization/useI18n"
 
+export function RequiredMark() {
+  return (
+    <span className="required-mark" aria-hidden="true">
+      *
+    </span>
+  )
+}
+
 export function PageHeader({
   eyebrow,
   title,

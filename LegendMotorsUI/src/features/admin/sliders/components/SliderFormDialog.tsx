@@ -1,6 +1,9 @@
 import { useState, type FormEvent } from "react"
 import { getLocalizedErrorMessage } from "@/shared/api/error"
-import { ImageUpload } from "@/shared/components/AdminComponents"
+import {
+  ImageUpload,
+  RequiredMark,
+} from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
 import { useI18n } from "@/localization/useI18n"
 import { SlidersApi } from "../sliders.api"
@@ -121,7 +124,9 @@ export function SliderFormDialog(props: SliderFormDialogProps) {
           <legend>{t("admin.forms.slider.sections.info")}</legend>
           <div className="form-grid">
             <label>
-              {t("admin.forms.fields.englishTitle")}
+              <span>
+                {t("admin.forms.fields.englishTitle")} <RequiredMark />
+              </span>
               <input
                 dir="ltr"
                 value={form.title_en}
@@ -134,7 +139,9 @@ export function SliderFormDialog(props: SliderFormDialogProps) {
               />
             </label>
             <label>
-              {t("admin.forms.fields.arabicTitle")}
+              <span>
+                {t("admin.forms.fields.arabicTitle")} <RequiredMark />
+              </span>
               <input
                 dir="rtl"
                 value={form.title_ar}
@@ -148,7 +155,9 @@ export function SliderFormDialog(props: SliderFormDialogProps) {
             </label>
           </div>
           <label className="field-label slider-order-field">
-            {t("admin.forms.slider.displayOrder")}
+            <span>
+              {t("admin.forms.slider.displayOrder")} <RequiredMark />
+            </span>
             <input
               type="number"
               min="0"
@@ -169,7 +178,9 @@ export function SliderFormDialog(props: SliderFormDialogProps) {
         </fieldset>
 
         <fieldset className="form-section">
-          <legend>{t("admin.forms.slider.sections.image")}</legend>
+          <legend>
+            {t("admin.forms.slider.sections.image")} <RequiredMark />
+          </legend>
           <div className="slider-image-upload">
             <ImageUpload
               value={form.image}

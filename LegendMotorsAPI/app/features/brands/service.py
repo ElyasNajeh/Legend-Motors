@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.features.brands.model import Brand
 from app.features.brands.schema import BrandCreate, BrandUpdate
+from app.features.cars.model import Car
 from app.shared import crud
 
 
@@ -86,11 +87,7 @@ def update_brand(
 
 
 def delete_brand(db: Session, brand_id: int):
-    brand = crud.delete_by_id(
-        db,
-        Brand,
-        brand_id,
-    )
+    brand = crud.get_by_id(db, Brand, brand_id)
 
     if not brand:
         raise HTTPException(
@@ -98,4 +95,17 @@ def delete_brand(db: Session, brand_id: int):
             detail="Brand not found",
         )
 
-    return brand
+    has_cars = (
+        db.query(Car.id)
+        .filter(Car.brand_id == brand_id)
+        .first()
+        is not None
+    )
+
+    if has_cars:
+        raise HTTPException(
+            status_code=409,
+            detail="Brand is assigned to one or more cars",
+        )
+
+    return crud.delete_by_id(db, Brand, brand_id)

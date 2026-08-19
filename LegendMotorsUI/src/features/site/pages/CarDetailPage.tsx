@@ -523,7 +523,11 @@ export function CarDetailPage() {
               <DetailSpec
                 icon={<CarAssetIcon name="engine" />}
                 label={t("public.detail.engine")}
-                value={`${formatNumber(car.engine_cc)} cc`}
+                value={
+                  car.is_turbo
+                    ? `${formatNumber(car.engine_cc)} cc`
+                    : formatNumber(car.engine_cc)
+                }
               />
 
               {car.hybrid_car?.battery_capacity && (
