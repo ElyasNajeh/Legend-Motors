@@ -5,7 +5,6 @@ import {
   LoadableContent,
   PageHeader,
   Pagination,
-  StatusBadge,
 } from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
 import { useI18n } from "@/localization/useI18n"
@@ -101,12 +100,13 @@ export function CarsPage() {
           <option value="">
             {t("admin.management.allStatuses")}
           </option>
-          <option value="true">
-            {t("admin.common.active")}
+          <option value="active">
+            {t("admin.common.available")}
           </option>
-          <option value="false">
+          <option value="hidden">
             {t("admin.common.hidden")}
           </option>
+          <option value="bought">{t("admin.common.bought")}</option>
         </select>
       </div>
 
@@ -189,7 +189,21 @@ export function CarsPage() {
                 </span>
 
                 <span className="car-status-cell">
-                  <StatusBadge active={car.is_active} />
+                  <span className={`status-badge status-badge--${car.status}`}>
+                    <i />
+                    {t(
+                      car.status === "active"
+                        ? "admin.common.available"
+                        : "admin.common.bought",
+                    )}
+                  </span>
+
+                  {car.is_hidden && (
+                    <span className="status-badge status-badge--hidden">
+                      <i />
+                      {t("admin.common.hidden")}
+                    </span>
+                  )}
 
                   {car.is_featured && (
                     <small className="featured-badge">
@@ -210,15 +224,27 @@ export function CarsPage() {
                   <button
                     className="icon-button"
                     title={t(
-                      car.is_active
-                        ? "admin.management.hide"
-                        : "admin.management.activate",
+                      car.is_hidden
+                        ? "admin.management.show"
+                        : "admin.management.hide",
                     )}
-                    onClick={() => void cars.toggleStatus(car)}
+                    aria-pressed={car.is_hidden}
+                    onClick={() => void cars.toggleVisibility(car)}
                   >
-                    <Icon
-                      name={car.is_active ? "eyeOff" : "eye"}
-                    />
+                    <Icon name={car.is_hidden ? "eye" : "eyeOff"} />
+                  </button>
+
+                  <button
+                    className={`icon-button icon-button--bought${car.status === "bought" ? " is-active" : ""}`}
+                    title={t(
+                      car.status === "bought"
+                        ? "admin.management.markAvailable"
+                        : "admin.management.markBought",
+                    )}
+                    aria-pressed={car.status === "bought"}
+                    onClick={() => void cars.toggleBought(car)}
+                  >
+                    <Icon name="check" />
                   </button>
 
                   <button

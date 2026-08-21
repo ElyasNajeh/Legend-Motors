@@ -31,7 +31,8 @@ export type PublicCar = {
   description_ar: string | null
   description_en: string | null
   is_featured: boolean
-  is_active: boolean
+  status: "active" | "bought"
+  is_hidden: boolean
   created_at: string
   hybrid_car: { battery_capacity: string | null } | null
   images: PublicCarImage[]

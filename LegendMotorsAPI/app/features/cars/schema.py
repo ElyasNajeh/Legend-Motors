@@ -30,6 +30,8 @@ class CarCreate(BaseModel):
     description_en: str | None = None
 
     is_featured: bool = False
+    status: Literal["active", "bought"] = "active"
+    is_hidden: bool = False
 
     car_type: str
 
@@ -52,6 +54,8 @@ class CarUpdate(BaseModel):
     description_en: str | None = None
 
     is_featured: bool
+    status: Literal["active", "bought"]
+    is_hidden: bool
 
     car_type: str
 
@@ -102,7 +106,8 @@ class CarResponse(BaseModel):
     description_en: str | None
 
     is_featured: bool
-    is_active: bool
+    status: Literal["active", "bought"]
+    is_hidden: bool
 
     created_at: datetime
 
@@ -113,3 +118,11 @@ class CarResponse(BaseModel):
     brand: CarBrandResponse
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CarStatusUpdate(BaseModel):
+    status: Literal["active", "bought"]
+
+
+class CarVisibilityUpdate(BaseModel):
+    is_hidden: bool

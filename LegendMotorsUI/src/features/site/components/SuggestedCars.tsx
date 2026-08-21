@@ -35,7 +35,7 @@ export function SuggestedCars({ currentCar }: { currentCar: PublicCar }) {
   });
 
   const inventory = carsQuery.data ?? [];
-  const activeCarCount = inventory.filter((car) => car.is_active).length;
+  const activeCarCount = inventory.filter((car) => !car.is_hidden).length;
   const suggestionLimit = Math.min(
     RECOMMENDATION_LIMIT,
     Math.floor(activeCarCount * RECOMMENDATION_SHARE),
@@ -136,7 +136,7 @@ function getSuggestedCars(
   limit: number,
 ): SuggestedCar[] {
   return inventory
-    .filter((car) => car.id !== currentCar.id && car.is_active)
+    .filter((car) => car.id !== currentCar.id && !car.is_hidden)
     .map((car) => scoreCar(currentCar, car))
     .sort((first, second) => {
       if (second.score !== first.score) return second.score - first.score;

@@ -328,6 +328,13 @@ export function CarDetailPage() {
               </span>
             )}
 
+            {car.status === "bought" && (
+              <span className="car-card__bought">
+                <CarAssetIcon name="bought" />
+                <span>{t("public.cars.bought")}</span>
+              </span>
+            )}
+
             {car.images.length > 1 && (
               <div className="car-gallery__count">
                 {formatNumber(safeActiveImage + 1)}
@@ -436,15 +443,22 @@ export function CarDetailPage() {
             />
           </div>
 
-          <a
-            className="public-whatsapp car-detail__whatsapp"
-            href={whatsAppUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <SiteIcon name="whatsapp" size={22} />
-            {t("public.detail.whatsapp")}
-          </a>
+          {car.status === "bought" ? (
+            <div className="car-detail__bought car-detail__whatsapp">
+              <CarAssetIcon name="bought" />
+              {t("public.detail.bought")}
+            </div>
+          ) : (
+            <a
+              className="public-whatsapp car-detail__whatsapp"
+              href={whatsAppUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <SiteIcon name="whatsapp" size={22} />
+              {t("public.detail.whatsapp")}
+            </a>
+          )}
 
           <section className="car-detail__description">
             <h2>
@@ -557,15 +571,22 @@ export function CarDetailPage() {
       </section>
 
       <div className="car-detail__mobile-whatsapp">
-        <a
-          className="public-whatsapp car-detail__mobile-whatsapp-button"
-          href={whatsAppUrl}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SiteIcon name="whatsapp" size={15} />
-          {t("public.detail.whatsapp")}
-        </a>
+        {car.status === "bought" ? (
+          <div className="car-detail__bought car-detail__mobile-whatsapp-button">
+            <CarAssetIcon name="bought" />
+            {t("public.detail.bought")}
+          </div>
+        ) : (
+          <a
+            className="public-whatsapp car-detail__mobile-whatsapp-button"
+            href={whatsAppUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SiteIcon name="whatsapp" size={15} />
+            {t("public.detail.whatsapp")}
+          </a>
+        )}
       </div>
 
       {/* FULLSCREEN IMAGE VIEWER */}

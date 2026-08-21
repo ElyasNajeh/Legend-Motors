@@ -6,6 +6,48 @@ COMMON_CAR_COLUMNS = {"fuel_type", "engine_cc", "is_turbo"}
 CAR_IMAGE_PRIMARY_INDEX = "uq_car_images_primary_per_car"
 
 
+def migrate_car_status(engine: Engine) -> None:
+    """Keep sale state and public visibility independent on existing databases."""
+    with engine.begin() as connection:
+        inspector = inspect(connection)
+        if "cars" not in inspector.get_table_names():
+            return
+
+        car_columns = {
+            column["name"] for column in inspector.get_columns("cars")
+        }
+        if "status" not in car_columns:
+            connection.execute(
+                text(
+                    "ALTER TABLE cars ADD COLUMN status VARCHAR(20) "
+                    "NOT NULL DEFAULT 'active'"
+                )
+            )
+
+        if "is_hidden" not in car_columns:
+            connection.execute(
+                text(
+                    "ALTER TABLE cars ADD COLUMN is_hidden BOOLEAN "
+                    "NOT NULL DEFAULT FALSE"
+                )
+            )
+
+            if "is_active" in car_columns:
+                connection.execute(
+                    text("UPDATE cars SET is_hidden = NOT is_active")
+                )
+
+        # The first status implementation represented hidden as a mutually
+        # exclusive status. Preserve that visibility while normalizing the
+        # sale state so future updates can combine hidden + bought.
+        connection.execute(
+            text(
+                "UPDATE cars SET is_hidden = TRUE, status = 'active' "
+                "WHERE status = 'hidden'"
+            )
+        )
+
+
 def migrate_car_common_fields(engine: Engine) -> None:
     """Move duplicated subtype fields to cars for databases created before this change."""
     with engine.begin() as connection:

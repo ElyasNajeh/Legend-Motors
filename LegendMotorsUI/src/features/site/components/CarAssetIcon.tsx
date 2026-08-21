@@ -9,8 +9,10 @@ import transmissionIcon from "@/assets/site_assets/transmission-icon.png"
 import warrantyIcon from "@/assets/site_assets/trusted=warranty-icon.png"
 import turboIcon from "@/assets/site_assets/turbo-icon.png"
 import yearIcon from "@/assets/site_assets/year-icon.png"
+import boughtIcon from "@/assets/site_assets/bought-icon.png"
 
 export type CarAssetIconName =
+  | "bought"
   | "cc"
   | "engine"
   | "fuel"
@@ -24,6 +26,7 @@ export type CarAssetIconName =
   | "year"
 
 const icons: Record<CarAssetIconName, string> = {
+  bought: boughtIcon,
   cc: ccIcon,
   engine: engineIcon,
   fuel: fuelIcon,

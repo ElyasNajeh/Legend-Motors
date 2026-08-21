@@ -56,7 +56,9 @@ export function useCars() {
         (!brandFilter || car.brand_id === Number(brandFilter)) &&
         (!typeFilter || car.car_type === typeFilter) &&
         (!statusFilter ||
-          car.is_active === (statusFilter === "true")),
+          (statusFilter === "hidden"
+            ? car.is_hidden
+            : car.status === statusFilter)),
     )
   }, [
     brandFilter,
@@ -196,26 +198,75 @@ export function useCars() {
     }
   }
 
-  async function toggle(car: Car, featured = false) {
+  async function toggleFeatured(car: Car) {
     try {
-      const updated = await (featured
-        ? CarsApi.toggleFeatured(car.id)
-        : CarsApi.toggleStatus(car.id))
+      const updated = await CarsApi.toggleFeatured(car.id)
 
       toast.success(
         t(
-          featured
-            ? "admin.feedback.cars.featuredUpdated"
-            : "admin.feedback.cars.statusUpdated",
+          "admin.feedback.cars.featuredUpdated",
         ),
         t(
-          featured
-            ? updated.is_featured
-              ? "admin.feedback.cars.featuredEnabledMessage"
-              : "admin.feedback.cars.featuredDisabledMessage"
-            : updated.is_active
-              ? "admin.feedback.cars.activatedMessage"
-              : "admin.feedback.cars.hiddenMessage",
+          updated.is_featured
+            ? "admin.feedback.cars.featuredEnabledMessage"
+            : "admin.feedback.cars.featuredDisabledMessage",
+          { name: car.model },
+        ),
+      )
+
+      await carsQuery.refetch()
+    } catch (error) {
+      toast.error(
+        t("admin.feedback.cars.updateFailed"),
+        getLocalizedErrorMessage(
+          error,
+          language,
+          t("admin.feedback.cars.updateFailedMessage"),
+        ),
+      )
+    }
+  }
+
+  async function toggleVisibility(car: Car) {
+    try {
+      const updated = await CarsApi.updateVisibility(car.id, !car.is_hidden)
+
+      toast.success(
+        t("admin.feedback.cars.statusUpdated"),
+        t(
+          updated.is_hidden
+            ? "admin.feedback.cars.hiddenMessage"
+            : "admin.feedback.cars.activatedMessage",
+          { name: car.model },
+        ),
+      )
+
+      await carsQuery.refetch()
+    } catch (error) {
+      toast.error(
+        t("admin.feedback.cars.updateFailed"),
+        getLocalizedErrorMessage(
+          error,
+          language,
+          t("admin.feedback.cars.updateFailedMessage"),
+        ),
+      )
+    }
+  }
+
+  async function toggleBought(car: Car) {
+    try {
+      const updated = await CarsApi.updateStatus(
+        car.id,
+        car.status === "bought" ? "active" : "bought",
+      )
+
+      toast.success(
+        t("admin.feedback.cars.statusUpdated"),
+        t(
+          updated.status === "bought"
+            ? "admin.feedback.cars.boughtMessage"
+            : "admin.feedback.cars.availableMessage",
           { name: car.model },
         ),
       )
@@ -269,7 +320,8 @@ export function useCars() {
       ]),
     saveCar,
     deleteCar,
-    toggleStatus: (car: Car) => toggle(car),
-    toggleFeatured: (car: Car) => toggle(car, true),
+    toggleVisibility,
+    toggleBought,
+    toggleFeatured,
   }
 }

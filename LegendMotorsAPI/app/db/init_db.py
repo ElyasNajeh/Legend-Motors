@@ -5,6 +5,7 @@ from app.db.base import Base
 from app.db.migrations import (
     migrate_car_common_fields,
     migrate_car_image_primary,
+    migrate_car_status,
     migrate_car_transmission,
 )
 from app.db.session import engine
@@ -54,4 +55,5 @@ def init_db():
     migrate_car_common_fields(engine)
     migrate_car_transmission(engine)
     migrate_car_image_primary(engine)
+    migrate_car_status(engine)
     create_tables()

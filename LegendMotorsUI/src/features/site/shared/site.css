@@ -158,6 +158,8 @@ html[dir="rtl"] .cars-filter-fields select { background-position: left 12px cent
 .car-card__placeholder { height: 100%; display: grid; place-items: center; align-content: center; gap: 10px; color: var(--site-muted); }
 .car-card__featured { position: absolute; z-index: 1; top: 14px; inset-inline-end: 14px; display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 8px 12px; border: 1px solid rgba(255,255,255,.3); border-radius: 12px; color: #fff; background: rgba(10,10,10,.68); box-shadow: 0 8px 20px rgba(0,0,0,.16); backdrop-filter: blur(9px); font-size: .78rem; font-weight: 800; }
 .car-card__featured svg { width: 17px; height: 17px; }
+.car-card__bought { position: absolute; z-index: 1; top: 14px; inset-inline-start: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.34); border-radius: 999px; color: #fff; background: rgba(10,10,10,.7); box-shadow: 0 8px 20px rgba(0,0,0,.16); backdrop-filter: blur(9px); font-size: .72rem; font-weight: 800; }
+.car-card__bought .car-asset-icon { width: 28.5px; height: 28.5px; flex: none; object-fit: contain; }
 .car-card__recommendation { position: absolute; z-index: 1; inset-inline-start: 14px; bottom: 14px; min-height: 36px; display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.3); border-radius: 12px; color: #fff; background: rgba(10,10,10,.72); box-shadow: 0 8px 20px rgba(0,0,0,.16); backdrop-filter: blur(9px); font-size: .76rem; font-weight: 800; }
 .car-card__recommendation svg { width: 16px; height: 16px; flex: none; }
 .car-card__body { min-width: 0; display: flex; flex-direction: column; padding: 20px; }
@@ -228,6 +230,8 @@ html[dir="rtl"] .car-detail__info h1 { letter-spacing: 0; }
 .car-detail__quick small { max-width: 100%; color: var(--site-muted); font-size: .66rem; line-height: 1.3; text-wrap: balance; }
 .car-detail__quick strong { max-width: 100%; font-size: .86rem; line-height: 1.3; font-weight: 850; overflow-wrap: anywhere; }
 .car-detail__whatsapp { width: 100%; min-height: 54px; border-radius: 9px; font-size: 1rem; box-shadow: 0 9px 22px rgba(22,140,79,.2); }
+.car-detail__bought { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 11px 18px; color: #5f430d; border: 1px solid #e3bf67; background: #fff4d8; box-shadow: 0 9px 22px rgba(154,103,18,.14); font-weight: 850; }
+.car-detail__bought .car-asset-icon { width: 39px; height: 39px; object-fit: contain; }
 .car-detail__mobile-whatsapp { display: none; }
 .car-detail__description, .car-specs { margin-top: 28px; }
 .car-detail__description { padding-bottom: 24px; border-bottom: 1px solid var(--site-line); }

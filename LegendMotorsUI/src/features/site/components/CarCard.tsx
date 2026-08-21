@@ -52,6 +52,13 @@ export function CarCard({
           </span>
         )}
 
+        {car.status === "bought" && (
+          <span className="car-card__bought" title={t("public.cars.bought")}>
+            <CarAssetIcon name="bought" />
+            <span>{t("public.cars.bought")}</span>
+          </span>
+        )}
+
         {recommendationLabel && (
           <span className="car-card__recommendation">
             <SiteIcon name="sparkle" />

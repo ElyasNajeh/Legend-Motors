@@ -13,7 +13,9 @@ from app.features.cars.schema import (
     CarCreate,
     CarImageCreate,
     CarImageUpdate,
+    CarStatusUpdate,
     CarUpdate,
+    CarVisibilityUpdate,
 )
 from app.shared import crud
 from app.shared.images import optimize_car_upload
@@ -67,6 +69,8 @@ def create_car(db: Session, car_data: CarCreate):
             description_ar=car_data.description_ar,
             description_en=car_data.description_en,
             is_featured=car_data.is_featured,
+            status=car_data.status,
+            is_hidden=car_data.is_hidden,
         )
 
         db.add(car)
@@ -111,7 +115,7 @@ def get_active_cars(db: Session):
             selectinload(Car.images),
             selectinload(Car.hybrid_car),
         )
-        .filter(Car.is_active.is_(True))
+        .filter(Car.is_hidden.is_(False))
         .order_by(Car.created_at.desc())
         .all()
     )
@@ -121,7 +125,7 @@ def get_featured_cars(db: Session):
     return (
         db.query(Car)
         .filter(
-            Car.is_active.is_(True),
+            Car.is_hidden.is_(False),
             Car.is_featured.is_(True),
         )
         .options(
@@ -147,7 +151,7 @@ def get_cars_by_brand(db: Session, brand_id: int):
         db.query(Car)
         .filter(
             Car.brand_id == brand_id,
-            Car.is_active.is_(True),
+            Car.is_hidden.is_(False),
         )
         .options(
             selectinload(Car.brand),
@@ -167,7 +171,7 @@ def get_car(db: Session, car_id: int):
             selectinload(Car.images),
             selectinload(Car.hybrid_car),
         )
-        .filter(Car.id == car_id, Car.is_active.is_(True))
+        .filter(Car.id == car_id, Car.is_hidden.is_(False))
         .first()
     )
 
@@ -216,6 +220,8 @@ def update_car(
         car.description_ar = car_data.description_ar
         car.description_en = car_data.description_en
         car.is_featured = car_data.is_featured
+        car.status = car_data.status
+        car.is_hidden = car_data.is_hidden
 
         # If the car type changed, remove the old subtype.
         if car.car_type != car_data.car_type:
@@ -273,7 +279,11 @@ def delete_car(db: Session, car_id: int):
     return car
 
 
-def toggle_car_status(db: Session, car_id: int):
+def update_car_status(
+    db: Session,
+    car_id: int,
+    status_data: CarStatusUpdate,
+):
     car = crud.get_by_id(db, Car, car_id)
 
     if not car:
@@ -282,7 +292,28 @@ def toggle_car_status(db: Session, car_id: int):
             detail="Car not found",
         )
 
-    car.is_active = not car.is_active
+    car.status = status_data.status
+
+    db.commit()
+    db.refresh(car)
+
+    return car
+
+
+def update_car_visibility(
+    db: Session,
+    car_id: int,
+    visibility_data: CarVisibilityUpdate,
+):
+    car = crud.get_by_id(db, Car, car_id)
+
+    if not car:
+        raise HTTPException(
+            status_code=404,
+            detail="Car not found",
+        )
+
+    car.is_hidden = visibility_data.is_hidden
 
     db.commit()
     db.refresh(car)

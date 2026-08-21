@@ -18,6 +18,8 @@ import type {
   CarPayload,
 } from "../cars.types"
 
+const MAX_CAR_IMAGES = 12
+
 type Errors = Partial<Record<keyof CarFormValues, string>>
 
 type ManagedImage =
@@ -60,6 +62,8 @@ function initialValues(
     description_ar: car?.description_ar ?? "",
     description_en: car?.description_en ?? "",
     is_featured: car?.is_featured ?? false,
+    status: car?.status ?? "active",
+    is_hidden: car?.is_hidden ?? false,
     car_type: car?.car_type ?? "normal",
     battery_capacity: car?.hybrid_car?.battery_capacity ?? "",
   }
@@ -117,6 +121,8 @@ function toPayload(form: CarFormValues): CarPayload {
     description_ar: form.description_ar.trim() || null,
     description_en: form.description_en.trim() || null,
     is_featured: form.is_featured,
+    status: form.status,
+    is_hidden: form.is_hidden,
     car_type: form.car_type,
     hybrid_details:
       form.car_type === "hybrid"
@@ -190,7 +196,12 @@ export function CarFormDialog({
     ) : null
 
   function selectImages(event: ChangeEvent<HTMLInputElement>) {
-    const selected = Array.from(event.target.files ?? []).map(
+    const availableSlots = MAX_CAR_IMAGES - images.length
+    const selectedFiles = Array.from(event.target.files ?? []).slice(
+      0,
+      Math.max(availableSlots, 0),
+    )
+    const selected = selectedFiles.map(
       (file) => {
         const previewUrl = URL.createObjectURL(file)
         previewUrlsRef.current.add(previewUrl)
@@ -208,6 +219,14 @@ export function CarFormDialog({
       setImages((current) => [...current, ...selected])
       setPrimaryImageKey((current) => current ?? selected[0].key)
       setFormError("")
+    }
+
+    if ((event.target.files?.length ?? 0) > selected.length) {
+      setFormError(
+        t("admin.forms.car.validation.maxImages", {
+          max: MAX_CAR_IMAGES,
+        }),
+      )
     }
 
     event.target.value = ""
@@ -578,7 +597,7 @@ export function CarFormDialog({
                 <button
                   className="button button--secondary"
                   type="button"
-                  disabled={saving}
+                  disabled={saving || images.length >= MAX_CAR_IMAGES}
                   onClick={() => imageInputRef.current?.click()}
                 >
                   {t(
@@ -592,6 +611,7 @@ export function CarFormDialog({
                   {images.length
                     ? t("admin.forms.car.imagesSelected", {
                         count: images.length,
+                        max: MAX_CAR_IMAGES,
                       })
                     : t("admin.forms.car.imagesHelp")}
                 </small>
@@ -700,6 +720,38 @@ export function CarFormDialog({
 
         <fieldset className="form-section">
           <legend>{t("admin.forms.car.sections.options")}</legend>
+
+          <div className="car-status-options">
+            <label className={`status-option${form.is_hidden ? " is-selected" : ""}`}>
+              <span className="status-option__icon">
+                <Icon name={form.is_hidden ? "eyeOff" : "eye"} />
+              </span>
+              <span>
+                <strong>{t("admin.forms.car.hiddenLabel")}</strong>
+                <small>{t("admin.forms.car.hiddenHelp")}</small>
+              </span>
+              <input
+                type="checkbox"
+                checked={form.is_hidden}
+                onChange={(e) => change("is_hidden", e.target.checked)}
+              />
+            </label>
+
+            <label className={`status-option status-option--bought${form.status === "bought" ? " is-selected" : ""}`}>
+              <span className="status-option__icon">
+                <Icon name="check" />
+              </span>
+              <span>
+                <strong>{t("admin.forms.car.boughtLabel")}</strong>
+                <small>{t("admin.forms.car.boughtHelp")}</small>
+              </span>
+              <input
+                type="checkbox"
+                checked={form.status === "bought"}
+                onChange={(e) => change("status", e.target.checked ? "bought" : "active")}
+              />
+            </label>
+          </div>
 
           <div className="car-switches">
             <label className="switch-row">
