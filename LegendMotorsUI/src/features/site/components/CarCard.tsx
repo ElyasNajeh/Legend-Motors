@@ -52,7 +52,7 @@ export function CarCard({
           </span>
         )}
 
-        {car.status === "bought" && (
+        {car.is_bought && (
           <span className="car-card__bought" title={t("public.cars.bought")}>
             <CarAssetIcon name="bought" />
             <span>{t("public.cars.bought")}</span>

@@ -1,5 +1,5 @@
 import { adminRequest } from "@/shared/api/adminHttpClient"
-import type { Car, CarImage, CarPayload, CarStatus } from "./cars.types"
+import type { Car, CarImage, CarPayload } from "./cars.types"
 
 export const CarsApi = {
   list: () =>
@@ -27,18 +27,18 @@ export const CarsApi = {
       method: "DELETE",
     }),
 
-  updateStatus: (id: number, status: CarStatus) =>
+  updateBought: (id: number, isBought: boolean) =>
     adminRequest<Car>({
-      url: `/cars/${id}/status`,
+      url: `/cars/${id}/bought`,
       method: "PATCH",
-      data: { status },
+      data: { is_bought: isBought },
     }),
 
-  updateVisibility: (id: number, isHidden: boolean) =>
+  updateActive: (id: number, isActive: boolean) =>
     adminRequest<Car>({
-      url: `/cars/${id}/visibility`,
+      url: `/cars/${id}/active`,
       method: "PATCH",
-      data: { is_hidden: isHidden },
+      data: { is_active: isActive },
     }),
 
   toggleFeatured: (id: number) =>
@@ -81,6 +81,7 @@ export const CarsApi = {
       url: "/cars/upload-image",
       method: "POST",
       data,
+      timeout: 60_000,
     })
 
     return `/uploads/cars/${result.filename}`

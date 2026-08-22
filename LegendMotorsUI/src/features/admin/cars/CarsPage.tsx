@@ -7,6 +7,7 @@ import {
   Pagination,
 } from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
+import { FilterSearch, FilterSelect } from "@/shared/components/DashboardFilters"
 import { useI18n } from "@/localization/useI18n"
 import { useCars } from "./hooks/useCars"
 import { CarFormDialog } from "./components/CarFormDialog"
@@ -47,23 +48,17 @@ export function CarsPage() {
       />
 
       <div className="filters filters--cars">
-        <label className="search-field">
-          <span>
-            <Icon name="search" />
-          </span>
+        <FilterSearch
+          label={t("admin.management.searchCars")}
+          placeholder={t("admin.management.searchCars")}
+          value={cars.search}
+          onValueChange={cars.setSearch}
+        />
 
-          <input
-            aria-label={t("admin.management.searchCars")}
-            placeholder={t("admin.management.searchCars")}
-            value={cars.search}
-            onChange={(e) => cars.setSearch(e.target.value)}
-          />
-        </label>
-
-        <select
-          aria-label={t("admin.management.filterBrand")}
+        <FilterSelect
+          label={t("admin.management.filterBrand")}
           value={cars.brandFilter}
-          onChange={(e) => cars.setBrandFilter(e.target.value)}
+          onValueChange={cars.setBrandFilter}
         >
           <option value="">
             {t("admin.management.allBrands")}
@@ -74,12 +69,12 @@ export function CarsPage() {
               {language === "ar" ? brand.name_ar : brand.name_en}
             </option>
           ))}
-        </select>
+        </FilterSelect>
 
-        <select
-          aria-label={t("admin.management.filterType")}
+        <FilterSelect
+          label={t("admin.management.filterType")}
           value={cars.typeFilter}
-          onChange={(e) => cars.setTypeFilter(e.target.value)}
+          onValueChange={cars.setTypeFilter}
         >
           <option value="">
             {t("admin.management.allTypes")}
@@ -90,12 +85,12 @@ export function CarsPage() {
           <option value="hybrid">
             {t("admin.carTypes.hybrid")}
           </option>
-        </select>
+        </FilterSelect>
 
-        <select
-          aria-label={t("admin.management.filterStatus")}
+        <FilterSelect
+          label={t("admin.management.filterStatus")}
           value={cars.statusFilter}
-          onChange={(e) => cars.setStatusFilter(e.target.value)}
+          onValueChange={cars.setStatusFilter}
         >
           <option value="">
             {t("admin.management.allStatuses")}
@@ -107,7 +102,7 @@ export function CarsPage() {
             {t("admin.common.hidden")}
           </option>
           <option value="bought">{t("admin.common.bought")}</option>
-        </select>
+        </FilterSelect>
       </div>
 
       <LoadableContent
@@ -189,16 +184,16 @@ export function CarsPage() {
                 </span>
 
                 <span className="car-status-cell">
-                  <span className={`status-badge status-badge--${car.status}`}>
+                  <span className={`status-badge status-badge--${car.is_bought ? "bought" : "active"}`}>
                     <i />
                     {t(
-                      car.status === "active"
-                        ? "admin.common.available"
-                        : "admin.common.bought",
+                      car.is_bought
+                        ? "admin.common.bought"
+                        : "admin.common.available",
                     )}
                   </span>
 
-                  {car.is_hidden && (
+                  {!car.is_active && (
                     <span className="status-badge status-badge--hidden">
                       <i />
                       {t("admin.common.hidden")}
@@ -214,52 +209,68 @@ export function CarsPage() {
 
                 <div className="row-actions">
                   <button
-                    className="icon-button"
+                    className="icon-button record-action record-action--edit"
                     title={t("admin.management.edit")}
+                    aria-label={t("admin.management.edit")}
                     onClick={() => setEditing(car)}
                   >
                     <Icon name="edit" />
                   </button>
 
                   <button
-                    className="icon-button"
+                    className={`icon-button record-action record-action--visibility${car.is_active ? "" : " is-active"}`}
                     title={t(
-                      car.is_hidden
-                        ? "admin.management.show"
-                        : "admin.management.hide",
+                      car.is_active
+                        ? "admin.management.hide"
+                        : "admin.management.show",
                     )}
-                    aria-pressed={car.is_hidden}
+                    aria-label={t(
+                      car.is_active
+                        ? "admin.management.hide"
+                        : "admin.management.show",
+                    )}
+                    aria-pressed={!car.is_active}
                     onClick={() => void cars.toggleVisibility(car)}
                   >
-                    <Icon name={car.is_hidden ? "eye" : "eyeOff"} />
+                    <Icon name={car.is_active ? "eye" : "eyeOff"} />
                   </button>
 
                   <button
-                    className={`icon-button icon-button--bought${car.status === "bought" ? " is-active" : ""}`}
+                    className={`icon-button record-action record-action--bought${car.is_bought ? " is-active" : ""}`}
                     title={t(
-                      car.status === "bought"
+                      car.is_bought
                         ? "admin.management.markAvailable"
                         : "admin.management.markBought",
                     )}
-                    aria-pressed={car.status === "bought"}
+                    aria-label={t(
+                      car.is_bought
+                        ? "admin.management.markAvailable"
+                        : "admin.management.markBought",
+                    )}
+                    aria-pressed={car.is_bought}
                     onClick={() => void cars.toggleBought(car)}
                   >
                     <Icon name="check" />
                   </button>
 
                   <button
-                    className="icon-button"
+                    className={`icon-button record-action record-action--featured${car.is_featured ? " is-active" : ""}`}
                     title={t(
                       "admin.management.toggleFeatured",
                     )}
+                    aria-label={t(
+                      "admin.management.toggleFeatured",
+                    )}
+                    aria-pressed={car.is_featured}
                     onClick={() => void cars.toggleFeatured(car)}
                   >
                     ★
                   </button>
 
                   <button
-                    className="icon-button icon-button--danger"
+                    className="icon-button record-action record-action--delete"
                     title={t("admin.management.delete")}
+                    aria-label={t("admin.management.delete")}
                     onClick={() => void cars.deleteCar(car)}
                   >
                     <Icon name="trash" />

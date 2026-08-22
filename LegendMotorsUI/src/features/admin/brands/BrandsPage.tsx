@@ -1,9 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react"
 import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
-import {
-  getLocalizedErrorMessage,
-  isApiError,
-} from "@/shared/api/error"
+import { getLocalizedErrorMessage } from "@/shared/api/error"
 import {
   EmptyState,
   LoadableContent,
@@ -12,6 +9,7 @@ import {
   RequiredMark,
 } from "@/shared/components/AdminComponents"
 import { Icon } from "@/shared/components/Icon"
+import { FilterSearch } from "@/shared/components/DashboardFilters"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
 import { useI18n } from "@/localization/useI18n"
 import { BrandsApi } from "./brands.api"
@@ -108,13 +106,11 @@ export function BrandsPage() {
     } catch (error) {
       toast.error(
         t("admin.feedback.brands.deleteFailed"),
-        isApiError(error) && error.status === 409
-          ? t("admin.feedback.brands.inUse")
-          : getLocalizedErrorMessage(
-              error,
-              language,
-              t("admin.feedback.brands.deleteFailedMessage"),
-            ),
+        getLocalizedErrorMessage(
+          error,
+          language,
+          t("admin.feedback.brands.deleteFailedMessage"),
+        ),
       )
     }
   }
@@ -137,21 +133,15 @@ export function BrandsPage() {
       />
 
       <div className="filters filters--brands">
-        <label className="search-field">
-          <span>
-            <Icon name="search" />
-          </span>
-
-          <input
-            aria-label={t("admin.management.searchBrands")}
-            placeholder={t("admin.management.searchBrands")}
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value)
-              setPage(1)
-            }}
-          />
-        </label>
+        <FilterSearch
+          label={t("admin.management.searchBrands")}
+          placeholder={t("admin.management.searchBrands")}
+          value={search}
+          onValueChange={(value) => {
+            setSearch(value)
+            setPage(1)
+          }}
+        />
       </div>
 
       <LoadableContent
@@ -222,16 +212,18 @@ export function BrandsPage() {
 
                 <div className="row-actions">
                   <button
-                    className="icon-button"
+                    className="icon-button record-action record-action--edit"
                     title={t("admin.management.edit")}
+                    aria-label={t("admin.management.edit")}
                     onClick={() => setEditing(brand)}
                   >
                     <Icon name="edit" />
                   </button>
 
                   <button
-                    className="icon-button icon-button--danger"
+                    className="icon-button record-action record-action--delete"
                     title={t("admin.management.delete")}
+                    aria-label={t("admin.management.delete")}
                     onClick={() => void deleteBrand(brand)}
                   >
                     <Icon name="trash" />
@@ -321,13 +313,11 @@ function BrandFormDialog({
       onClose()
     } catch (error) {
       setFormError(
-        isApiError(error) && error.status === 400
-          ? t("admin.feedback.brands.duplicate")
-          : getLocalizedErrorMessage(
-              error,
-              language,
-              t("admin.validation.saveFailed"),
-            ),
+        getLocalizedErrorMessage(
+          error,
+          language,
+          t("admin.validation.saveFailed"),
+        ),
       )
     } finally {
       setSaving(false)

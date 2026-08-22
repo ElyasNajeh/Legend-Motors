@@ -1,6 +1,5 @@
 export type CarType = "normal" | "hybrid"
 export type Transmission = "automatic" | "manual" | "cvt"
-export type CarStatus = "active" | "bought"
 
 export type CarImage = { id: number; image: string; is_primary: boolean; created_at: string }
 
@@ -25,8 +24,8 @@ export type Car = {
   description_ar: string | null
   description_en: string | null
   is_featured: boolean
-  status: CarStatus
-  is_hidden: boolean
+  is_bought: boolean
+  is_active: boolean
   created_at: string
   hybrid_car: { battery_capacity: string | null } | null
   images: CarImage[]
@@ -46,8 +45,8 @@ export type CarPayload = {
   description_ar: string | null
   description_en: string | null
   is_featured: boolean
-  status: CarStatus
-  is_hidden: boolean
+  is_bought: boolean
+  is_active: boolean
   car_type: CarType
   hybrid_details: { battery_capacity: string | null } | null
 }
@@ -65,8 +64,8 @@ export type CarFormValues = {
   description_ar: string
   description_en: string
   is_featured: boolean
-  status: CarStatus
-  is_hidden: boolean
+  is_bought: boolean
+  is_active: boolean
   car_type: CarType
   battery_capacity: string
 }

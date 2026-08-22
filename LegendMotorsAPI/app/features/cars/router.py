@@ -10,9 +10,9 @@ from app.features.cars.schema import (
     CarImageResponse,
     CarImageUpdate,
     CarResponse,
-    CarStatusUpdate,
+    CarBoughtUpdate,
     CarUpdate,
-    CarVisibilityUpdate,
+    CarActiveUpdate,
 )
 
 router = APIRouter(
@@ -154,24 +154,24 @@ def delete_car(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.patch("/{car_id}/status", response_model=CarResponse)
-def update_car_status(
+@router.patch("/{car_id}/bought", response_model=CarResponse)
+def update_car_bought(
     car_id: int,
-    status_data: CarStatusUpdate,
+    bought_data: CarBoughtUpdate,
     db: Session = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ):
-    return service.update_car_status(db, car_id, status_data)
+    return service.update_car_bought(db, car_id, bought_data)
 
 
-@router.patch("/{car_id}/visibility", response_model=CarResponse)
-def update_car_visibility(
+@router.patch("/{car_id}/active", response_model=CarResponse)
+def update_car_active(
     car_id: int,
-    visibility_data: CarVisibilityUpdate,
+    active_data: CarActiveUpdate,
     db: Session = Depends(get_db),
     current_user: str = Depends(get_current_user),
 ):
-    return service.update_car_visibility(db, car_id, visibility_data)
+    return service.update_car_active(db, car_id, active_data)
 
 
 @router.patch("/{car_id}/toggle-featured", response_model=CarResponse)

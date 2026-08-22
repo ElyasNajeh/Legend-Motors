@@ -1,6 +1,6 @@
 import axios, { type AxiosRequestConfig } from "axios"
 import { httpClient } from "@/shared/api/httpClient"
-import { ApiError, getApiErrorMessage } from "@/shared/api/error"
+import { createApiError } from "@/shared/api/error"
 import type { PublicBrand, PublicCar, PublicSlider } from "./site.types"
 
 async function publicRequest<T>(config: AxiosRequestConfig): Promise<T> {
@@ -9,11 +9,7 @@ async function publicRequest<T>(config: AxiosRequestConfig): Promise<T> {
     return response.data
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new ApiError(
-        error.response?.status ?? 0,
-        getApiErrorMessage(error.response?.data, error.message),
-        error.response?.data,
-      )
+      throw createApiError(error)
     }
     throw error
   }

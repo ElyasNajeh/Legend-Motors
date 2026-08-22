@@ -328,7 +328,7 @@ export function CarDetailPage() {
               </span>
             )}
 
-            {car.status === "bought" && (
+            {car.is_bought && (
               <span className="car-card__bought">
                 <CarAssetIcon name="bought" />
                 <span>{t("public.cars.bought")}</span>
@@ -443,7 +443,7 @@ export function CarDetailPage() {
             />
           </div>
 
-          {car.status === "bought" ? (
+          {car.is_bought ? (
             <div className="car-detail__bought car-detail__whatsapp">
               <CarAssetIcon name="bought" />
               {t("public.detail.bought")}
@@ -571,7 +571,7 @@ export function CarDetailPage() {
       </section>
 
       <div className="car-detail__mobile-whatsapp">
-        {car.status === "bought" ? (
+        {car.is_bought ? (
           <div className="car-detail__bought car-detail__mobile-whatsapp-button">
             <CarAssetIcon name="bought" />
             {t("public.detail.bought")}

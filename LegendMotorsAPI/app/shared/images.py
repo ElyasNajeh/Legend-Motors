@@ -187,11 +187,13 @@ def optimize_image_file(
 
 def delete_uploaded_image(value: str | None, subdirectory: str) -> None:
     path = resolve_uploaded_image(value, subdirectory)
-    if path and path.is_file():
-        try:
-            path.unlink()
-        except OSError:
-            logger.warning("Could not delete replaced image %s", path, exc_info=True)
+    if not path or not path.is_file():
+        return
+
+    try:
+        path.unlink()
+    except OSError:
+        logger.warning("Could not delete uploaded image %s", path, exc_info=True)
 
 
 def resolve_uploaded_image(value: str | None, subdirectory: str) -> Path | None:

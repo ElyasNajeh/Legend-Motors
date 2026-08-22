@@ -43,6 +43,7 @@ export const SlidersApi = {
       url: "/sliders/upload-image",
       method: "POST",
       data: body,
+      timeout: 60_000,
     })
 
     return result.path ?? `/uploads/sliders/${result.filename}`

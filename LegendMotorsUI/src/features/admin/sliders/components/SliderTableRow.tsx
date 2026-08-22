@@ -30,19 +30,27 @@ export function SliderTableRow(props: SliderTableRowProps) {
       <span>{new Date(slider.created_at).toLocaleDateString(language === "ar" ? "ar-PS" : "en-PS")}</span>
       <StatusBadge active={slider.is_active} />
       <div className="row-actions">
-        <button className="icon-button" title={t("admin.management.edit")} onClick={() => props.onEdit(slider)}>
+        <button
+          className="icon-button record-action record-action--edit"
+          title={t("admin.management.edit")}
+          aria-label={t("admin.management.edit")}
+          onClick={() => props.onEdit(slider)}
+        >
           <Icon name="edit" />
         </button>
         <button
-          className="icon-button"
+          className={`icon-button record-action record-action--visibility${slider.is_active ? "" : " is-active"}`}
           title={t(slider.is_active ? "admin.management.hide" : "admin.management.activate")}
+          aria-label={t(slider.is_active ? "admin.management.hide" : "admin.management.activate")}
+          aria-pressed={!slider.is_active}
           onClick={() => props.onToggle(slider)}
         >
-          <Icon name={slider.is_active ? "eyeOff" : "eye"} />
+          <Icon name={slider.is_active ? "eye" : "eyeOff"} />
         </button>
         <button
-          className="icon-button icon-button--danger"
+          className="icon-button record-action record-action--delete"
           title={t("admin.management.delete")}
+          aria-label={t("admin.management.delete")}
           onClick={() => props.onDelete(slider)}
         >
           <Icon name="trash" />

@@ -13,12 +13,12 @@ from app.features.cars.schema import (
     CarCreate,
     CarImageCreate,
     CarImageUpdate,
-    CarStatusUpdate,
+    CarBoughtUpdate,
     CarUpdate,
-    CarVisibilityUpdate,
+    CarActiveUpdate,
 )
 from app.shared import crud
-from app.shared.images import optimize_car_upload
+from app.shared.images import delete_uploaded_image, optimize_car_upload
 
 
 def validate_car_type(car_data):
@@ -69,8 +69,8 @@ def create_car(db: Session, car_data: CarCreate):
             description_ar=car_data.description_ar,
             description_en=car_data.description_en,
             is_featured=car_data.is_featured,
-            status=car_data.status,
-            is_hidden=car_data.is_hidden,
+            is_bought=car_data.is_bought,
+            is_active=car_data.is_active,
         )
 
         db.add(car)
@@ -104,7 +104,16 @@ def create_car(db: Session, car_data: CarCreate):
 
 
 def get_cars(db: Session):
-    return crud.get_all(db, Car)
+    return (
+        db.query(Car)
+        .options(
+            selectinload(Car.brand),
+            selectinload(Car.images),
+            selectinload(Car.hybrid_car),
+        )
+        .order_by(Car.created_at.desc())
+        .all()
+    )
 
 
 def get_active_cars(db: Session):
@@ -115,7 +124,7 @@ def get_active_cars(db: Session):
             selectinload(Car.images),
             selectinload(Car.hybrid_car),
         )
-        .filter(Car.is_hidden.is_(False))
+        .filter(Car.is_active.is_(True))
         .order_by(Car.created_at.desc())
         .all()
     )
@@ -125,7 +134,7 @@ def get_featured_cars(db: Session):
     return (
         db.query(Car)
         .filter(
-            Car.is_hidden.is_(False),
+            Car.is_active.is_(True),
             Car.is_featured.is_(True),
         )
         .options(
@@ -151,7 +160,7 @@ def get_cars_by_brand(db: Session, brand_id: int):
         db.query(Car)
         .filter(
             Car.brand_id == brand_id,
-            Car.is_hidden.is_(False),
+            Car.is_active.is_(True),
         )
         .options(
             selectinload(Car.brand),
@@ -171,7 +180,7 @@ def get_car(db: Session, car_id: int):
             selectinload(Car.images),
             selectinload(Car.hybrid_car),
         )
-        .filter(Car.id == car_id, Car.is_hidden.is_(False))
+        .filter(Car.id == car_id, Car.is_active.is_(True))
         .first()
     )
 
@@ -220,8 +229,8 @@ def update_car(
         car.description_ar = car_data.description_ar
         car.description_en = car_data.description_en
         car.is_featured = car_data.is_featured
-        car.status = car_data.status
-        car.is_hidden = car_data.is_hidden
+        car.is_bought = car_data.is_bought
+        car.is_active = car_data.is_active
 
         # If the car type changed, remove the old subtype.
         if car.car_type != car_data.car_type:
@@ -268,21 +277,32 @@ def update_car(
 
 
 def delete_car(db: Session, car_id: int):
-    car = crud.delete_by_id(db, Car, car_id)
-
+    car = crud.get_by_id(db, Car, car_id)
     if not car:
         raise HTTPException(
             status_code=404,
             detail="Car not found",
         )
 
+    image_paths = [image.image for image in car.images]
+
+    try:
+        db.delete(car)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    for image_path in image_paths:
+        delete_uploaded_image(image_path, "cars")
+
     return car
 
 
-def update_car_status(
+def update_car_bought(
     db: Session,
     car_id: int,
-    status_data: CarStatusUpdate,
+    bought_data: CarBoughtUpdate,
 ):
     car = crud.get_by_id(db, Car, car_id)
 
@@ -292,7 +312,7 @@ def update_car_status(
             detail="Car not found",
         )
 
-    car.status = status_data.status
+    car.is_bought = bought_data.is_bought
 
     db.commit()
     db.refresh(car)
@@ -300,10 +320,10 @@ def update_car_status(
     return car
 
 
-def update_car_visibility(
+def update_car_active(
     db: Session,
     car_id: int,
-    visibility_data: CarVisibilityUpdate,
+    active_data: CarActiveUpdate,
 ):
     car = crud.get_by_id(db, Car, car_id)
 
@@ -313,7 +333,7 @@ def update_car_visibility(
             detail="Car not found",
         )
 
-    car.is_hidden = visibility_data.is_hidden
+    car.is_active = active_data.is_active
 
     db.commit()
     db.refresh(car)
@@ -462,6 +482,7 @@ def delete_car_image(db: Session, image_id: int):
 
     car_id = image.car_id
     was_primary = image.is_primary
+    image_path = image.image
 
     try:
         db.delete(image)
@@ -478,10 +499,12 @@ def delete_car_image(db: Session, image_id: int):
                 next_image.is_primary = True
 
         db.commit()
-        return image
     except Exception:
         db.rollback()
         raise
+
+    delete_uploaded_image(image_path, "cars")
+    return image
 
 
 def upload_image(file: UploadFile):

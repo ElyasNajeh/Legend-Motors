@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { queryKeys, useMutation, useQuery } from "@/shared/query/remoteData"
 import { BrandsApi } from "@/features/admin/brands/brands.api"
 import { useFeedback } from "@/shared/feedback/FeedbackProvider"
-import { getLocalizedErrorMessage } from "@/shared/api/error"
+import { ApiError, getLocalizedErrorMessage } from "@/shared/api/error"
 import { useI18n } from "@/localization/useI18n"
 import { CarsApi } from "../cars.api"
 import type {
@@ -48,18 +48,26 @@ export function useCars() {
   const filteredItems = useMemo(() => {
     const term = search.trim().toLocaleLowerCase()
 
-    return (carsQuery.data ?? []).filter(
-      (car) =>
-        (!term ||
-          car.model.toLocaleLowerCase().includes(term) ||
-          String(car.year).includes(term)) &&
-        (!brandFilter || car.brand_id === Number(brandFilter)) &&
-        (!typeFilter || car.car_type === typeFilter) &&
-        (!statusFilter ||
-          (statusFilter === "hidden"
-            ? car.is_hidden
-            : car.status === statusFilter)),
-    )
+    return (carsQuery.data ?? [])
+      .filter(
+        (car) =>
+          (!term ||
+            car.model.toLocaleLowerCase().includes(term) ||
+            String(car.year).includes(term)) &&
+          (!brandFilter || car.brand_id === Number(brandFilter)) &&
+          (!typeFilter || car.car_type === typeFilter) &&
+          (!statusFilter ||
+            (statusFilter === "hidden"
+              ? !car.is_active
+              : statusFilter === "bought"
+                ? car.is_bought
+                : !car.is_bought)),
+      )
+      .sort(
+        (left, right) =>
+          new Date(right.created_at).getTime() -
+          new Date(left.created_at).getTime(),
+      )
   }, [
     brandFilter,
     carsQuery.data,
@@ -187,14 +195,40 @@ export function useCars() {
 
       await carsQuery.refetch()
     } catch (error) {
-      toast.error(
-        t("admin.feedback.cars.deleteFailed"),
-        getLocalizedErrorMessage(
-          error,
-          language,
+      if (error instanceof ApiError && error.kind === "timeout") {
+        toast.error(
+          t("admin.feedback.cars.deleteTimedOut"),
+          t("admin.feedback.cars.deleteTimedOutMessage"),
+        )
+      } else if (error instanceof ApiError && error.kind === "network") {
+        toast.error(
+          t("admin.feedback.cars.deleteConnectionFailed"),
+          t("admin.feedback.cars.deleteConnectionFailedMessage"),
+        )
+      } else if (error instanceof ApiError && error.status === 404) {
+        toast.info(
+          t("admin.feedback.cars.deleteNotFound"),
+          t("admin.feedback.cars.deleteNotFoundMessage", {
+            name: car.model,
+          }),
+        )
+      } else if (error instanceof ApiError && error.status >= 500) {
+        toast.error(
+          t("admin.feedback.cars.deleteFailed"),
           t("admin.feedback.cars.deleteFailedMessage"),
-        ),
-      )
+        )
+      } else {
+        toast.error(
+          t("admin.feedback.cars.deleteFailed"),
+          getLocalizedErrorMessage(
+            error,
+            language,
+            t("admin.feedback.cars.deleteFailedMessage"),
+          ),
+        )
+      }
+
+      await carsQuery.refetch()
     }
   }
 
@@ -229,14 +263,14 @@ export function useCars() {
 
   async function toggleVisibility(car: Car) {
     try {
-      const updated = await CarsApi.updateVisibility(car.id, !car.is_hidden)
+      const updated = await CarsApi.updateActive(car.id, !car.is_active)
 
       toast.success(
         t("admin.feedback.cars.statusUpdated"),
         t(
-          updated.is_hidden
-            ? "admin.feedback.cars.hiddenMessage"
-            : "admin.feedback.cars.activatedMessage",
+          updated.is_active
+            ? "admin.feedback.cars.activatedMessage"
+            : "admin.feedback.cars.hiddenMessage",
           { name: car.model },
         ),
       )
@@ -256,15 +290,15 @@ export function useCars() {
 
   async function toggleBought(car: Car) {
     try {
-      const updated = await CarsApi.updateStatus(
+      const updated = await CarsApi.updateBought(
         car.id,
-        car.status === "bought" ? "active" : "bought",
+        !car.is_bought,
       )
 
       toast.success(
         t("admin.feedback.cars.statusUpdated"),
         t(
-          updated.status === "bought"
+          updated.is_bought
             ? "admin.feedback.cars.boughtMessage"
             : "admin.feedback.cars.availableMessage",
           { name: car.model },

@@ -62,8 +62,8 @@ function initialValues(
     description_ar: car?.description_ar ?? "",
     description_en: car?.description_en ?? "",
     is_featured: car?.is_featured ?? false,
-    status: car?.status ?? "active",
-    is_hidden: car?.is_hidden ?? false,
+    is_bought: car?.is_bought ?? false,
+    is_active: car?.is_active ?? true,
     car_type: car?.car_type ?? "normal",
     battery_capacity: car?.hybrid_car?.battery_capacity ?? "",
   }
@@ -121,8 +121,8 @@ function toPayload(form: CarFormValues): CarPayload {
     description_ar: form.description_ar.trim() || null,
     description_en: form.description_en.trim() || null,
     is_featured: form.is_featured,
-    status: form.status,
-    is_hidden: form.is_hidden,
+    is_bought: form.is_bought,
+    is_active: form.is_active,
     car_type: form.car_type,
     hybrid_details:
       form.car_type === "hybrid"
@@ -722,9 +722,9 @@ export function CarFormDialog({
           <legend>{t("admin.forms.car.sections.options")}</legend>
 
           <div className="car-status-options">
-            <label className={`status-option${form.is_hidden ? " is-selected" : ""}`}>
+            <label className={`status-option${form.is_active ? "" : " is-selected"}`}>
               <span className="status-option__icon">
-                <Icon name={form.is_hidden ? "eyeOff" : "eye"} />
+                <Icon name={form.is_active ? "eye" : "eyeOff"} />
               </span>
               <span>
                 <strong>{t("admin.forms.car.hiddenLabel")}</strong>
@@ -732,12 +732,12 @@ export function CarFormDialog({
               </span>
               <input
                 type="checkbox"
-                checked={form.is_hidden}
-                onChange={(e) => change("is_hidden", e.target.checked)}
+                checked={!form.is_active}
+                onChange={(e) => change("is_active", !e.target.checked)}
               />
             </label>
 
-            <label className={`status-option status-option--bought${form.status === "bought" ? " is-selected" : ""}`}>
+            <label className={`status-option status-option--bought${form.is_bought ? " is-selected" : ""}`}>
               <span className="status-option__icon">
                 <Icon name="check" />
               </span>
@@ -747,8 +747,8 @@ export function CarFormDialog({
               </span>
               <input
                 type="checkbox"
-                checked={form.status === "bought"}
-                onChange={(e) => change("status", e.target.checked ? "bought" : "active")}
+                checked={form.is_bought}
+                onChange={(e) => change("is_bought", e.target.checked)}
               />
             </label>
           </div>

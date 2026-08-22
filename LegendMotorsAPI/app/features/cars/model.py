@@ -93,15 +93,15 @@ class Car(Base):
         nullable=False,
     )
 
-    status = Column(
-        String(20),
-        default="active",
+    is_bought = Column(
+        Boolean,
+        default=False,
         nullable=False,
     )
 
-    is_hidden = Column(
+    is_active = Column(
         Boolean,
-        default=False,
+        default=True,
         nullable=False,
     )
 
